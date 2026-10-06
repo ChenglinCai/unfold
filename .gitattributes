@@ -1,0 +1,7 @@
+# Tools write these files, so GitHub collapses them in pull-request diffs.
+uv.lock linguist-generated=true
+.specify/** linguist-generated=true
+.claude/skills/speckit-*/** linguist-generated=true
+
+# People write the constitution, so reviews show it in full.
+.specify/memory/constitution.md linguist-generated=false

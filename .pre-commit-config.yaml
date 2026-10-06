@@ -1,6 +1,11 @@
 # Checks that run before each commit, and in CI on every pull request.
 # Install the git hook once with: uv run pre-commit install
 # Run every check on every file with: uv run pre-commit run --all-files
+
+# Spec Kit generates these files, so we keep them exactly as it wrote them.
+# The constitution is the exception, because people write it.
+exclude: ^(\.specify/(?!memory/constitution\.md$)|\.claude/skills/speckit-)
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0

@@ -12,6 +12,8 @@ unfold turns learning material into explainer videos. This file lists the comman
 
 ## Conventions
 
+- Read `.specify/memory/constitution.md` before you plan a feature. Every feature goes through Spec Kit, starting with `/speckit-specify`.
+- Use the terms in `docs/glossary.md`, with their meanings there.
 - Write the test first. Show its output as evidence that a change works.
 - Keep each pull request under about 300 changed lines, not counting generated files.
 - Docs, plans, and pull-request descriptions use plain English. Write one idea per sentence, with at most 25 words and in active voice. Define each term at first use, and use no arrows in prose.
