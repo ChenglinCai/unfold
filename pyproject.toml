@@ -1,0 +1,40 @@
+[project]
+name = "unfold"
+version = "0.1.0"
+description = "Turn learning material into explainer videos: scripts, visual plans, manim scenes, and voice."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "manim>=0.21.0,<0.22",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.ruff.lint]
+# E and W: style errors. F: likely mistakes. I: import order. UP: newer syntax.
+# B: common bugs. SIM: simpler code. RUF: Ruff's own rules.
+select = ["E", "W", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pyright]
+include = ["src", "tests", "examples"]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "standard"
+
+[tool.pytest]
+testpaths = ["tests"]
+addopts = ["-ra"]
+strict = true
+markers = ["slow: renders a video, so it takes seconds. Skip with -m 'not slow'."]

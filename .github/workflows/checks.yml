@@ -1,0 +1,52 @@
+# Runs on every pull request and on every push to main.
+# It makes no calls to language models, so contributors cost nothing and need no secrets.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: lint, type-check, and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      # Actions are pinned to full commit hashes, so a moved tag cannot change what runs.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the system libraries that manim needs
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libcairo2-dev libpango1.0-dev pkg-config
+
+      # The package list comes from Manim's own CI, which renders every kind of equation.
+      - name: Install LaTeX for equations
+        uses: zauguin/install-texlive@6671d0c62046c7e349fe154d5208fe746b07e037 # v4.4.0
+        with:
+          packages: >
+            scheme-basic latex fontspec tipa calligra xcolor
+            standalone preview doublestroke setspace rsfs relsize
+            ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx
+            wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Install Python packages from the lock file
+        run: uv sync --locked
+
+      - name: Run the pre-commit checks
+        run: uv run pre-commit run --all-files --show-diff-on-failure
+
+      - name: Run the tests
+        run: uv run pytest
