@@ -15,7 +15,7 @@ unfold turns learning material into explainer videos. This file lists the comman
 - Write the test first. Show its output as evidence that a change works.
 - Keep each pull request under about 300 changed lines, not counting generated files.
 - Docs, plans, and pull-request descriptions use plain English. Write one idea per sentence, with at most 25 words and in active voice. Define each term at first use, and use no arrows in prose.
-- A hook in `.claude/hooks/` formats each Python file that Claude edits.
+- The hooks in `.claude/hooks/` format each Python file that Claude edits. They also run ruff and pyright before Claude ends a turn. Hooks never run tests, so run `uv run pytest` yourself before you claim a change works.
 
 ## Never
 

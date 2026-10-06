@@ -1,11 +1,13 @@
 """Shared fixtures for testing the Claude Code hooks in .claude/hooks."""
 
+import importlib.util
 import json
 import os
 import subprocess
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -31,3 +33,16 @@ def _run_hook(
 def run_hook() -> RunHook:
     """Run a hook script as Claude Code does: JSON in, exit code and output out."""
     return _run_hook
+
+
+@pytest.fixture
+def stop_checks() -> ModuleType:
+    """Import stop_checks.py as a module, so tests can call its functions."""
+    spec = importlib.util.spec_from_file_location(
+        "stop_checks", HOOKS / "stop_checks.py"
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
