@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Manim output. Renders are rebuilt from code, so they never go in git.
+media/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+
+# Source material. PDFs and course content live in the private content folder.
+*.pdf
+content/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local Claude Code files
+.claude/settings.local.json
+.claude/state/
+CLAUDE.local.md
+
+# Operating system and editors
+.DS_Store
+.idea/
+.vscode/
