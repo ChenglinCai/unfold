@@ -36,7 +36,8 @@ def check_map(text: str, doc: SourceDocument) -> list[str]:
         return errors
     errors += _concepts(data["concepts"])
     errors += _claims(data["claims"], topic=doc.family == "topic")
-    errors += [f"unknown anchor: {ref}" for ref in unresolved(data, [doc.manifest()])]
+    unknown = dict.fromkeys(unresolved(data, [doc.manifest()]))
+    errors += [f"unknown anchor: {ref}" for ref in unknown]
     return errors
 
 
