@@ -9,6 +9,8 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | pypdfium2 | runtime | BSD-3-Clause and Apache-2.0 | M2 | Reads text from PDF pages. PyMuPDF was rejected for its AGPL license |
 | python-pptx | runtime | MIT | M2 | Reads PowerPoint decks |
 | trafilatura | runtime | Apache-2.0 | M2 | Extracts the main text of web pages |
+| av | runtime | BSD-3-Clause | M2 | Decodes recordings for Whisper. manim already installs it. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL |
+| numpy | runtime | BSD-3-Clause, with parts under 0BSD, MIT, Zlib, and CC0 | M2 | Holds the decoded audio samples. manim already installs it |
 | faster-whisper | `audio` extra | MIT | M2 | Transcribes recordings. Its English base model, about 145 MB, downloads once from Hugging Face |
 | pytest | dev | MIT | M0 | Runs the tests |
 | ruff | dev | MIT | M0 | Lints and formats Python |

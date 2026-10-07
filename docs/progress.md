@@ -6,8 +6,9 @@ This file holds the current state of the work, so that a new session can resume 
 
 - Mode: overnight autonomous run, which began on 2026-10-06. Decision record 0006 sets its rules.
 - Branch: `dev`. Nothing merges into `main` without the maintainer.
-- Done: M1, tagged `m1-done`, and M3, tagged `m3-done`. M0 is done except the settings file that the maintainer writes.
-- Next: M2, source understanding.
+- Done: M1, tagged `m1-done`, and M3, tagged `m3-done`. M0 lacks only the settings file that the maintainer writes.
+- Now: M2, source understanding. Every family has its reader. Next come `unfold ingest` and the understand step.
+- Backup job: a session-only job checks in every hour at minute 17. It resumes the run after a usage limit, and it ends when this session closes. The run deletes it when the run finishes.
 
 ## Check-ins
 
@@ -36,3 +37,4 @@ This file holds the current state of the work, so that a new session can resume 
 6. The spoken breath-group limit is 31 words, from the study. The strict profile keeps 20.
 7. The linter treats every numbered list item as a procedure step, which allows 20 words. Bullet lists allow 25.
 8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.
+9. PyAV comes with manim, and the recording reader uses it too. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL. Users install these wheels from PyPI, so unfold does not redistribute them. A packaged app would need a license review first.

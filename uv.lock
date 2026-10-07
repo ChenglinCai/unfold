@@ -1833,7 +1833,9 @@ name = "unfold"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "av" },
     { name = "manim" },
+    { name = "numpy" },
     { name = "pypdfium2" },
     { name = "python-pptx" },
     { name = "pyyaml" },
@@ -1855,8 +1857,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "av", specifier = ">=19.0.1" },
     { name = "faster-whisper", marker = "extra == 'audio'", specifier = ">=1.2" },
     { name = "manim", specifier = ">=0.21.0,<0.22" },
+    { name = "numpy", specifier = ">=2.5.3" },
     { name = "pypdfium2", specifier = ">=5.14" },
     { name = "python-pptx", specifier = ">=1.0" },
     { name = "pyyaml", specifier = ">=6.0" },
