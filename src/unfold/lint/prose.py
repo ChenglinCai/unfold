@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 
 CUE = re.compile(r"^\[\[([a-z0-9][a-z0-9-]*)\]\]\s*")
-LIST_ITEM = re.compile(r"^\s*(?:[-*+]|(\d+)[.)])\s+")
+LIST_ITEM = re.compile(r"^\s*(?:[-*+]|(\d+)[.)])\s+(?:\[[ xX]\]\s+)?")
 HEADING = re.compile(r"^\s{0,3}#{1,6}\s+")
 FENCE = re.compile(r"^\s*(```|~~~)")
 INLINE_CODE = re.compile(r"`[^`\n]*`")

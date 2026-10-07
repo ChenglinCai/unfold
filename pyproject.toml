@@ -31,6 +31,10 @@ dev = [
 # B: common bugs. SIM: simpler code. RUF: Ruff's own rules.
 select = ["E", "W", "F", "I", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+# Word lists read better as one string split on spaces than as long list literals.
+"src/unfold/lint/words.py" = ["SIM905"]
+
 [tool.pyright]
 include = ["src", "tests", "examples", ".claude/hooks"]
 venvPath = "."

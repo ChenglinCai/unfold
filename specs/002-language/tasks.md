@@ -32,13 +32,13 @@
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Write `tests/lint/test_rules_written.py` for N101, N102, N104, N201, N202, and N301, using the limits in `data-model.md`: "words per sentence 25", "words per numbered step 20", and "sentences per paragraph 6, warning". Check: the tests fail.
-- [ ] T006 [P] [US1] Write `tests/lint/test_cli.py` for exit codes 0, 1, and 2, and for both output formats in `contracts/cli.md`. It also covers directories, and N900 for unreadable files. Check: the tests fail.
+- [X] T005 [P] [US1] Write `tests/lint/test_rules_written.py` for N101, N102, N104, N201, N202, and N301, using the limits in `data-model.md`: "words per sentence 25", "words per numbered step 20", and "sentences per paragraph 6, warning". Check: the tests fail.
+- [X] T006 [P] [US1] Write `tests/lint/test_cli.py` for exit codes 0, 1, and 2, and for both output formats in `contracts/cli.md`. It also covers directories, and N900 for unreadable files. Check: the tests fail.
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implement `Finding`, `Rule`, and `Profile`, and the written rules, in `src/unfold/lint/rules.py`, and `lint_text()` in `src/unfold/lint/__init__.py`. Check: `tests/lint/test_rules_written.py` passes.
-- [ ] T008 [US1] Implement the `lint` subcommand in `src/unfold/cli.py`, as `contracts/cli.md` describes. Check: `tests/lint/test_cli.py` passes.
+- [X] T007 [US1] Implement `Finding`, `Rule`, and `Profile`, and the written rules, in `src/unfold/lint/rules.py`, and `lint_text()` in `src/unfold/lint/__init__.py`. Check: `tests/lint/test_rules_written.py` passes.
+- [X] T008 [US1] Implement the `lint` subcommand in `src/unfold/cli.py`, as `contracts/cli.md` describes. Check: `tests/lint/test_cli.py` passes.
 
 ## Phase 4: User Story 2, lint narration with the spoken profile (Priority: P1)
 
