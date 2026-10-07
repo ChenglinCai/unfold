@@ -23,7 +23,7 @@ def add_build_command(
         "build", help="Write a series' plan, outlines, scripts, and storyboards."
     )
     command.add_argument("series", metavar="SERIES", help="A folder with series.yaml.")
-    command.add_argument("--until", choices=STEPS, default="storyboard")
+    command.add_argument("--until", choices=STEPS, default="scene")
     command.add_argument("--model", help="Override the series file's model.")
     command.add_argument("--retries", type=int, default=RETRIES)
     command.set_defaults(run=run_build)

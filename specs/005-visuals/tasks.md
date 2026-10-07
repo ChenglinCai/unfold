@@ -15,8 +15,8 @@
 
 - [X] T005 [US2] Write `tests/visuals/test_scene.py` for the scene/v0 format, beat timing, and the layout check of a whole scene. Check: the tests fail.
 - [X] T006 [US2] Implement `src/unfold/visuals/scene.py`, and add scene/v0 to `unfold.formats`. Check: the tests pass, and `schemas/` holds the new file.
-- [ ] T007 [US2] Write tests for the scene step in `tests/build/test_graph.py`, with a fake runner. Check: the tests fail.
-- [ ] T008 [US2] Add the scene step to the build graph, with `src/unfold/prompts/scene.md`. Check: the tests pass.
+- [X] T007 [US2] Write tests for the scene step in `tests/build/test_graph.py`, with a fake runner. Check: the tests fail.
+- [X] T008 [US2] Add the scene step to the build graph, with `src/unfold/prompts/scene.md`. Check: the tests pass.
 
 ## Phase 3: User Story 3, renders and contact sheets (Priority: P1)
 

@@ -9,7 +9,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from unfold.formats.episode import Entry, Segment, Transition
+from unfold.formats.episode import Entry, SceneEntry, Segment, Transition
 from unfold.formats.series import PlannedEpisode
 from unfold.formats.sources import Model, Ref, Slug, Text
 
@@ -37,3 +37,7 @@ class ScriptReply(Model):
 
 class StoryboardReply(Model):
     entries: Annotated[list[Entry], Field(min_length=1)]
+
+
+class SceneReply(Model):
+    entries: Annotated[list[SceneEntry], Field(min_length=1, max_length=12)]
