@@ -54,6 +54,7 @@ class SourceDocument:
     profile: dict[str, object] = field(default_factory=dict)
     anchors: list[Anchor] = field(default_factory=list)
     retrieved: str = field(default_factory=_today)
+    files: dict[str, str] = field(default_factory=lambda: {"text": TEXT})
 
     def manifest(self) -> dict[str, object]:
         return {
@@ -63,6 +64,7 @@ class SourceDocument:
             "family": self.family,
             "origin": self.origin,
             "retrieved": self.retrieved,
+            "files": self.files,
             "rights": self.rights,
             "profile": self.profile,
             "anchors": [
@@ -107,8 +109,13 @@ class Meta:
 def build(
     meta: Meta, anchors: list[Anchor], profile: dict[str, object]
 ) -> SourceDocument:
-    """Make a source document, adding the rights, subject, and needs to the profile."""
-    full = {**profile, "subject": meta.subject, "needs": needs(meta.family)}
+    """Make a source document, adding rights, family, subject, and needs."""
+    full = {
+        "family": meta.family,
+        **profile,
+        "subject": meta.subject,
+        "needs": needs(meta.family),
+    }
     granted = rights(meta.license, meta.owner, meta.attribution)
     return SourceDocument(
         meta.id, meta.title, meta.family, meta.origin, granted, full, anchors
@@ -134,6 +141,7 @@ def load(folder: Path) -> SourceDocument:
         profile=manifest.get("profile") or {},
         anchors=anchors,
         retrieved=str(manifest["retrieved"]),
+        files=manifest.get("files") or {"text": TEXT},
     )
 
 

@@ -83,6 +83,8 @@ def run_ingest(args: argparse.Namespace) -> int:
             return fail(str(problem), 2)
         except Exception as problem:  # each reader fails in its own way
             return fail(f"could not read {args.source}: {problem}", 1)
+        if original is not None:
+            doc.files["original"] = original.name
         folder = doc.save(out)
         if original is not None:
             shutil.move(original, folder / original.name)

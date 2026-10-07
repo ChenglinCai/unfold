@@ -43,13 +43,17 @@ def run_understand(args: argparse.Namespace) -> int:
         return 0
     if record.outcome == "ok":
         print(
-            f"{result.folder}: written in {record.attempts} tries, with "
+            f"{result.folder}: written in {tries(record.attempts)}, with "
             f"{record.input_tokens} input and {record.output_tokens} output tokens, "
             f"in {record.seconds} seconds"
         )
         return 0
     problems = "\n".join(f"  {error}" for error in record.errors)
-    return fail(f"{folder}: failed after {record.attempts} tries:\n{problems}", 1)
+    return fail(f"{folder}: failed after {tries(record.attempts)}:\n{problems}", 1)
+
+
+def tries(count: int) -> str:
+    return "1 try" if count == 1 else f"{count} tries"
 
 
 def fail(message: str, code: int) -> int:

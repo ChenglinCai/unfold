@@ -171,6 +171,7 @@ def test_the_command_reports_each_outcome(
     monkeypatch.setattr(understand_command, "RUNNER", FakeRunner(GOOD))
 
     assert main(["understand", str(source)]) == 0
+    assert "written in 1 try," in capsys.readouterr().out
     assert main(["understand", str(source)]) == 0
     assert "reused" in capsys.readouterr().out
     assert main(["understand", str(source.parent / "missing")]) == 2

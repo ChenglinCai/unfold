@@ -44,7 +44,11 @@ def read(path: Path, meta: Meta, model: str = MODEL) -> SourceDocument:
             "Recordings need the audio extra: uv sync --extra audio"
         ) from error
     whisper = WhisperModel(model, device="cpu", compute_type="int8")
-    segments, info = whisper.transcribe(decode(path), beam_size=5, language="en")
+    # The voice filter skips silences. Without it, speech after a long pause joins
+    # the segment before it, and takes that segment's start time.
+    segments, info = whisper.transcribe(
+        decode(path), beam_size=5, language="en", vad_filter=True
+    )
     anchors: list[Anchor] = []
     confidences: list[float] = []
     used: set[str] = set()

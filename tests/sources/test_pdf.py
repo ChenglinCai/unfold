@@ -6,7 +6,7 @@ import cairo
 import pytest
 
 from unfold.sources import Meta
-from unfold.sources.pdf import read
+from unfold.sources.pdf import SCAN_HINT, read
 
 PAGES = ["Demand slopes down as the price rises.", "Supply slopes up with the price."]
 
@@ -50,7 +50,9 @@ def test_the_profile_counts_pages_and_flags_sparse_text(two_pages: Path) -> None
 
     assert profile["format"] == "pdf"
     assert profile["size"] == {"pages": 2, "words": 13}
-    assert profile["quality"] == {"words_per_page": 6, "low": True}
+    assert profile["family"] == "textbook"
+    assert profile["quality"] == {"words_per_page": 6, "low": True, "hint": SCAN_HINT}
+    assert "scan reader" in SCAN_HINT
     assert profile["needs"] == "cut"
 
 

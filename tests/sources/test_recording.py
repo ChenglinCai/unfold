@@ -39,3 +39,17 @@ def test_transcribes_speech_into_timestamp_anchors(tmp_path: Path) -> None:
     size = doc.profile["size"]
     assert isinstance(size, dict)
     assert size["minutes"] < 1
+
+
+def test_timestamps_stay_correct_after_a_long_silence(tmp_path: Path) -> None:
+    from unfold.sources.recording import read
+
+    path = tmp_path / "pause.aiff"
+    speech = "Money changes hands. [[slnc 8000]] Later, prices rise."
+    subprocess.run(["say", "-o", str(path), speech], check=True)
+
+    doc = read(path, Meta(id="pause", title="Pause", family="recording", origin="x"))
+
+    later = [a for a in doc.anchors if "prices" in a.text.lower()]
+    assert later, [a.text for a in doc.anchors]
+    assert int(later[0].id.split("-")[1]) >= 8

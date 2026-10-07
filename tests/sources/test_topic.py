@@ -11,4 +11,5 @@ def test_a_topic_has_no_text_and_needs_a_fact_check() -> None:
 
     assert (doc.anchors, doc.text()) == ([], "")
     assert doc.profile["needs"] == "fact-check"
+    assert doc.profile["family"] == "topic"
     assert doc.rights["public_outputs"] is True

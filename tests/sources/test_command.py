@@ -100,6 +100,10 @@ def test_a_download_keeps_the_original_beside_the_document(
 
     assert (out / "notes" / "original.md").read_bytes() == MARKDOWN.encode()
     assert load(out / "notes").origin == url
+    assert load(out / "notes").files == {
+        "text": "document.md",
+        "original": "original.md",
+    }
 
 
 def test_a_download_without_a_suffix_uses_its_content_type(

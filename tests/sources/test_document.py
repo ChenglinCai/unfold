@@ -33,6 +33,7 @@ def test_saves_a_manifest_and_anchored_text(tmp_path: Path) -> None:
         {"id": "p-2", "kind": "page", "title": "Page 2"},
     ]
     assert manifest["retrieved"]
+    assert manifest["files"] == {"text": "document.md"}
     text = (folder / "document.md").read_text(encoding="utf-8")
     assert text.index("<!-- anchor: p-1 -->") < text.index("<!-- anchor: p-2 -->")
 
