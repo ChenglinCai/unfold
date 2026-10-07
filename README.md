@@ -59,6 +59,7 @@ Every pull request runs the same checks as the git hook, and then the tests. The
 |---|---|
 | `uv run pre-commit run --all-files` | Formatting, lint, types, the lock file, and that no PDFs or media files are committed |
 | `uv run pytest` | All tests, including a test render |
+| `uv run unfold lint docs` | Prose against the Narration Standard. Use `--profile spoken` for narration |
 
 ## License
 

@@ -64,7 +64,7 @@ content/cis5200/                            private
     └── render.sh                           renders both segments and joins them
 ```
 
-The build differs from the first draft of this plan in one way: one scene file holds both segments, because two files would need to share the data and its checks.
+The build differs from the first draft in one way. One scene file holds both segments, because they share the data and its checks.
 
 ## Complexity Tracking
 

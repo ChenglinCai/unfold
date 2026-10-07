@@ -78,6 +78,13 @@ def test_splits_sentences_but_not_numbers_or_abbreviations() -> None:
     ]
 
 
+def test_a_sentence_may_start_with_a_lowercase_name() -> None:
+    assert split_sentences("Run it once. unfold then lints the docs.") == [
+        "Run it once.",
+        "unfold then lints the docs.",
+    ]
+
+
 def test_breath_groups_split_at_pauses() -> None:
     assert breath_groups("One, two three; four: five six.") == [
         "One",

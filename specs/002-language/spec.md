@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: Plan milestone M3. Build `unfold lint` with written, spoken, and strict profiles. Test the breath-group hypothesis on at least 50 3Blue1Brown transcripts, calibrate the spoken limits on them, and check that the linter flags AI writing habits.
+**Input**: Plan milestone M3. Build `unfold lint` with written, spoken, and strict profiles. Test the breath-group hypothesis on at least 50 3Blue1Brown transcripts, and calibrate the spoken limits on them. Check that the linter flags AI writing habits.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -21,8 +21,8 @@ A contributor runs `unfold lint` on a plan, doc, or pull-request description. Ea
 **Acceptance Scenarios**:
 
 1. **Given** a doc whose sentences all have 25 words or fewer, **When** it is linted, **Then** no sentence-length error appears.
-2. **Given** a sentence of 26 words, **When** it is linted with the written profile, **Then** one error names that sentence and its length.
-3. **Given** a numbered step of 21 words, **When** it is linted, **Then** one error says that procedure steps allow 20 words.
+2. **Given** a 26-word sentence, **When** the written profile lints it, **Then** one error names it and its length.
+3. **Given** a numbered step of 21 words, **When** it is linted, **Then** one error says steps allow 20.
 4. **Given** a paragraph of 7 sentences, **When** it is linted, **Then** one warning says that paragraphs allow 6 sentences.
 5. **Given** code blocks, inline code, tables, and link addresses, **When** a doc is linted, **Then** no rule fires on them.
 
@@ -38,7 +38,7 @@ A script writer lints a narration script. The limits apply to breath groups, and
 
 1. **Given** a breath group longer than the calibrated spoken limit, **When** it is linted, **Then** one error names it.
 2. **Given** a long sentence whose breath groups are all short, **When** it is linted, **Then** only a warning appears.
-3. **Given** "this" or "here" more than 15 words after the cue that starts its beat, **When** it is linted, **Then** one warning appears.
+3. **Given** "this" or "here" more than 15 words after its beat's cue, **When** it is linted, **Then** one warning appears.
 4. **Given** a cue marker, **When** a script is linted, **Then** the marker itself is not counted as words.
 
 ### User Story 3 - Catch AI writing habits and inconsistent terms (Priority: P2)
@@ -53,7 +53,7 @@ Any text gets warnings for the vocabulary, phrases, and punctuation habits that 
 
 1. **Given** "delve" or "a testament to", **When** it is linted, **Then** a warning cites the AI-habits rule.
 2. **Given** "bookmark", which the glossary replaces with "cue", **When** it is linted, **Then** a warning names the preferred term.
-3. **Given** the `--fix` option, **When** an abbreviation or an avoided term is found, **Then** the file is rewritten with the replacement, and nothing else changes.
+3. **Given** the `--fix` option, **When** it finds an abbreviation or an avoided term, **Then** it replaces only that.
 
 ### User Story 4 - Evidence for the spoken limits (Priority: P2)
 
@@ -65,7 +65,7 @@ The maintainer reads a report that tests the breath-group hypothesis on real tra
 
 **Acceptance Scenarios**:
 
-1. **Given** at least 50 transcripts, **When** the study runs, **Then** the report states whether 90 percent of breath groups have 19 words or fewer.
+1. **Given** at least 50 transcripts, **When** the study runs, **Then** the report tests the 90 percent hypothesis.
 2. **Given** word timings, **When** the study runs, **Then** the report states how often punctuation marks fall at real pauses.
 3. **Given** the calibrated limits, **When** the spoken profile runs on every transcript, **Then** the report gives errors per 1,000 words.
 
@@ -119,7 +119,7 @@ The maintainer reads a report that tests the breath-group hypothesis on real tra
 
 ## Assumptions
 
-- The maintainer is asleep, so these choices stand until the morning review: the spoken breath-group limit comes from the study, and warnings never fail the command.
+- The maintainer is asleep, so two choices stand until the morning review. The spoken breath-group limit comes from the study, and warnings never fail the command.
 - Punctuation stands in for pauses in breath groups. The study measures how well it does.
 - The 3Blue1Brown captions repository has no license, so its transcripts stay in the private content folder.
 - The AI-style test set is written for this purpose and lives in the repo.

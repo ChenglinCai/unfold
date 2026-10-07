@@ -32,7 +32,7 @@
 
 ### Tests for User Story 1
 
-- [X] T005 [P] [US1] Write `tests/lint/test_rules_written.py` for N101, N102, N104, N201, N202, and N301, using the limits in `data-model.md`: "words per sentence 25", "words per numbered step 20", and "sentences per paragraph 6, warning". Check: the tests fail.
+- [X] T005 [P] [US1] Write `tests/lint/test_rules_written.py` for N101, N102, N104, N201, N202, and N301. Use the limits in `data-model.md`: 25 words per sentence, 20 per numbered step, and a warning above 6 sentences per paragraph. Check: the tests fail.
 - [X] T006 [P] [US1] Write `tests/lint/test_cli.py` for exit codes 0, 1, and 2, and for both output formats in `contracts/cli.md`. It also covers directories, and N900 for unreadable files. Check: the tests fail.
 
 ### Implementation for User Story 1
@@ -52,7 +52,7 @@
 
 ### Implementation for User Story 2
 
-- [X] T010 [US2] Implement the spoken and strict profiles and rules N103 to N206 in `src/unfold/lint/rules.py`, with a provisional breath-group limit of 20 words. Check: `tests/lint/test_rules_spoken.py` passes.
+- [X] T010 [US2] Implement the spoken and strict profiles, and rules N103 to N206, in `src/unfold/lint/rules.py`. Start with a provisional breath-group limit of 20 words. Check: `tests/lint/test_rules_spoken.py` passes.
 
 ## Phase 5: User Story 3, AI writing habits and replaced terms (Priority: P2)
 
@@ -62,14 +62,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T011 [P] [US3] Write `tests/lint/sets/ai_style.md` with at least 10 paragraphs written in AI style, `tests/lint/sets/clean.md` with at least 5 clean paragraphs, and `tests/lint/test_sets.py`. Check: the tests fail.
-- [ ] T012 [P] [US3] Write `tests/lint/test_fix.py`: the fixer expands "e.g." and replaces avoided terms, changes nothing else, and gives the same result when run twice. Check: the tests fail.
+- [X] T011 [P] [US3] Write `tests/lint/sets/ai_style.md` with at least 10 paragraphs written in AI style, `tests/lint/sets/clean.md` with at least 5 clean paragraphs, and `tests/lint/test_sets.py`. Check: the tests fail.
+- [X] T012 [P] [US3] Write `tests/lint/test_fix.py`. The fixer expands "e.g." and replaces avoided terms, changes nothing else, and is stable when run twice. Check: the tests fail.
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Write `src/unfold/lint/words.py` with three lists. They hold the AI vocabulary and phrases from Wikipedia's "Signs of AI writing", abbreviations with their spoken forms, and irregular past participles. Check: the module imports.
-- [ ] T014 [US3] Implement N302, N303, N304, and N305 in `src/unfold/lint/rules.py`. Check: `tests/lint/test_sets.py` passes.
-- [ ] T015 [US3] Implement `src/unfold/lint/fix.py`, and the `--fix` option in `src/unfold/cli.py`. Check: `tests/lint/test_fix.py` passes.
+- [X] T013 [US3] Write `src/unfold/lint/words.py` with three lists. They hold the AI vocabulary and phrases from Wikipedia's "Signs of AI writing", abbreviations with their spoken forms, and irregular past participles. Check: the module imports.
+- [X] T014 [US3] Implement N302, N303, N304, and N305 in `src/unfold/lint/rules.py`. Check: `tests/lint/test_sets.py` passes.
+- [X] T015 [US3] Implement `src/unfold/lint/fix.py`, and the `--fix` option in `src/unfold/cli.py`. Check: `tests/lint/test_fix.py` passes.
 
 ## Phase 6: User Story 4, evidence for the spoken limits (Priority: P2)
 
@@ -89,10 +89,10 @@
 
 ## Phase 7: Polish
 
-- [ ] T020 Add two local hooks to `.pre-commit-config.yaml`: the written profile on Markdown docs, and the spoken profile on `script.md` files. Check: `uv run pre-commit run --all-files` passes.
-- [ ] T021 Fix every error that the linter finds in the repo's docs. Check: `uv run unfold lint README.md CLAUDE.md docs specs` exits 0.
-- [ ] T022 [P] Replace the scratch measurement script with `unfold lint` in `.specify/memory/constitution.md` and `CLAUDE.md`. Check: both name `unfold lint`.
-- [ ] T023 Time a lint of the whole repo. Check: under 5 seconds, as SC-005 requires.
+- [X] T020 Add two local hooks to `.pre-commit-config.yaml`: the written profile on Markdown docs, and the spoken profile on `script.md` files. Check: `uv run pre-commit run --all-files` passes.
+- [X] T021 Fix every error that the linter finds in the repo's docs. Check: `uv run unfold lint README.md CLAUDE.md docs specs` exits 0.
+- [X] T022 [P] Replace the scratch measurement script with `unfold lint` in `.specify/memory/constitution.md` and `CLAUDE.md`. Check: both name `unfold lint`.
+- [X] T023 Time a lint of the whole repo. Check: under 5 seconds, as SC-005 requires.
 - [ ] T024 Converge: compare the result with the spec, record the M3 gates in `docs/milestones.json`, and tag `m3-done`. Check: every M3 gate has evidence or a stated reason.
 
 ## Dependencies & Execution Order

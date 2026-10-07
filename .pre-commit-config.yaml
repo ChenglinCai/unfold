@@ -45,3 +45,14 @@ repos:
         entry: These files belong in the private content folder.
         language: fail
         files: (?i)\.(pdf|mp4|mov|webm|wav|mp3|m4a)$
+      - id: lint-docs
+        name: lint docs with the written profile
+        entry: uv run unfold lint --profile written
+        language: system
+        files: \.md$
+        exclude: (^|/)script\.md$|^tests/lint/sets/
+      - id: lint-narration
+        name: lint narration with the spoken profile
+        entry: uv run unfold lint --profile spoken
+        language: system
+        files: (^|/)script\.md$

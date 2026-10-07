@@ -32,7 +32,8 @@ COMMA_HELD = "\u201a"  # stands in for a comma inside a number
 COLON_HELD = "\u2236"  # stands in for a colon inside a time
 CLOSERS = "\"'\u201d\u2019)\\]"
 OPENERS = "\"'\u201c\u2018(\\["
-SENTENCE_END = re.compile(rf"[.!?]+[{CLOSERS}]*(?=\s+[{OPENERS}]?[A-Z0-9]|\s*$)")
+# Known abbreviations are held first, so any letter may start the next sentence.
+SENTENCE_END = re.compile(rf"[.!?]+[{CLOSERS}]*(?=\s+[{OPENERS}]?[A-Za-z0-9]|\s*$)")
 PAUSE = re.compile(rf"[,;:]|[.!?]+(?=[{CLOSERS}]*(?:\s|$))")
 WORD = re.compile(
     r"\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|\d+(?:\.\d+)*%?"

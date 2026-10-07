@@ -127,7 +127,7 @@ Review Checklist. Before anyone presents a plan, doc, or pull request, they chec
 3. Every claim has a source or carries the label "hypothesis".
 4. The design works for at least two different source families.
 5. A reviewer can read it in 10 minutes.
-6. It passes the written profile of the linter. Until the linter exists, a measurement script checks it.
+6. It passes `unfold lint` with the written profile.
 7. It includes evidence of verification.
 8. It states the safety implications of each change, as principle IX requires.
 

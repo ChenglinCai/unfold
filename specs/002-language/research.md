@@ -22,7 +22,7 @@ Each decision lists what we chose, why, and what else we considered.
 
 ## Calibrating the spoken limit
 
-- Decision: the spoken breath-group limit is the smallest whole number at which the 3Blue1Brown transcripts produce fewer than 1 breath-group error per 1,000 words. The study reports the percentiles behind it.
+- Decision: the spoken breath-group limit is the smallest whole number that keeps the 3Blue1Brown transcripts under 1 breath-group error per 1,000 words. The study reports the percentiles behind it.
 - Rationale: the plan requires the linter to fire rarely on 3Blue1Brown. A limit read off the data avoids a number fitted to three transcripts.
 - Alternatives: keep 20 words from the written profile. The study shows how often that limit would fire.
 

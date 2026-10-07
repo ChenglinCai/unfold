@@ -16,7 +16,7 @@ unfold turns learning material into explainer videos. This file lists the comman
 - Use the terms in `docs/glossary.md`, with their meanings there.
 - Write the test first. Show its output as evidence that a change works.
 - Keep each pull request under about 300 changed lines, not counting generated files.
-- Docs, plans, and pull-request descriptions use plain English. Write one idea per sentence, with at most 25 words and in active voice. Define each term at first use, and use no arrows in prose.
+- Docs, plans, and pull-request descriptions use plain English. Write one idea per sentence, with at most 25 words and in active voice. Define each term at first use, and use no arrows in prose. Check with `uv run unfold lint`, which pre-commit runs on every commit.
 - The hooks in `.claude/hooks/` format each Python file that Claude edits. They also run ruff and pyright before Claude ends a turn. Hooks never run tests, so run `uv run pytest` yourself before you claim a change works.
 
 ## Never

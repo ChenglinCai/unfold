@@ -20,7 +20,7 @@ The maintainer plays a video of about two minutes on k-nearest neighbors, in two
 
 **Acceptance Scenarios**:
 
-1. **Given** an outline, two scripts, and two storyboards, **When** the maintainer runs the render command, **Then** each segment renders to a video with sound.
+1. **Given** the outline, scripts, and storyboards, **When** the render command runs, **Then** each segment becomes a video with sound.
 2. **Given** both segment videos, **When** the join command runs, **Then** one episode file plays from start to end.
 3. **Given** a script, **When** its beat starts, **Then** the matching animation starts within half a second.
 
@@ -85,4 +85,4 @@ A retro in `docs/retros/M1.md` lists what was hard, and which steps later milest
 
 - The macOS voice is good enough as a stand-in. M6 replaces it with Kokoro.
 - The maintainer is asleep, so Claude writes the scenes, which the plan reserved for the maintainer.
-- Out of scope: schemas and automation, which come in M4, layout checks, which come in M5, and the final voice, which comes in M6.
+- Out of scope: schemas and automation come in M4, layout checks in M5, and the final voice in M6.
