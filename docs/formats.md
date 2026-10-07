@@ -24,6 +24,33 @@ An anchor is a pointer to one place in a source, such as a heading, table, figur
 
 Examples: `examples/econ-supply-demand/source.yaml`, and `content/cis5200/manifests/lecture-03.yaml`.
 
+## Source document: format `source/v1`
+
+`unfold ingest` writes one folder per source. M1's hand-written manifests use source/v0, and every ingested source uses source/v1.
+
+| File | What it holds |
+|---|---|
+| `source.yaml` | The manifest, described below |
+| `document.md` | The clean text. A line such as `<!-- anchor: p-3 -->` starts each anchored block |
+| `original.<ext>` | The downloaded file, when the source came from a URL |
+| `understand/` | The outputs of `unfold understand`, described below |
+
+The manifest has these fields:
+
+| Field | Meaning |
+|---|---|
+| `id`, `title`, `family`, `origin` | What the source is, and the URL or path it came from |
+| `retrieved` | The date of ingestion |
+| `rights` | `license`, `owner`, `attribution`, and `public_outputs` |
+| `profile` | `format`, `size`, `quality`, `subject`, and `needs` |
+| `anchors` | Each block: `id`, `kind`, and `title` |
+
+`public_outputs` is true only under CC0, CC BY, CC BY-SA, or the public domain, and for a bare topic. `needs` names what the source needs most: `cut`, `fill-gaps`, `clean-up`, or `fact-check`.
+
+Anchor ids follow the family. Pages are `p-1`, slides are `s-1`, sections use heading slugs, timestamps are `t-0042`, and scans are `scan-1`. A bare topic has no anchors.
+
+Examples: the five golden sources in `content/sources/`, which stay private.
+
 ## Knowledge map: format `knowledge-map/v0`
 
 | Field | Meaning |
@@ -33,8 +60,28 @@ Examples: `examples/econ-supply-demand/source.yaml`, and `content/cis5200/manife
 | `claims` | Each statement a video may make, with the anchors that support it |
 | `gaps` | What the source leaves unexplained, which a video must fill |
 | `suspected_errors` | Places where the source may be wrong |
+| `written_by` | Who wrote the map: a person, or `unfold understand` with its model |
 
 Examples: `examples/econ-supply-demand/knowledge-map.yaml`, and `content/cis5200/knowledge/lecture-03.yaml`.
+
+A claim with no anchor needs `unsupported: true`, and so does every claim about a bare topic. `unfold.understand.checks.check_map()` checks every rule in this section.
+
+## Study notes: `study-notes.md`
+
+Study notes are Markdown for a learner. They cite the source as `[§p-3]`, or `[§p-3, §p-4]` for several anchors. `unfold.understand.checks.check_notes()` checks that each citation names an anchor of the source.
+
+## Job record: `job.json`
+
+Each model job writes a record next to its outputs.
+
+| Field | Meaning |
+|---|---|
+| `key` | A hash of the prompt, the request, and the model. A matching key means the saved outputs are reused |
+| `model` | The model that ran |
+| `attempts` | How many tries the job took |
+| `input_tokens`, `output_tokens` | The tokens of every try, summed |
+| `seconds` | The total time |
+| `outcome`, `errors` | `ok` or `failed`, and the last errors |
 
 ## Outline: `outline.yaml`, format `outline/v0`
 

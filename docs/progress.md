@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: overnight autonomous run, which began on 2026-10-06. Decision record 0006 sets its rules.
 - Branch: `dev`. Nothing merges into `main` without the maintainer.
 - Done: M1, tagged `m1-done`, and M3, tagged `m3-done`. M0 lacks only the settings file that the maintainer writes.
-- Now: M2, source understanding. Every family has its reader. Next come `unfold ingest` and the understand step.
+- Now: M2, source understanding. `unfold ingest` and `unfold understand` work, and the gate run is under way.
 - Backup job: a session-only job checks in every hour at minute 17. It resumes the run after a usage limit, and it ends when this session closes. The run deletes it when the run finishes.
 
 ## Check-ins
@@ -39,3 +39,5 @@ This file holds the current state of the work, so that a new session can resume 
 8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.
 9. PyAV comes with manim, and the recording reader uses it too. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL. Users install these wheels from PyPI, so unfold does not redistribute them. A packaged app would need a license review first.
 10. A bare topic's outputs may be public, because no source text reaches them. Every claim still starts flagged for a fact check.
+11. The CUNY statistics deck sits behind Cloudflare's bot wall, which refuses any download outside a browser. MIT 18.05's Class 10 slides take its place, under CC BY-NC-SA 4.0. To add the CUNY deck, save the PDF from a browser and run `unfold ingest` on the file.
+12. The web reader now keeps each formula's TeX from the page's MathML. Without it, the Euler's identity article lost every equation.

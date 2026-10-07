@@ -9,7 +9,7 @@
 1. Ingest a PDF. Expected: one anchor per page.
 
    ```sh
-   uv run unfold ingest "../CIS 5200 - training example/Lecture 3 - KNN.pdf" --out ../content/sources --id cis5200-lecture-03 --family textbook --license private --subject "machine learning"
+   uv run unfold ingest "../CIS 5200 - training example/Lecture 3 - KNN.pdf" --out ../content/sources --id cis5200-lecture-03 --family textbook --license "all rights reserved" --subject computer-science
    ```
 
 2. Understand it. Expected: a valid knowledge map and study notes, with every anchor resolved.
@@ -18,7 +18,11 @@
    uv run unfold understand ../content/sources/cis5200-lecture-03
    ```
 
-3. Run it again. Expected: it reuses the saved result and makes no model call.
+3. Run it again. Expected: it prints "reused the saved result" and makes no model call.
+
+   ```sh
+   uv run unfold understand ../content/sources/cis5200-lecture-03
+   ```
 
 4. Ingest a bare topic. Expected: no text and no anchors, and every claim flagged after understanding.
 

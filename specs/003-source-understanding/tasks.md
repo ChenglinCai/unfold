@@ -53,12 +53,12 @@
 
 ## Phase 5: User Story 4, the gate (Priority: P2)
 
-- [ ] T023 [US4] Download the four golden sources into `../content/sources/`, then ingest them and the bare topic. Check: five source documents exist.
-- [ ] T024 [US4] Run understand on all five, within 15 model jobs. Check: every output passes its checks, and a second run makes no calls.
+- [X] T023 [US4] Download the four golden sources into `../content/sources/`, then ingest them and the bare topic. The CUNY deck sits behind a bot wall, so MIT 18.05's Class 10 slides take its place, under CC BY-NC-SA 4.0. Check: five source documents exist.
+- [X] T024 [US4] Run understand on all five, within 15 model jobs. Check: every output passes its checks, and a second run makes no calls. Result: 5 jobs, each passing on its first try. A second run reused all five results.
 
 ## Phase 6: Polish
 
-- [ ] T025 Lint the study notes with the written profile, and record the results. Check: `docs/studies/` holds the counts per source.
+- [X] T025 Lint the study notes with the written profile, and record the results. Check: `docs/studies/` holds the counts per source. Result: `docs/studies/study-notes-lint.md`.
 - [ ] T026 Converge: compare the result with the spec, record the M2 gates, and tag `m2-done`. Check: every M2 gate has evidence.
 
 ## Dependencies & Execution Order
