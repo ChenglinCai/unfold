@@ -81,6 +81,7 @@ def understand(
             _write(out / NOTES_FILE, notes)
             record.save(out / RECORD_FILE)
             return Result(out, record, reused=False)
+        record.tries.append(list(record.errors))
         ask = _retry(prompt, reply.text, record.errors)
     record.outcome = "failed"
     out.mkdir(exist_ok=True)

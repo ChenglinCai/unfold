@@ -6,7 +6,9 @@ from unfold import jobs
 from unfold.understand import command as understand_command
 
 
-def refuse(prompt: str, *, system: str, model: str) -> jobs.Reply:
+def refuse(
+    prompt: str, *, system: str, model: str, schema: object = None
+) -> jobs.Reply:
     raise AssertionError("tests must not call a language model")
 
 

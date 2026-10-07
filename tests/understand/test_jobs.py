@@ -117,3 +117,44 @@ def test_a_record_sums_its_attempts_and_round_trips(tmp_path: Path) -> None:
     assert jobs.Record.load(path) == record
     assert (record.attempts, record.input_tokens, record.output_tokens) == (2, 300, 30)
     assert jobs.Record.load(tmp_path / "missing.json") is None
+
+
+SCHEMA = {"type": "object", "properties": {"answer": {"type": "integer"}}}
+
+
+def test_a_schema_asks_for_structured_output() -> None:
+    command = jobs.command("haiku", "Be exact.", schema=SCHEMA)
+
+    flag = command.index("--json-schema")
+    assert json.loads(command[flag + 1]) == SCHEMA
+    assert "--json-schema" not in jobs.command("haiku", "Be exact.")
+
+
+def test_parse_reads_structured_output() -> None:
+    stdout = json.dumps({**REPLY, "structured_output": {"answer": 5}})
+
+    assert jobs.parse(stdout, seconds=1.0).data == {"answer": 5}
+    assert jobs.parse(json.dumps(REPLY), seconds=1.0).data is None
+
+
+def test_a_record_keeps_every_try_and_names_its_format(tmp_path: Path) -> None:
+    record = jobs.Record(key="k", model="sonnet")
+    record.tries.append(["unknown anchor: demo#p-9"])
+    path = tmp_path / "job.json"
+
+    record.save(path)
+
+    saved = json.loads(path.read_text())
+    assert next(iter(saved)) == "format"
+    assert saved["format"] == "job/v0"
+    assert jobs.Record.load(path) == record
+
+
+def test_an_m2_record_still_loads(tmp_path: Path) -> None:
+    path = tmp_path / "job.json"
+    path.write_text(json.dumps({"key": "k", "model": "sonnet", "outcome": "ok"}))
+
+    record = jobs.Record.load(path)
+
+    assert record is not None
+    assert (record.format, record.tries) == ("job/v0", [])

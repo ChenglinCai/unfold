@@ -33,13 +33,30 @@ class Reply:
     input_tokens: int = 0
     output_tokens: int = 0
     seconds: float = 0.0
+    # The structured output, when the job asked for a schema.
+    data: dict[str, object] | None = None
 
 
 class Runner(Protocol):
-    def __call__(self, prompt: str, *, system: str, model: str) -> Reply: ...
+    def __call__(
+        self,
+        prompt: str,
+        *,
+        system: str,
+        model: str,
+        schema: Mapping[str, object] | None = None,
+    ) -> Reply: ...
 
 
-def command(model: str, system: str) -> list[str]:
+def command(
+    model: str, system: str, schema: Mapping[str, object] | None = None
+) -> list[str]:
+    """The `claude -p` command. A schema asks for output that matches it."""
+    structured = (
+        ["--json-schema", json.dumps(schema, sort_keys=True, separators=(",", ":"))]
+        if schema is not None
+        else []
+    )
     return [
         "claude",
         "-p",
@@ -55,6 +72,7 @@ def command(model: str, system: str) -> list[str]:
         "json",
         "--system-prompt",
         system,
+        *structured,
     ]
 
 
@@ -85,18 +103,29 @@ def parse(stdout: str, seconds: float) -> Reply:
             "cache_read_input_tokens",
         )
     )
+    structured = data.get("structured_output")
     return Reply(
-        str(data["result"]), input_tokens, int(usage.get("output_tokens") or 0), seconds
+        str(data["result"]),
+        input_tokens,
+        int(usage.get("output_tokens") or 0),
+        seconds,
+        structured if isinstance(structured, dict) else None,
     )
 
 
-def run_claude(prompt: str, *, system: str, model: str) -> Reply:
+def run_claude(
+    prompt: str,
+    *,
+    system: str,
+    model: str,
+    schema: Mapping[str, object] | None = None,
+) -> Reply:
     """Run one job, with the prompt on stdin, in a new empty folder."""
     with tempfile.TemporaryDirectory(prefix="unfold-job-") as empty:
         started = time.monotonic()
         try:
             result = subprocess.run(
-                command(model, system),
+                command(model, system, schema),
                 input=prompt,
                 capture_output=True,
                 text=True,
@@ -133,6 +162,9 @@ class Record:
     seconds: float = 0.0
     outcome: str = "running"
     errors: list[str] = field(default_factory=list)
+    # The errors of each failed try, in order.
+    tries: list[list[str]] = field(default_factory=list)
+    format: str = "job/v0"
 
     def add(self, reply: Reply) -> None:
         self.attempts += 1
@@ -142,9 +174,9 @@ class Record:
 
     def save(self, path: Path) -> None:
         partial = path.with_name(f".{path.name}.partial")
-        partial.write_text(
-            json.dumps(dataclasses.asdict(self), indent=2) + "\n", encoding="utf-8"
-        )
+        fields = dataclasses.asdict(self)
+        ordered = {"format": fields.pop("format"), **fields}
+        partial.write_text(json.dumps(ordered, indent=2) + "\n", encoding="utf-8")
         partial.replace(path)
 
     @classmethod

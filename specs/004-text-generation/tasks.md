@@ -15,8 +15,8 @@
 
 ## Phase 2: Foundational
 
-- [ ] T002 Write tests in `tests/understand/test_jobs.py` for structured output and records. `command()` adds `--json-schema`, and `parse()` reads `structured_output` into the reply. Records gain `format: job/v0` and `tries`, and old records still load. Check: the new tests fail.
-- [ ] T003 Implement those changes in `src/unfold/jobs.py`. Check: `tests/understand` passes.
+- [X] T002 Write tests in `tests/understand/test_jobs.py` for structured output and records. `command()` adds `--json-schema`, and `parse()` reads `structured_output` into the reply. Records gain `format: job/v0` and `tries`, and old records still load. Check: the new tests fail.
+- [X] T003 Implement those changes in `src/unfold/jobs.py`. Check: `tests/understand` passes.
 
 ## Phase 3: User Story 1, check any file (Priority: P1)
 

@@ -45,7 +45,9 @@ class FakeRunner:
         self.replies = list(replies)
         self.prompts: list[str] = []
 
-    def __call__(self, prompt: str, *, system: str, model: str) -> jobs.Reply:
+    def __call__(
+        self, prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
         self.prompts.append(prompt)
         assert self.replies, "the step called the model more often than expected"
         return jobs.Reply(self.replies.pop(0), 100, 40, 1.0)
@@ -96,6 +98,7 @@ def test_a_failed_check_retries_with_the_errors(source: Path) -> None:
     result = understand(source, runner=runner)
 
     assert (result.record.outcome, result.record.attempts) == ("ok", 2)
+    assert result.record.tries == [["unknown anchor: demo#p-9"]]
     assert "unknown anchor: demo#p-9" in runner.prompts[1]
     assert "demo#p-9" in runner.prompts[1].split("<last-answer>")[1]
 
@@ -138,7 +141,9 @@ def test_a_new_model_or_source_text_runs_again(source: Path) -> None:
 
 
 def test_a_job_error_is_recorded_without_a_retry(source: Path) -> None:
-    def broken(prompt: str, *, system: str, model: str) -> jobs.Reply:
+    def broken(
+        prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
         raise jobs.JobError("the usage limit was reached")
 
     result = understand(source, runner=broken)
