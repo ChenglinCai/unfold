@@ -76,7 +76,7 @@
 - [X] T025 [US5] Read every output, and write open notes in `../content/series/notes.md`. Group them into failure types. Check: at least 3 failure types, each with a count.
 - [X] T026 [P] [US5] Write `tests/evals/test_eval_checks.py`, with one binary check per failure type on small examples. Check: the tests fail.
 - [X] T027 [US5] Implement the checks in `src/unfold/evals/__init__.py` and `unfold eval` in `src/unfold/evals/command.py`. Check: the tests pass, and `unfold eval` prints a pass rate per check.
-- [ ] T028 [US5] Write `docs/evals/M4-report.md` with the failure types, checks, and pass rates. Check: it passes `unfold lint`, and it quotes only sources with public outputs.
+- [X] T028 [US5] Write `docs/evals/M4-report.md` with the failure types, checks, and pass rates. Check: it passes `unfold lint`, and it quotes only sources with public outputs.
 
 ## Phase 8: Polish
 
