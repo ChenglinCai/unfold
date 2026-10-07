@@ -80,3 +80,14 @@ def test_tex_that_fails_names_its_cue() -> None:
     [error] = check_scene(scene(entries=entries), ["eq"])
 
     assert error.startswith("eq: equation: ")
+
+
+def test_tex_in_a_text_card_fails() -> None:
+    card = {"component": "text-card", "title": "Euler", "lines": [r"e^{i\pi} + 1 = 0"]}
+    entries = [{"cue": "card", "region": "full", "visual": card}]
+
+    [error] = check_scene(scene(entries=entries), ["card"])
+
+    assert (
+        error == "card: a text card shows TeX as plain text. Use an equation, or words"
+    )

@@ -9,7 +9,7 @@ import yaml
 from PIL import Image
 
 from unfold.cli import main
-from unfold.visuals.render import beat_ends, contact_sheet, segments
+from unfold.visuals.render import beat_ends, contact_sheet, sample_times, segments
 
 SCRIPT = """---
 format: script/v1
@@ -115,3 +115,7 @@ def test_a_segment_renders_with_a_contact_sheet_and_then_reuses_it(
 
     assert main(["render", str(tmp_path)]) == 0
     assert "reused" in capsys.readouterr().out.splitlines()[-2]
+
+
+def test_contact_sheets_sample_the_middle_of_each_hold() -> None:
+    assert sample_times(["Three short words.", " ".join(["word"] * 11)]) == [1.4, 4.4]

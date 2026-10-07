@@ -54,6 +54,12 @@ def test_regions_in_use_at_once_must_not_overlap() -> None:
     assert check_layout(placed) == ["regions bottom and full are in use at once"]
 
 
+def test_overlapping_labels_fail() -> None:
+    errors = check_layout([Placed("chart", "full", Box(-1, -1, 1, 1), overlaps=2)])
+
+    assert errors == ["chart: 2 labels overlap. Use shorter labels, or fewer items"]
+
+
 def test_text_below_the_minimum_size_fails() -> None:
     errors = check_layout([Placed("card", "full", Box(-1, -1, 1, 1), min_font=12)])
 

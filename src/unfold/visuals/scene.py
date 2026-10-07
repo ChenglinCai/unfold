@@ -4,19 +4,23 @@ Each beat shows one entry. A new entry clears the visuals whose regions it
 overlaps, so a scene never stacks two drawings in one place.
 """
 
+import re
 from typing import Any
 
 from manim import UP, FadeIn, FadeOut, Scene, VGroup
 
 from unfold.formats.episode import SceneEntry, SceneV0
 from unfold.script import Script
-from unfold.visuals.components import ComponentError, build
+from unfold.visuals.components import ComponentError, build, crowded
 from unfold.visuals.layout import REGIONS, Placed, box_of, check_layout
+from unfold.visuals.params import TextCard
 
 # A voice speaks about 165 words a minute, and no beat is shorter than 2 seconds.
 WORDS_PER_SECOND = 2.75
 MIN_SECONDS = 2.0
 FADE_SECONDS = 0.8
+# TeX commands, superscripts, or subscripts, which a text card would print literally.
+TEX = re.compile(r"\\[a-zA-Z]+|\^\{|_\{")
 
 
 def beat_seconds(text: str) -> float:
@@ -42,12 +46,23 @@ def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
     errors: list[str] = []
     placed: dict[str, Placed] = {}
     for entry in scene.entries:
+        visual = entry.visual
+        if isinstance(visual, TextCard) and any(
+            TEX.search(text) for text in [visual.title, *visual.lines]
+        ):
+            errors.append(
+                f"{entry.cue}: a text card shows TeX as plain text. Use an equation, or words"
+            )
+            continue
         try:
-            drawing, min_font = build(entry.visual, entry.region)
+            drawing, min_font = build(visual, entry.region)
         except ComponentError as error:
             errors.append(f"{entry.cue}: {error}")
             continue
-        placed[entry.cue] = Placed(entry.cue, entry.region, box_of(drawing), min_font)
+        box = box_of(drawing)
+        placed[entry.cue] = Placed(
+            entry.cue, entry.region, box, min_font, crowded(drawing)
+        )
     for beat in on_screen(scene.entries):
         found = check_layout([placed[e.cue] for e in beat if e.cue in placed])
         errors += [error for error in found if error not in errors]

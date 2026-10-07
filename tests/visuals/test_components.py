@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from unfold.visuals.components import NAMES, ComponentError, build, parse
+from unfold.visuals.components import NAMES, ComponentError, build, crowded, parse
 from unfold.visuals.layout import Placed, box_of, check_layout
 
 SAMPLES: dict[str, dict[str, object]] = {
@@ -85,3 +85,27 @@ def test_an_unknown_component_fails() -> None:
 def test_tex_that_does_not_compile_names_the_component() -> None:
     with pytest.raises(ComponentError, match="equation"):
         build(parse({"component": "equation", "tex": r"\frac{1"}), "full")
+
+
+def test_a_timeline_with_twelve_flows_keeps_its_labels_apart() -> None:
+    events = [{"at": 0, "label": "Invest", "amount": -100000}]
+    events += [{"at": n, "label": f"Year {n}", "amount": 10000} for n in range(1, 12)]
+    timeline = parse({"component": "timeline", "start": 0, "end": 11, "events": events})
+
+    drawing, _ = build(timeline, "plot")
+
+    assert crowded(drawing) == 0
+
+
+def test_a_bar_chart_with_long_labels_keeps_them_apart() -> None:
+    names = [
+        "Euler's identity",
+        "Pythagorean theorem",
+        "Fundamental theorem of calculus",
+    ]
+    chart = parse({"component": "bar-chart", "labels": names, "values": [3, 2, 1]})
+
+    drawing, min_font = build(chart, "plot")
+
+    assert crowded(drawing) == 0
+    assert min_font is not None and min_font >= 18

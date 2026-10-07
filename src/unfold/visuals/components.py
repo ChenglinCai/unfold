@@ -7,6 +7,7 @@ drawing only ever shrinks to fit, so the layout check can catch tiny text.
 
 import math
 import textwrap
+from itertools import combinations
 
 from manim import (
     DOWN,
@@ -28,7 +29,7 @@ from manim import (
 from pydantic import BaseModel
 
 from unfold.visuals import theme
-from unfold.visuals.layout import REGIONS
+from unfold.visuals.layout import REGIONS, box_of
 from unfold.visuals.params import (
     NAMES,
     BarChart,
@@ -41,7 +42,7 @@ from unfold.visuals.params import (
     parse,
 )
 
-__all__ = ["NAMES", "ComponentError", "build", "parse"]
+__all__ = ["NAMES", "ComponentError", "build", "crowded", "parse"]
 
 PAD = 0.92
 WRAP = 42
@@ -65,6 +66,15 @@ def build(visual: BaseModel, region: str) -> tuple[VGroup, float | None]:
         if isinstance(m, Text | SingleStringMathTex)
     ]
     return drawing, min(sizes) if sizes else None
+
+
+def crowded(drawing: VGroup) -> int:
+    """How many pairs of labels in a drawing overlap each other."""
+    texts = [
+        m for m in drawing.get_family() if isinstance(m, Text) or type(m) is MathTex
+    ]
+    boxes = [box_of(text) for text in texts]
+    return sum(1 for a, b in combinations(boxes, 2) if a.overlaps(b))
 
 
 def _text(words: str, size: int = theme.BODY_SIZE, color: str = theme.TEXT) -> Text:
@@ -120,11 +130,19 @@ def _bar_chart(chart: BarChart, width: float, height: float) -> VGroup:
         x = -width / 2 + slot * (index + 0.5)
         bar.move_to((x, 0, 0), aligned_edge=DOWN if value >= 0 else UP)
         bars.add(bar)
-        name = _text(label, theme.LABEL_SIZE, theme.MUTED)
-        labels.add(name.move_to((x, low * scale - 0.35, 0)))
+        room = slot * 0.92
+        lines = textwrap.wrap(label, max(6, int(room / 0.15)))[:2] or [label]
+        name = VGroup(*[_text(line, theme.LABEL_SIZE, theme.MUTED) for line in lines])
+        name.arrange(DOWN, buff=0.08)
+        if name.width > room:
+            name.scale(room / name.width)
+        labels.add(name.move_to((x, low * scale - 0.15, 0), aligned_edge=UP))
         tip = bar.get_top() if value >= 0 else bar.get_bottom()
         offset = 0.25 if value >= 0 else -0.25
-        values.add(_text(_number(value), theme.LABEL_SIZE).move_to(tip + UP * offset))
+        number = _text(_number(value), theme.LABEL_SIZE)
+        if number.width > room:
+            number.scale(room / number.width)
+        values.add(number.move_to(tip + UP * offset))
     axis = Line((-width / 2, 0, 0), (width / 2, 0, 0), color=theme.MUTED)
     group = VGroup(axis, bars, labels, values)
     if chart.title:
@@ -192,12 +210,21 @@ def _timeline(timeline: Timeline, width: float, height: float) -> VGroup:
     group = VGroup(line)
     biggest = max((abs(e.amount) for e in timeline.events if e.amount), default=1)
     reach = max(min(1.6, height / 2 - 0.9), 0.4)
-    for event in timeline.events:
+    # Labels that would touch a kept neighbor stay out, so a crowded line stays legible.
+    edges = {"label": -math.inf, "amount": -math.inf}
+
+    def fits(text: Text, kind: str) -> bool:
+        if text.get_left()[0] < edges[kind] + 0.15:
+            return False
+        edges[kind] = text.get_right()[0]
+        return True
+
+    for event in sorted(timeline.events, key=lambda e: e.at):
         point = line.n2p(event.at)
         group.add(Dot(point, radius=0.1, color=theme.YELLOW))
-        group.add(
-            _text(event.label, theme.LABEL_SIZE, theme.MUTED).next_to(point, DOWN)
-        )
+        label = _text(event.label, theme.LABEL_SIZE, theme.MUTED).next_to(point, DOWN)
+        if fits(label, "label"):
+            group.add(label)
         if event.amount:
             length = 0.3 + reach * abs(event.amount) / biggest
             direction = UP if event.amount > 0 else DOWN
@@ -208,7 +235,9 @@ def _timeline(timeline: Timeline, width: float, height: float) -> VGroup:
             amount = _text(
                 f"{sign}{_number(abs(event.amount))}", theme.LABEL_SIZE, color
             )
-            group.add(arrow, amount.next_to(arrow, direction, buff=0.1))
+            group.add(arrow)
+            if fits(amount.next_to(arrow, direction, buff=0.1), "amount"):
+                group.add(amount)
     return group
 
 

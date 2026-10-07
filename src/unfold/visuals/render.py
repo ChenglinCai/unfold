@@ -17,7 +17,7 @@ from unfold.formats import read_data
 from unfold.formats.episode import SceneV0
 from unfold.script import load_script
 from unfold.visuals import params
-from unfold.visuals.scene import beat_seconds
+from unfold.visuals.scene import FADE_SECONDS, beat_seconds
 
 VIDEO = "segment.mp4"
 SHEET = "contact-sheet.png"
@@ -38,6 +38,17 @@ def beat_ends(texts: list[str]) -> list[float]:
         clock += beat_seconds(text)
         ends.append(round(clock, 2))
     return ends
+
+
+def sample_times(texts: list[str]) -> list[float]:
+    """The middle of each beat's hold, after its fade, safe from frame drift."""
+    times, start = [], 0.0
+    for text in texts:
+        seconds = beat_seconds(text)
+        fade = min(FADE_SECONDS, seconds / 2)
+        times.append(round(start + fade + (seconds - fade) / 2, 2))
+        start += seconds
+    return times
 
 
 def render_key(folder: Path, quality: str) -> str:
@@ -81,8 +92,7 @@ def render_segment(folder: Path, quality: str = "low") -> Path:
         movie = SegmentScene(scene, script)
         movie.render()
         shutil.copyfile(movie.renderer.file_writer.movie_file_path, folder / VIDEO)
-    texts = [beat.text for beat in script.beats]
-    times = [max(end - 0.1, 0.0) for end in beat_ends(texts)]
+    times = sample_times([beat.text for beat in script.beats])
     contact_sheet(folder / VIDEO, times, [b.cue for b in script.beats], folder / SHEET)
     record = {"key": render_key(folder, quality), "quality": quality}
     (folder / RECORD).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")

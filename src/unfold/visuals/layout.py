@@ -83,6 +83,8 @@ class Placed:
     region: str
     box: Box
     min_font: float | None = None
+    # Pairs of labels inside the object that overlap each other.
+    overlaps: int = 0
 
 
 def check_layout(placed: list[Placed]) -> list[str]:
@@ -98,6 +100,11 @@ def check_layout(placed: list[Placed]) -> list[str]:
             errors.append(
                 f"{item.name}: text size {item.min_font:.1f} is below {MIN_FONT}. "
                 f"Cut its text to about {share} percent, or give it a bigger region"
+            )
+        if item.overlaps:
+            errors.append(
+                f"{item.name}: {item.overlaps} labels overlap. "
+                "Use shorter labels, or fewer items"
             )
     in_use = sorted({item.region for item in placed})
     errors += [
