@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from unfold import jobs
 from unfold.build import command as build_command
@@ -110,6 +111,7 @@ class StepRunner:
     def __init__(self, refuse: bool = False, bad: str = "", canary: int = 5) -> None:
         self.refuse, self.bad, self.canary = refuse, bad, canary
         self.calls: list[str] = []
+        self.prompts: list[tuple[str, str]] = []
 
     def __call__(
         self, prompt: str, *, system: str, model: str, schema: object = None
@@ -118,6 +120,7 @@ class StepRunner:
         if isinstance(schema, dict):
             step = str(schema.get("title", "canary"))
         self.calls.append(step)
+        self.prompts.append((step, prompt))
         assert not self.refuse, f"the build called the model for {step}"
         if step == "canary":
             data: dict[str, object] = {"answer": self.canary}
@@ -313,3 +316,18 @@ def test_a_scene_with_a_layout_failure_retries_with_the_error(series: Path) -> N
     assert not result.failed
     record = series / "records" / "E01-center" / "s1-mean" / "scene.yaml.json"
     assert "below 18" in json.loads(record.read_text())["tries"][0][0]
+
+
+def test_episode_two_sees_the_ledger_of_episode_one(series: Path) -> None:
+    text = (series / "series.yaml").read_text()
+    (series / "series.yaml").write_text(text + "episodes: 2\n")
+    runner = StepRunner()
+
+    build(series, runner, until="outline")
+
+    outlines = [prompt for step, prompt in runner.prompts if step == "OutlineReply"]
+    assert len(outlines) == 2
+    assert "<previously>" not in outlines[0]
+    assert "<previously>" in outlines[1] and "E01-center" in outlines[1]
+    ledger = yaml.safe_load((series / "ledger.yaml").read_text())
+    assert [e["episode"] for e in ledger["episodes"]] == ["E01-center", "E02-spread"]

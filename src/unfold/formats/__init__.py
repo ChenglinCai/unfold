@@ -18,7 +18,7 @@ from unfold.formats.episode import (
     ScriptV1,
     StoryboardV0,
 )
-from unfold.formats.series import SeriesPlanV0, SeriesV0
+from unfold.formats.series import LedgerV0, SeriesPlanV0, SeriesV0
 from unfold.formats.sources import JobV0, KnowledgeMapV0, SourceV0, SourceV1
 from unfold.script import ScriptError, parse_script
 
@@ -34,6 +34,7 @@ FORMATS: dict[str, type[BaseModel]] = {
     "script/v1": ScriptV1,
     "storyboard/v0": StoryboardV0,
     "scene/v0": SceneV0,
+    "ledger/v0": LedgerV0,
 }
 
 

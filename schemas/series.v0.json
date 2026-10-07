@@ -57,6 +57,14 @@
       "minLength": 1,
       "title": "Model",
       "type": "string"
+    },
+    "knows": {
+      "items": {
+        "pattern": "^(term|idea|visual):[a-z0-9][a-z0-9-]*$",
+        "type": "string"
+      },
+      "title": "Knows",
+      "type": "array"
     }
   },
   "required": [

@@ -2,17 +2,11 @@
 
 from typing import Annotated, Literal, Self
 
-from pydantic import ConfigDict, Field, StringConstraints, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
-from unfold.formats.series import EpisodeId
+from unfold.formats.series import EpisodeId, Item, SegmentId
 from unfold.formats.sources import Model, Ref, Slug, Text
 from unfold.visuals.params import Region, Visual
-
-SegmentId = Annotated[str, StringConstraints(pattern=r"^s\d+-[a-z0-9][a-z0-9-]*$")]
-# What a segment needs or teaches, such as term:demand or visual:demand-curve.
-Item = Annotated[
-    str, StringConstraints(pattern=r"^(term|idea|visual):[a-z0-9][a-z0-9-]*$")
-]
 
 
 class Callback(Model):
