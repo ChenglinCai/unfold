@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scene.v0.json",
+  "$defs": {
+    "BarChart": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "bar-chart",
+          "title": "Component",
+          "type": "string"
+        },
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Labels",
+          "type": "array"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "highlight": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight"
+        }
+      },
+      "required": [
+        "component",
+        "labels",
+        "values"
+      ],
+      "title": "BarChart",
+      "type": "object"
+    },
+    "Custom": {
+      "additionalProperties": false,
+      "description": "A visual that no component draws yet. It renders as a labeled card.",
+      "properties": {
+        "component": {
+          "const": "custom",
+          "title": "Component",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "description"
+      ],
+      "title": "Custom",
+      "type": "object"
+    },
+    "Equation": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "equation",
+          "title": "Component",
+          "type": "string"
+        },
+        "tex": {
+          "minLength": 1,
+          "title": "Tex",
+          "type": "string"
+        },
+        "caption": {
+          "default": "",
+          "title": "Caption",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "tex"
+      ],
+      "title": "Equation",
+      "type": "object"
+    },
+    "Event": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "number"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        }
+      },
+      "required": [
+        "at",
+        "label"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "ScatterPlot": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "scatter-plot",
+          "title": "Component",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "maxItems": 60,
+          "minItems": 1,
+          "title": "Points",
+          "type": "array"
+        },
+        "groups": {
+          "items": {
+            "maximum": 4,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "x_label": {
+          "default": "",
+          "title": "X Label",
+          "type": "string"
+        },
+        "y_label": {
+          "default": "",
+          "title": "Y Label",
+          "type": "string"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        }
+      },
+      "required": [
+        "component",
+        "points"
+      ],
+      "title": "ScatterPlot",
+      "type": "object"
+    },
+    "SceneEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "cue": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Cue",
+          "type": "string"
+        },
+        "region": {
+          "enum": [
+            "full",
+            "plot",
+            "top",
+            "bottom",
+            "left",
+            "right"
+          ],
+          "title": "Region",
+          "type": "string"
+        },
+        "visual": {
+          "discriminator": {
+            "mapping": {
+              "bar-chart": "#/$defs/BarChart",
+              "custom": "#/$defs/Custom",
+              "equation": "#/$defs/Equation",
+              "scatter-plot": "#/$defs/ScatterPlot",
+              "text-card": "#/$defs/TextCard",
+              "timeline": "#/$defs/Timeline"
+            },
+            "propertyName": "component"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TextCard"
+            },
+            {
+              "$ref": "#/$defs/Equation"
+            },
+            {
+              "$ref": "#/$defs/BarChart"
+            },
+            {
+              "$ref": "#/$defs/ScatterPlot"
+            },
+            {
+              "$ref": "#/$defs/Timeline"
+            },
+            {
+              "$ref": "#/$defs/Custom"
+            }
+          ],
+          "title": "Visual"
+        }
+      },
+      "required": [
+        "cue",
+        "region",
+        "visual"
+      ],
+      "title": "SceneEntry",
+      "type": "object"
+    },
+    "TextCard": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "text-card",
+          "title": "Component",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Lines",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component"
+      ],
+      "title": "TextCard",
+      "type": "object"
+    },
+    "Timeline": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "timeline",
+          "title": "Component",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "number"
+        },
+        "end": {
+          "title": "End",
+          "type": "number"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/Event"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Events",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component",
+        "start",
+        "end",
+        "events"
+      ],
+      "title": "Timeline",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One segment's visuals: for each cue, a region and a component's parameters.",
+  "properties": {
+    "format": {
+      "const": "scene/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "episode": {
+      "pattern": "^E\\d{2}-[a-z0-9][a-z0-9-]*$",
+      "title": "Episode",
+      "type": "string"
+    },
+    "segment": {
+      "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+      "title": "Segment",
+      "type": "string"
+    },
+    "written_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Written By"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/SceneEntry"
+      },
+      "minItems": 1,
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "episode",
+    "segment",
+    "entries"
+  ],
+  "title": "SceneV0",
+  "type": "object"
+}

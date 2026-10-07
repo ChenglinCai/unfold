@@ -11,7 +11,13 @@ import yaml
 from pydantic import BaseModel, ValidationError
 from pydantic_core import ErrorDetails
 
-from unfold.formats.episode import OutlineV0, ScriptV0, ScriptV1, StoryboardV0
+from unfold.formats.episode import (
+    OutlineV0,
+    SceneV0,
+    ScriptV0,
+    ScriptV1,
+    StoryboardV0,
+)
 from unfold.formats.series import SeriesPlanV0, SeriesV0
 from unfold.formats.sources import JobV0, KnowledgeMapV0, SourceV0, SourceV1
 from unfold.script import ScriptError, parse_script
@@ -27,6 +33,7 @@ FORMATS: dict[str, type[BaseModel]] = {
     "script/v0": ScriptV0,
     "script/v1": ScriptV1,
     "storyboard/v0": StoryboardV0,
+    "scene/v0": SceneV0,
 }
 
 
