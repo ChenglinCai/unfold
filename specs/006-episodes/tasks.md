@@ -6,8 +6,8 @@
 
 ## Phase 1: User Story 1, voiced segments (Priority: P1)
 
-- [ ] T001 [US1] Write tests for clip timing in `tests/visuals/test_render.py`, with a slow test that renders a voiced segment. Check: the tests fail.
-- [ ] T002 [US1] Add the Voice interface to `src/unfold/voice.py`, time each beat by its clip in `src/unfold/visuals/scene.py`, and voice renders in `src/unfold/visuals/render.py`. Check: the tests pass.
+- [X] T001 [US1] Write tests for clip timing in `tests/visuals/test_render.py`, with a slow test that renders a voiced segment. Check: the tests fail.
+- [X] T002 [US1] Add the Voice interface to `src/unfold/voice.py`, time each beat by its clip in `src/unfold/visuals/scene.py`, and voice renders in `src/unfold/visuals/render.py`. Check: the tests pass.
 - [ ] T003 [US1] Write `tests/episodes/test_audio.py` for the word error rate, then implement `src/unfold/episodes/audio.py`. Check: the tests pass.
 
 ## Phase 2: User Story 2, episodes with subtitles (Priority: P1)

@@ -13,6 +13,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol
 
 from manim import Scene
 
@@ -78,3 +79,32 @@ def voiced(
     remaining = clip.seconds + pause - (scene.renderer.time - start)
     if remaining > 1 / 60:
         scene.wait(remaining)
+
+
+class Voice(Protocol):
+    """Anything that turns one beat's text into a clip. Kokoro can fill it later."""
+
+    @property
+    def name(self) -> str: ...
+
+    def speak(self, text: str, cache_dir: Path) -> Clip: ...
+
+
+@dataclass(frozen=True)
+class SayVoice:
+    """The macOS `say` command. Rate 140 speaks about 165 words a minute."""
+
+    voice: str = DEFAULT_VOICE
+    rate: int = 140
+
+    @property
+    def name(self) -> str:
+        return f"say:{self.voice}@{self.rate}"
+
+    def speak(self, text: str, cache_dir: Path) -> Clip:
+        return synthesize(text, cache_dir, self.voice, self.rate)
+
+
+def default_voice() -> Voice | None:
+    """The voice to use on this machine, or None when no voice exists."""
+    return SayVoice() if available() else None

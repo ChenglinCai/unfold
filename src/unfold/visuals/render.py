@@ -17,11 +17,13 @@ from unfold.formats import read_data
 from unfold.formats.episode import SceneV0
 from unfold.script import load_script
 from unfold.visuals import params
-from unfold.visuals.scene import FADE_SECONDS, beat_seconds
+from unfold.visuals.scene import FADE_SECONDS, durations
+from unfold.voice import default_voice
 
 VIDEO = "segment.mp4"
 SHEET = "contact-sheet.png"
 RECORD = "render.json"
+TIMING = "timing.json"
 QUALITIES = {"low": "low_quality", "medium": "medium_quality", "high": "high_quality"}
 THUMB = 480
 
@@ -31,20 +33,19 @@ def segments(series: Path) -> list[Path]:
     return sorted(p.parent for p in series.glob("E*/s*/scene.yaml"))
 
 
-def beat_ends(texts: list[str]) -> list[float]:
+def beat_ends(lengths: list[float]) -> list[float]:
     """The time at which each beat ends, from the start of the segment."""
     ends, clock = [], 0.0
-    for text in texts:
-        clock += beat_seconds(text)
+    for seconds in lengths:
+        clock += seconds
         ends.append(round(clock, 2))
     return ends
 
 
-def sample_times(texts: list[str]) -> list[float]:
+def sample_times(lengths: list[float]) -> list[float]:
     """The middle of each beat's hold, after its fade, safe from frame drift."""
     times, start = [], 0.0
-    for text in texts:
-        seconds = beat_seconds(text)
+    for seconds in lengths:
         fade = min(FADE_SECONDS, seconds / 2)
         times.append(round(start + fade + (seconds - fade) / 2, 2))
         start += seconds
@@ -56,7 +57,9 @@ def render_key(folder: Path, quality: str) -> str:
         (folder / name).read_text(encoding="utf-8")
         for name in ("scene.yaml", "script.md")
     ]
-    return jobs.key(*texts, params.VERSION, metadata.version("manim"), quality)
+    voice = default_voice()
+    name = voice.name if voice else "silent"
+    return jobs.key(*texts, params.VERSION, metadata.version("manim"), quality, name)
 
 
 def current(folder: Path, quality: str) -> bool:
@@ -79,6 +82,10 @@ def render_segment(folder: Path, quality: str = "low") -> Path:
 
     scene = SceneV0.model_validate(read_data(folder / "scene.yaml"))
     script = load_script(folder / "script.md")
+    voice = default_voice()
+    cache = folder.parent.parent / ".voice-cache"
+    clips = [voice.speak(b.text, cache) for b in script.beats] if voice else None
+    lengths = durations(script, clips)
     settings = {
         "quality": QUALITIES[quality],
         "media_dir": str(folder / "media"),
@@ -89,10 +96,17 @@ def render_segment(folder: Path, quality: str = "low") -> Path:
         "disable_caching": True,
     }
     with tempconfig(settings):
-        movie = SegmentScene(scene, script)
+        movie = SegmentScene(scene, script, clips)
         movie.render()
         shutil.copyfile(movie.renderer.file_writer.movie_file_path, folder / VIDEO)
-    times = sample_times([beat.text for beat in script.beats])
+    times = sample_times(lengths)
+    ends = beat_ends(lengths)
+    beats = [
+        {"cue": beat.cue, "start": round(end - length, 2), "end": end}
+        for beat, end, length in zip(script.beats, ends, lengths, strict=True)
+    ]
+    timing = {"voice": voice.name if voice else None, "beats": beats}
+    (folder / TIMING).write_text(json.dumps(timing, indent=2) + "\n", encoding="utf-8")
     contact_sheet(folder / VIDEO, times, [b.cue for b in script.beats], folder / SHEET)
     record = {"key": render_key(folder, quality), "quality": quality}
     (folder / RECORD).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
