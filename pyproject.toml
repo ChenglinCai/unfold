@@ -60,6 +60,8 @@ typeCheckingMode = "standard"
 
 [tool.pytest]
 testpaths = ["tests"]
+# pytest skips folders named build by default, which would hide tests/build.
+norecursedirs = [".*", "*.egg", "__pycache__", "dist", "node_modules", "venv"]
 # macOS can mark .venv files as hidden, and Python then skips the .pth file
 # that makes the package importable. This path keeps the tests working anyway.
 pythonpath = ["src"]

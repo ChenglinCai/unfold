@@ -91,3 +91,9 @@ These came from earlier drafts of the project plan.
 - What happened: the recording reader imports faster-whisper, an optional extra. CI skips the extra, so CI's pyright failed, and nobody looked.
 - Cause: Claude trusted local checks, and the local environment has every extra. Claude also stopped checking CI after each push.
 - Guardrail: check the CI run after any push that changes dependencies or imports. Type-check once without the extras before such a push.
+
+### The build tests never ran in the full suite
+
+- What happened: pytest skips folders named build by default, so the 28 tests in `tests/build` ran only when named. The full suite, CI, and the commit gate all missed them.
+- Cause: Claude trusted the passing count without checking that it grew.
+- Guardrail: after adding a test folder, compare the full suite's count with the new folder's count. `pyproject.toml` now lists the folders that pytest skips.

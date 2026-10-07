@@ -7,7 +7,9 @@ from pathlib import Path
 import pytest
 
 from unfold import jobs
+from unfold.build import command as build_command
 from unfold.build.graph import build
+from unfold.cli import main
 from unfold.formats import problems
 from unfold.sources import Anchor, SourceDocument
 
@@ -196,3 +198,32 @@ def test_a_failed_step_stops_the_build(series: Path) -> None:
     assert result.failed
     assert result.lines[-1].status == "failed"
     assert not (series / "E01-center" / "s1-mean").exists()
+
+
+def test_the_command_reports_each_output(
+    series: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(build_command, "RUNNER", StepRunner())
+    assert main(["build", str(series)]) == 0
+    assert "written" in capsys.readouterr().out
+
+    monkeypatch.setattr(build_command, "RUNNER", StepRunner(refuse=True))
+    assert main(["build", str(series)]) == 0
+    out = capsys.readouterr().out
+    assert not any(line.startswith("written") for line in out.splitlines())
+    assert out.strip().endswith("0 written, 7 reused, 0 failed")
+
+
+def test_the_command_exits_1_when_a_step_fails(
+    series: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(build_command, "RUNNER", StepRunner(bad="PlanReply"))
+
+    assert main(["build", str(series), "--retries", "0"]) == 1
+
+
+def test_the_command_exits_2_on_a_bad_series(tmp_path: Path) -> None:
+    (tmp_path / "series.yaml").write_text("format: series/v0\nid: x\n")
+
+    assert main(["build", str(tmp_path)]) == 2
+    assert main(["build", str(tmp_path / "missing")]) == 2
