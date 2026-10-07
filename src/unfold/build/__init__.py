@@ -83,6 +83,7 @@ def run_job(
         return Outcome(job, saved, reused=True)
     record = jobs.Record(key=job.key, model=job.model)
     ask = job.request
+    last: jobs.Reply | None = None
     for attempt in range(1, retries + 2):
         try:
             reply = runner(ask, system=job.system, model=job.model, schema=job.schema)
@@ -91,6 +92,7 @@ def run_job(
             log_call(log, job, record, attempt, None, final=True)
             break
         record.add(reply)
+        last = reply
         errors, text = evaluate(job, reply)
         record.errors = errors
         if not errors:
@@ -103,6 +105,7 @@ def run_job(
         ask = retry_request(job.request, reply, errors)
     if record.outcome != "ok":
         record.outcome = "failed"
+        record.last_reply = last.data if last is not None else None
     job.record.parent.mkdir(parents=True, exist_ok=True)
     record.save(job.record)
     return Outcome(job, record, reused=False)

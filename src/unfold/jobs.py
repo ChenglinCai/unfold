@@ -182,6 +182,8 @@ class Record:
     errors: list[str] = field(default_factory=list)
     # The errors of each failed try, in order.
     tries: list[list[str]] = field(default_factory=list)
+    # The data of the last reply, kept when every try fails, to show what went wrong.
+    last_reply: dict[str, object] | None = None
     format: str = "job/v0"
 
     def add(self, reply: Reply) -> None:

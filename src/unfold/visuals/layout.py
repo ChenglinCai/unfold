@@ -94,8 +94,10 @@ def check_layout(placed: list[Placed]) -> list[str]:
         elif not REGIONS[item.region].contains(item.box):
             errors.append(f"{item.name}: leaves region {item.region}")
         if item.min_font is not None and item.min_font < MIN_FONT:
+            share = int(100 * item.min_font / MIN_FONT) // 5 * 5
             errors.append(
-                f"{item.name}: text size {item.min_font:.0f} is below {MIN_FONT}"
+                f"{item.name}: text size {item.min_font:.1f} is below {MIN_FONT}. "
+                f"Cut its text to about {share} percent, or give it a bigger region"
             )
     in_use = sorted({item.region for item in placed})
     errors += [

@@ -57,4 +57,7 @@ def test_regions_in_use_at_once_must_not_overlap() -> None:
 def test_text_below_the_minimum_size_fails() -> None:
     errors = check_layout([Placed("card", "full", Box(-1, -1, 1, 1), min_font=12)])
 
-    assert errors == ["card: text size 12 is below 18"]
+    assert errors == [
+        "card: text size 12.0 is below 18. "
+        "Cut its text to about 65 percent, or give it a bigger region"
+    ]

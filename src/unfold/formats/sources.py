@@ -124,3 +124,4 @@ class JobV0(Model):
     outcome: Literal["running", "ok", "failed"]
     errors: list[str] = Field(default_factory=list)
     tries: list[list[str]] = Field(default_factory=list)
+    last_reply: dict[str, object] | None = None

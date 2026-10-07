@@ -83,6 +83,7 @@ def test_four_failures_write_nothing_and_keep_every_try(tmp_path: Path) -> None:
 
     assert (outcome.record.outcome, outcome.record.attempts) == ("failed", 4)
     assert len(outcome.record.tries) == 4
+    assert outcome.record.last_reply == BAD
     assert not (tmp_path / "out.txt").exists()
 
 
