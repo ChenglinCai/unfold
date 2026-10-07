@@ -157,13 +157,14 @@ def paragraphs(text: str) -> list[Paragraph]:
     """Split Markdown or plain text into prose paragraphs, list items, and headings."""
     found: list[Paragraph] = []
     current: list[tuple[int, str]] = []
-    numbered = False
+    numbered = in_item = False
 
     def close() -> None:
-        nonlocal current
+        nonlocal current, in_item
         if current and any(chunk.strip() for _, chunk in current):
             found.append(_make(current, heading=False, numbered=numbered))
         current = []
+        in_item = False
 
     for number, line in _prose_lines(text):
         if not line.strip():
@@ -174,9 +175,13 @@ def paragraphs(text: str) -> list[Paragraph]:
             found.append(_make(title, heading=True, numbered=False))
         elif item := LIST_ITEM.match(line):
             close()
-            numbered = item.group(1) is not None
+            numbered, in_item = item.group(1) is not None, True
             current = [(number, line[item.end() :])]
         else:
+            # Only an indented line continues a list item. Any other line starts
+            # a plain paragraph, so one numbered line cannot swallow a transcript.
+            if in_item and not line[:1].isspace():
+                close()
             if not current:
                 numbered = False
             current.append((number, line))

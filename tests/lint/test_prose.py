@@ -114,6 +114,15 @@ def test_comments_hide_only_themselves() -> None:
     assert [(p.text, p.line) for p in kept] == [("Kept text", 1), ("tail words.", 3)]
 
 
+def test_only_indented_lines_continue_a_list_item() -> None:
+    text = "1. A numbered step.\n   It continues here.\nA plain sentence follows.\n"
+    found = paragraphs(text)
+    assert [(p.text, p.numbered) for p in found] == [
+        ("A numbered step. It continues here.", True),
+        ("A plain sentence follows.", False),
+    ]
+
+
 def test_task_checkboxes_are_not_words() -> None:
     assert texts("- [ ] T001 Write it.\n- [X] T002 Done.\n") == [
         "T001 Write it.",

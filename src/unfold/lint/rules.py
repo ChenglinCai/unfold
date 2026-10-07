@@ -286,7 +286,9 @@ PROFILES = {
         {"N101": W, "N102": E, "N103": E, "N201": E, "N202": E, "N203": E, "N204": E,
          "N205": E, "N206": W, "N302": W, "N303": W, "N304": W, "N305": W, "N900": E},
         sentence_words=40,
-        breath_words=20,
+        # docs/studies/breath-groups.md: the smallest limit at which 3Blue1Brown
+        # narration gets fewer than 1 breath-group error per 1,000 words.
+        breath_words=31,
     ),
     "strict": Profile(
         "strict",

@@ -79,13 +79,13 @@
 
 ### Tests for User Story 4
 
-- [ ] T016 [US4] Write `tests/lint/test_study.py`, using a small invented transcript and word timings, not real 3Blue1Brown text. It covers breath-group lengths, percentiles, pause agreement, and speaking rate. Check: the tests fail.
+- [X] T016 [US4] Write `tests/lint/test_study.py`, using a small invented transcript and word timings, not real 3Blue1Brown text. It covers breath-group lengths, percentiles, pause agreement, and speaking rate. Check: the tests fail.
 
 ### Implementation for User Story 4
 
-- [ ] T017 [P] [US4] Write `corpus/README.md` with the download command and the rights note. Check: the writing check passes.
-- [ ] T018 [US4] Implement `corpus/breath_groups.py`, which reads transcripts by path and writes numbers only. Check: `tests/lint/test_study.py` passes.
-- [ ] T019 [US4] Run the study on the 144 private transcripts, write `docs/studies/breath-groups.md`, and set the spoken limit in `src/unfold/lint/rules.py` from it. Check: the report covers at least 50 transcripts, and its firing rate meets SC-002.
+- [X] T017 [P] [US4] Write `corpus/README.md` with the download command and the rights note. Check: the writing check passes.
+- [X] T018 [US4] Implement `corpus/breath_groups.py`, which reads transcripts by path and writes numbers only. Check: `tests/lint/test_study.py` passes.
+- [X] T019 [US4] Run the study on the 144 private transcripts, write `docs/studies/breath-groups.md`, and set the spoken limit in `src/unfold/lint/rules.py` from it. Check: the report covers at least 50 transcripts, and its firing rate meets SC-002.
 
 ## Phase 7: Polish
 
