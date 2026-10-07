@@ -11,10 +11,12 @@ def build_parser() -> argparse.ArgumentParser:
         description="Turn learning material into explainer videos.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    from unfold.check import add_check_command
     from unfold.lint.command import add_lint_command
     from unfold.sources.command import add_ingest_command
     from unfold.understand.command import add_understand_command
 
+    add_check_command(commands)
     add_lint_command(commands)
     add_ingest_command(commands)
     add_understand_command(commands)
