@@ -36,7 +36,7 @@
 - [X] T013 [US1] Implement `src/unfold/sources/scan.py` and `src/unfold/sources/vision.swift`. Check: `tests/sources/test_scan.py` passes.
 - [X] T014 [P] [US1] Write `tests/sources/test_recording.py`, which speaks a sentence and skips without the audio extra. Check: the tests fail.
 - [X] T015 [US1] Implement `src/unfold/sources/recording.py`. Check: `tests/sources/test_recording.py` passes.
-- [ ] T016 [US1] Implement `src/unfold/sources/topic.py` and `unfold ingest` in `src/unfold/sources/command.py`, test first. Check: `tests/sources/test_command.py` passes.
+- [X] T016 [US1] Implement `src/unfold/sources/topic.py` and `unfold ingest` in `src/unfold/sources/command.py`, test first. Check: `tests/sources/test_command.py` passes.
 
 ## Phase 4: User Story 3, understand (Priority: P1)
 

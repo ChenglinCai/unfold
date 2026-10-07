@@ -12,8 +12,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     commands = parser.add_subparsers(dest="command", required=True)
     from unfold.lint.command import add_lint_command
+    from unfold.sources.command import add_ingest_command
 
     add_lint_command(commands)
+    add_ingest_command(commands)
     return parser
 
 
