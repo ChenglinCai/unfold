@@ -38,3 +38,4 @@ This file holds the current state of the work, so that a new session can resume 
 7. The linter treats every numbered list item as a procedure step, which allows 20 words. Bullet lists allow 25.
 8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.
 9. PyAV comes with manim, and the recording reader uses it too. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL. Users install these wheels from PyPI, so unfold does not redistribute them. A packaged app would need a license review first.
+10. A bare topic's outputs may be public, because no source text reaches them. Every claim still starts flagged for a fact check.
