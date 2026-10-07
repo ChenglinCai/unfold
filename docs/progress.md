@@ -4,11 +4,11 @@ This file holds the current state of the work, so that a new session can resume 
 
 ## Current state
 
-- Mode: overnight autonomous run, which began on 2026-10-06. Decision record 0006 sets its rules.
+- Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: `dev`. Nothing merges into `main` without the maintainer.
-- Done: M1, M2, and M3, tagged `m1-done`, `m2-done`, and `m3-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: M4, the build graph and the first error analysis.
-- Backup job: a session-only job checks in every hour at minute 17. It resumes the run after a usage limit, and it ends when this session closes. The run deletes it when the run finishes.
+- Done: M1 through M4, each tagged, such as `m4-done`. M0 lacks only the settings file that the maintainer writes.
+- Next: M5, visuals. It waits for your review of M2 and M4, and for your answers to items 13 and 14.
+- Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
 
@@ -35,6 +35,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `src/unfold/understand/__init__.py`, which shows one job's loop: prompt, check, retry, and save.
 - Not done, by design: the CUNY deck, which needs a browser download, and your handwritten page. Items 13 and 14 below wait for you.
 
+### M4, text generation
+
+- What to try: `uv run unfold build ../content/series/velocity-of-money`, which reuses every result. Then try `uv run unfold eval ../content/series/*/ --failures`.
+- What to read: `docs/evals/M4-report.md`, then the open notes in `content/series/notes.md`, then `docs/retros/M4.md`.
+- Evidence: every M4 gate in `docs/milestones.json`.
+- Walkthrough to ask for: `src/unfold/build/__init__.py`, which shows the job loop that every step shares.
+- Not done, by design: model checks for paraphrase drift, and the fixes that the report proposes. They wait for your review.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
@@ -51,3 +59,5 @@ This file holds the current state of the work, so that a new session can resume 
 12. The web reader now keeps each formula's TeX from the page's MathML. Without it, the Euler's identity article lost every equation.
 13. Principle II says a job writes one output file. The understand job writes two: the knowledge map and the study notes. The spec asked for one job. I recommend a map job and a notes job in M4, when the build graph arrives. The other choice is a wording patch to principle II.
 14. Principle II says every key covers the manim and component-library versions. The understand outputs use neither, so the key leaves them out, and a manim upgrade costs no model calls. Proposed patch: "A key MUST cover everything its output depends on: the inputs, the prompt version, and the model. Scene jobs add the component-library and manim versions."
+15. Claude did the M4 error analysis, a step that principle IV prefers a domain expert for. Please read the open notes, and correct any failure type.
+16. New dependencies overnight: PyAV, NumPy, lxml, and pydantic. Each uses a permissive license, and `docs/dependencies.md` logs each one.

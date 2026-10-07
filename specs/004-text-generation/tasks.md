@@ -81,7 +81,7 @@
 ## Phase 8: Polish
 
 - [X] T029 Describe series/v0, series-plan/v0, script/v1, and `schemas/` in `docs/formats.md`. Check: `unfold lint docs` passes.
-- [ ] T030 Converge, record the M4 gates in `docs/milestones.json`, write `docs/retros/M4.md`, and tag `m4-done`. Check: every M4 gate has evidence.
+- [X] T030 Converge, record the M4 gates in `docs/milestones.json`, write `docs/retros/M4.md`, and tag `m4-done`. Check: every M4 gate has evidence.
 
 ## Dependencies & Execution Order
 
@@ -108,7 +108,7 @@ Task: "T013 Write tests/build/test_write.py"
 
 ## Phase 9: Convergence
 
-- [ ] T031 CRITICAL: Carry progress items 13 and 14 into `docs/retros/M4.md` and the morning report. Every new M4 step writes one file, but the understand step and every key still wait for the maintainer, per Constitution II (contradicts)
+- [X] T031 CRITICAL: Carry progress items 13 and 14 into `docs/retros/M4.md` and the morning report. Every new M4 step writes one file, but the understand step and every key still wait for the maintainer, per Constitution II (contradicts)
 - [X] T032 Make `unfold eval` count flagged beats, which cite no anchor, for each series. Check: a test in `tests/evals/test_eval_checks.py`, per FR-003 and US3/AC3 (partial)
 - [X] T033 Add the key to the call-log lines of canary and understand calls in `src/unfold/build/graph.py`. Check: a test in `tests/build/test_graph.py`, per FR-011 (partial)
 - [X] T034 Make `unfold build` print what its limits skipped, such as later episodes and segments. Check: a test in `tests/build/test_graph.py`, per Edge Cases (partial)

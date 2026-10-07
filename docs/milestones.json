@@ -134,17 +134,20 @@
         {
           "id": "M4.schemas",
           "check": "Every file format has a versioned schema",
-          "passes": false
+          "passes": true,
+          "evidence": "src/unfold/formats defines 10 schemas, one per format and version, and schemas/ holds them as JSON Schema files. unfold check passes all 108 example and content files."
         },
         {
           "id": "M4.reuse",
           "check": "A second build run reuses every saved result",
-          "passes": false
+          "passes": true,
+          "evidence": "A second build of all six golden series reused all 42 outputs. It made no model call, and took 0.7 seconds."
         },
         {
           "id": "M4.eval-report",
           "check": "The first eval report exists, after error analysis",
-          "passes": false
+          "passes": true,
+          "evidence": "docs/evals/M4-report.md: Claude read all 36 golden outputs, found 9 failure types, and wrote 7 binary checks. Their pass rates run from 33 to 92 percent."
         }
       ]
     },
