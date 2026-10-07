@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-06
 
+- Set up the overnight harness: the `dev` branch, `docs/progress.md`, `docs/milestones.json` with a test, `docs/dependencies.md`, and decision record 0006.
 - Wrote the first five decision records and started the mistake log with thirteen entries.
 - Installed Spec Kit 1.1.0 with its bug and idea-assessment extensions. Wrote constitution 1.0.0 from the plan, with a ninth principle on safety, and moved the glossary into `docs/glossary.md`.
 - Added a Stop hook that runs ruff and pyright before Claude ends a turn. It never runs tests, so no hook runs code that Claude wrote. It blocks at most three times in a row, and eight tests cover it.
