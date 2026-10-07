@@ -52,8 +52,8 @@
 
 **Independent Test**: build with a fake runner, change one input, and check which steps run again.
 
-- [ ] T018 [P] [US2] Write `tests/build/test_graph.py`. A build writes a plan, an outline, two scripts, and two storyboards. A second run calls nothing. A changed knowledge map reruns only later steps, and `--until` stops early. Check: the tests fail.
-- [ ] T019 [US2] Implement the graph in `src/unfold/build/graph.py`. Check: `tests/build/test_graph.py` passes.
+- [X] T018 [P] [US2] Write `tests/build/test_graph.py`. A build writes a plan, an outline, two scripts, and two storyboards. A second run calls nothing. A changed knowledge map reruns only later steps, and `--until` stops early. Check: the tests fail.
+- [X] T019 [US2] Implement the graph in `src/unfold/build/graph.py`. Check: `tests/build/test_graph.py` passes.
 - [ ] T020 [US2] Write `tests/build/test_command.py` for exit codes 0, 1, 2, and 3. Then implement `unfold build` in `src/unfold/build/command.py`. Check: the tests pass.
 
 ## Phase 6: User Story 4, stop early (Priority: P2)

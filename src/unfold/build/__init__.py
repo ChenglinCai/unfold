@@ -140,6 +140,12 @@ def log_call(
         "outcome": outcome,
         "errors": record.errors,
     }
+    append_log(log, line)
+
+
+def append_log(log: Path | None, line: dict[str, object]) -> None:
+    if log is None:
+        return
     log.parent.mkdir(parents=True, exist_ok=True)
     with log.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(line) + "\n")
