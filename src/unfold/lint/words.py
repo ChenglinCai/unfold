@@ -27,3 +27,28 @@ ABBREVIATIONS = {
     "w.r.t.": "with respect to",
     "et al.": "and others",
 }
+
+# Words and phrases that mark AI writing, from Wikipedia's "Signs of AI writing":
+# https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+# Common words with ordinary uses, such as "key" and "highlight", stay out, because
+# a video tool highlights things and a cache has keys.
+AI_VOCABULARY = frozenset(
+    """
+    additionally boast boasts boasted bolster bolsters bolstered bolstering crucial
+    delve delves delved delving emphasizing enduring enhance enhances enhanced
+    enhancing foster fosters fostered fostering garner garners garnered garnering
+    groundbreaking interplay intricate meticulous meticulously nestled pivotal
+    renowned showcase showcases showcased showcasing tapestry testament underscore
+    underscores underscored underscoring valuable vibrant
+    """.split()
+)
+AI_PHRASES = (
+    r"\bnot only\b.{0,80}?\bbut also\b",
+    r"\bit(?:'s|\u2019s| is) not just\b",
+    r"\bit(?:'s|\u2019s| is) important to (?:note|remember)\b",
+    r"\b(?:serves|served|stands|stood|functions) as\b",
+    r"\bplays? an? (?:crucial|pivotal|key|vital|significant) role\b",
+    r"\bin (?:summary|conclusion)\b",
+    r"\b(?:ever-)?evolving landscape\b",
+    r"\baligns? with\b",
+)

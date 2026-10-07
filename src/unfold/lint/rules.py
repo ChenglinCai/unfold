@@ -226,6 +226,52 @@ def passive_voice(context: Context) -> Iterator[Hit]:
         yield Hit(line, match.group(0), "Use active voice: say who does it.")
 
 
+AI_WORD = re.compile(
+    r"\b(" + "|".join(sorted(lists.AI_VOCABULARY)) + r")\b", re.IGNORECASE
+)
+AI_PHRASE = re.compile("|".join(lists.AI_PHRASES), re.IGNORECASE)
+
+
+@rule("N302", "ai-vocabulary")
+def ai_vocabulary(context: Context) -> Iterator[Hit]:
+    for line, match in matches(context, AI_WORD):
+        yield Hit(line, match.group(0), "A word that marks AI writing. Say it plainly.")
+
+
+@rule("N303", "ai-phrase")
+def ai_phrase(context: Context) -> Iterator[Hit]:
+    for line, match in matches(context, AI_PHRASE):
+        yield Hit(line, excerpt(match.group(0)), "A phrase that marks AI writing.")
+
+
+@rule("N304", "em-dash")
+def em_dash(context: Context) -> Iterator[Hit]:
+    for line, _ in matches(context, re.compile("\u2014| -- ")):
+        yield Hit(line, "\u2014", "Use a comma, a colon, or a new sentence instead.")
+
+
+def keep_capital(found: str, replacement: str) -> str:
+    return (
+        replacement[:1].upper() + replacement[1:]
+        if found[:1].isupper()
+        else replacement
+    )
+
+
+@rule("N305", "avoided-term")
+def avoided_term(context: Context) -> Iterator[Hit]:
+    if not context.terms:
+        return
+    ordered = sorted(context.terms, key=len, reverse=True)
+    pattern = re.compile(
+        r"\b(" + "|".join(map(re.escape, ordered)) + r")\b", re.IGNORECASE
+    )
+    for line, match in matches(context, pattern):
+        found = match.group(1)
+        preferred = keep_capital(found, context.terms[found.lower()])
+        yield Hit(line, found, f"Use {preferred!r}.", fix=(found, preferred))
+
+
 W, E = WARNING, ERROR
 PROFILES = {
     "written": Profile(

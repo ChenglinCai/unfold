@@ -9,6 +9,7 @@ from pathlib import Path
 import yaml
 
 from unfold.lint import lint_text
+from unfold.lint.fix import fix_text
 from unfold.lint.rules import ERROR, Finding
 
 DEFAULT_TERMS = Path("docs/terms.yaml")
@@ -63,6 +64,18 @@ def lint_file(path: Path, profile: str, terms: dict[str, str]) -> list[Finding]:
     return lint_text(text, profile, str(path), terms)
 
 
+def fix_files(files: list[Path], terms: dict[str, str]) -> None:
+    """Rewrite abbreviations and avoided terms in place."""
+    for path in files:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        fixed = fix_text(text, terms)
+        if fixed != text:
+            path.write_text(fixed, encoding="utf-8")
+
+
 def plural(count: int, noun: str) -> str:
     return f"{count} {noun}" + ("" if count == 1 else "s")
 
@@ -72,11 +85,10 @@ def run_lint(args: argparse.Namespace) -> int:
     if missing:
         print(f"unfold lint: no such path: {', '.join(missing)}", file=sys.stderr)
         return 2
-    if args.fix:
-        print("unfold lint: --fix is not available yet.", file=sys.stderr)
-        return 2
     terms = load_terms(Path(args.terms) if args.terms else None)
     files = expand(args.paths)
+    if args.fix:
+        fix_files(files, terms)
     findings = [f for path in files for f in lint_file(path, args.profile, terms)]
     errors = sum(f.severity == ERROR for f in findings)
     warnings = len(findings) - errors
