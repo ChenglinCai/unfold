@@ -10,6 +10,7 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | python-pptx | runtime | MIT | M2 | Reads PowerPoint decks |
 | trafilatura | runtime | Apache-2.0 | M2 | Extracts the main text of web pages |
 | lxml | runtime | BSD-3-Clause | M2 | Keeps each formula's TeX and drops wiki clutter before extraction. trafilatura already installs it |
+| pydantic | runtime | MIT | M4 | Defines the schema of every file format, and validates files and model replies. It brings pydantic-core, annotated-types, and typing-inspection, all MIT |
 | av | runtime | BSD-3-Clause | M2 | Decodes recordings for Whisper. manim already installs it. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL |
 | numpy | runtime | BSD-3-Clause, with parts under 0BSD, MIT, Zlib, and CC0 | M2 | Holds the decoded audio samples. manim already installs it |
 | faster-whisper | `audio` extra | MIT | M2 | Transcribes recordings. Its English base model, about 145 MB, downloads once from Hugging Face |
@@ -27,4 +28,5 @@ System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, an
 - Downloads: ingest fetches any http or https URL you give it, up to 500 MB. The file lands in a temporary folder, then in your private content folder. Delete the source's folder to undo it.
 - Parsers: pypdfium2, python-pptx, lxml, and PyAV read files that strangers made. A crafted file could exploit a bug in one of them. Ingest only files you would open on your own computer, and let Dependabot keep these packages current.
 - Speech model: faster-whisper downloads its model from Hugging Face once, into `~/.cache/huggingface`. Delete that folder to remove it.
+- Schemas: pydantic only validates data in memory. It reads no files and opens no network connections.
 - Model jobs: `unfold understand` sends each source's text to Claude under your own account. The job has no tools, so text in a source can change only the job's reply. Code checks every reply before it writes a file.

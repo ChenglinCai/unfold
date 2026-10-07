@@ -11,7 +11,7 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Add pydantic, and log it in `docs/dependencies.md` with its license and safety note. Check: `uv sync --extra audio` succeeds, and `import pydantic` works.
+- [X] T001 Add pydantic, and log it in `docs/dependencies.md` with its license and safety note. Check: `uv sync --extra audio` succeeds, and `import pydantic` works.
 
 ## Phase 2: Foundational
 
