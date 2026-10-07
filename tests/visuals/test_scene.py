@@ -91,3 +91,11 @@ def test_tex_in_a_text_card_fails() -> None:
     assert (
         error == "card: a text card shows TeX as plain text. Use an equation, or words"
     )
+
+
+def test_checks_use_a_private_manim_cache() -> None:
+    from manim import config
+
+    check_scene(scene(), CUES)
+
+    assert Path(config.media_dir).name.startswith("unfold-manim-")

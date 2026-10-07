@@ -4,10 +4,12 @@ Each beat shows one entry. A new entry clears the visuals whose regions it
 overlaps, so a scene never stacks two drawings in one place.
 """
 
+import functools
 import re
+import tempfile
 from typing import Any
 
-from manim import UP, FadeIn, FadeOut, Scene, VGroup
+from manim import UP, FadeIn, FadeOut, Scene, VGroup, config
 
 from unfold.formats.episode import SceneEntry, SceneV0
 from unfold.script import Script
@@ -39,8 +41,17 @@ def on_screen(entries: list[SceneEntry]) -> list[list[SceneEntry]]:
     return beats
 
 
+@functools.cache
+def private_media() -> str:
+    """Give this process its own manim cache, so parallel builds never race."""
+    folder = tempfile.mkdtemp(prefix="unfold-manim-")
+    config.media_dir = folder
+    return folder
+
+
 def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
     """Every layout failure in a scene, each named by its cue."""
+    private_media()
     if [entry.cue for entry in scene.entries] != cues:
         return [f"entries must follow the script's cues in order: {', '.join(cues)}"]
     errors: list[str] = []
