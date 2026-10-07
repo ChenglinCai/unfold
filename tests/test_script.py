@@ -41,3 +41,9 @@ def test_rejects_a_beat_without_a_cue() -> None:
 def test_rejects_a_repeated_cue() -> None:
     with pytest.raises(ScriptError, match="twice"):
         parse_script("---\nsegment: s1\n---\n\n[[a]] One.\n\n[[a]] Two.\n")
+
+
+def test_script_v0_beats_have_no_anchors() -> None:
+    script = parse_script("---\nformat: script/v0\n---\n\n[[one]] Hello.\n")
+
+    assert script.anchors() == {"one": []}

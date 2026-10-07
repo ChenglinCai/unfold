@@ -36,6 +36,12 @@ class Script:
     meta: dict[str, object]
     beats: list[Beat]
 
+    def anchors(self) -> dict[str, list[str]]:
+        """Each cue's anchors, from script/v1 front matter. script/v0 lists none."""
+        found = self.meta.get("anchors")
+        mapping = found if isinstance(found, dict) else {}
+        return {beat.cue: list(mapping.get(beat.cue) or []) for beat in self.beats}
+
     def __getitem__(self, cue: str) -> Beat:
         for beat in self.beats:
             if beat.cue == cue:

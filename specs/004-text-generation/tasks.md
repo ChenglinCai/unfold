@@ -40,8 +40,8 @@
 - [X] T010 [US3] Implement the job loop, keys, and records in `src/unfold/build/__init__.py`. Check: `tests/build/test_job.py` passes.
 - [X] T011 [P] [US3] Write `tests/build/test_checks.py` for the meaning checks of each step, as `data-model.md` lists them. Check: the tests fail.
 - [X] T012 [US3] Implement `src/unfold/build/checks.py`. Check: `tests/build/test_checks.py` passes.
-- [ ] T013 [P] [US3] Write `tests/build/test_write.py`. A written script/v1 reads back through `parse_script()`, and each YAML output validates. Check: the tests fail.
-- [ ] T014 [US3] Implement `src/unfold/build/write.py`, and teach `src/unfold/script.py` the script/v1 anchors. Check: `tests/build/test_write.py` and `tests/test_script.py` pass.
+- [X] T013 [P] [US3] Write `tests/build/test_write.py`. A written script/v1 reads back through `parse_script()`, and each YAML output validates. Check: the tests fail.
+- [X] T014 [US3] Implement `src/unfold/build/write.py`, and teach `src/unfold/script.py` the script/v1 anchors. Check: `tests/build/test_write.py` and `tests/test_script.py` pass.
 - [ ] T015 [US3] Write the prompts `series-plan.md`, `outline.md`, `script.md`, and `storyboard.md` in `src/unfold/prompts/`. Check: each passes `unfold lint`.
 - [ ] T016 [P] [US3] Write `tests/build/test_steps.py`. Each step builds its request from its inputs, and a script request holds only the cited source blocks. Check: the tests fail.
 - [ ] T017 [US3] Implement `src/unfold/build/steps.py`. Check: `tests/build/test_steps.py` passes.
