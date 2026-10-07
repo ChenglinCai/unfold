@@ -31,8 +31,11 @@ unfold understand DIR [--model MODEL] [--retries N]
 
 `DIR` is a source document folder. The command writes the knowledge map, the study notes, and the job record into `DIR/understand/`. It reuses saved results when nothing changed. The default model is `sonnet`, and the default number of retries is 3.
 
+- A failed job writes only `job.json`, with the last errors. Older outputs stay, but their key no longer matches, so the next run tries again.
+- A job error, such as a usage limit, stops the step at once, because a retry would fail the same way.
+
 | Exit code | Meaning |
 |---|---|
 | 0 | Valid outputs were written or reused |
-| 1 | The job failed its checks after every retry, and nothing was written |
+| 1 | The job failed its checks after every retry, or the job itself failed. Only the job record was written |
 | 2 | Bad options, or a folder that is not a source document |

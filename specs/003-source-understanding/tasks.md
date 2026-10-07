@@ -48,8 +48,8 @@
 - [X] T018 [US3] Implement `src/unfold/jobs.py` with the runner, saved results, and job records. Check: `tests/understand/test_jobs.py` passes.
 - [X] T019 [P] [US3] Write `tests/understand/test_checks.py` for the knowledge-map and study-note checks. Check: the tests fail.
 - [X] T020 [US3] Implement `src/unfold/understand/checks.py`. Check: `tests/understand/test_checks.py` passes.
-- [ ] T021 [US3] Write `tests/understand/test_understand.py`, which uses a fake runner for every path. Check: the tests fail.
-- [ ] T022 [US3] Implement `src/unfold/understand/__init__.py` and `unfold understand`. Check: `tests/understand/test_understand.py` passes.
+- [X] T021 [US3] Write `tests/understand/test_understand.py`, which uses a fake runner for every path. Check: the tests fail.
+- [X] T022 [US3] Implement `src/unfold/understand/__init__.py` and `unfold understand`. Check: `tests/understand/test_understand.py` passes.
 
 ## Phase 5: User Story 4, the gate (Priority: P2)
 

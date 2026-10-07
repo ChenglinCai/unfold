@@ -6,8 +6,10 @@ import pytest
 import yaml
 
 from unfold import jobs
+from unfold.cli import main
 from unfold.sources import Anchor, SourceDocument
 from unfold.understand import MAP_FILE, NOTES_FILE, RECORD_FILE, understand
+from unfold.understand import command as understand_command
 
 ANCHORS = [
     Anchor("p-1", "page", "Page 1", "The mean is the sum over the count."),
@@ -161,3 +163,23 @@ def test_every_claim_of_a_bare_topic_is_flagged(tmp_path: Path) -> None:
     saved = yaml.safe_load((outputs(topic) / MAP_FILE).read_text())
     assert [claim["unsupported"] for claim in saved["claims"]] == [True]
     assert "no source text" in runner.prompts[0]
+
+
+def test_the_command_reports_each_outcome(
+    source: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(understand_command, "RUNNER", FakeRunner(GOOD))
+
+    assert main(["understand", str(source)]) == 0
+    assert main(["understand", str(source)]) == 0
+    assert "reused" in capsys.readouterr().out
+    assert main(["understand", str(source.parent / "missing")]) == 2
+    assert main(["understand", str(source), "--retries", "-1"]) == 2
+
+
+def test_the_command_exits_1_when_every_try_fails(
+    source: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(understand_command, "RUNNER", FakeRunner(BAD, BAD))
+
+    assert main(["understand", str(source), "--retries", "1"]) == 1
