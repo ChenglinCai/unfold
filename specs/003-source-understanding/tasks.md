@@ -30,10 +30,10 @@
 - [X] T007 [US1] Implement `src/unfold/sources/pdf.py` for textbooks and slides. Check: `tests/sources/test_pdf.py` passes.
 - [X] T008 [P] [US1] Write `tests/sources/test_deck.py`, which builds a two-slide deck. The name avoids `pptx`, the package it reads. Check: the tests fail.
 - [X] T009 [US1] Implement `src/unfold/sources/deck.py`. Check: `tests/sources/test_deck.py` passes.
-- [ ] T010 [P] [US1] Write `tests/sources/test_web.py` for a Markdown file and a local HTML page. Check: the tests fail.
-- [ ] T011 [US1] Implement `src/unfold/sources/web.py`. Check: `tests/sources/test_web.py` passes.
-- [ ] T012 [P] [US1] Write `tests/sources/test_scan.py`, which draws text into an image and skips off macOS. Check: the tests fail.
-- [ ] T013 [US1] Implement `src/unfold/sources/scan.py` and `src/unfold/sources/vision.swift`. Check: `tests/sources/test_scan.py` passes.
+- [X] T010 [P] [US1] Write `tests/sources/test_web.py` for a Markdown file and a local HTML page. Check: the tests fail.
+- [X] T011 [US1] Implement `src/unfold/sources/web.py`. Check: `tests/sources/test_web.py` passes.
+- [X] T012 [P] [US1] Write `tests/sources/test_scan.py`, which draws text into an image and skips off macOS. Check: the tests fail.
+- [X] T013 [US1] Implement `src/unfold/sources/scan.py` and `src/unfold/sources/vision.swift`. Check: `tests/sources/test_scan.py` passes.
 - [ ] T014 [P] [US1] Write `tests/sources/test_recording.py`, which speaks a sentence and skips without the audio extra. Check: the tests fail.
 - [ ] T015 [US1] Implement `src/unfold/sources/recording.py`. Check: `tests/sources/test_recording.py` passes.
 - [ ] T016 [US1] Implement `src/unfold/sources/topic.py` and `unfold ingest` in `src/unfold/sources/command.py`, test first. Check: `tests/sources/test_command.py` passes.
