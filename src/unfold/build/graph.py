@@ -6,6 +6,7 @@ the limits in the series file. `specs/004-text-generation/` holds the design.
 """
 
 import datetime
+import json
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -31,6 +32,9 @@ from unfold.sources import load
 from unfold.understand import MAP_FILE, NOTES_FILE, understand
 
 STEPS = ("understand", "plan", "outline", "script", "storyboard")
+CANARY_KEY = jobs.key(
+    "canary", jobs.CANARY_MODEL, json.dumps(jobs.CANARY_SCHEMA, sort_keys=True)
+)
 
 
 class SeriesError(ValueError):
@@ -47,6 +51,8 @@ class Line:
 class Result:
     lines: list[Line] = field(default_factory=list)
     failed: bool = False
+    # What the series' limits left out, such as later episodes.
+    notes: list[str] = field(default_factory=list)
 
     def add(self, output: Path, status: str) -> bool:
         self.lines.append(Line(output, status))
@@ -64,8 +70,10 @@ def read_series(folder: Path) -> SeriesV0:
         raise SeriesError("; ".join(describe(d) for d in error.errors())) from error
 
 
-def logged(runner: jobs.Runner, log: Path, step: str, output: Path) -> jobs.Runner:
-    """A runner that adds one line to the call log for each call it makes."""
+def logged(
+    runner: jobs.Runner, lines: list[dict[str, object]], step: str, output: Path
+) -> jobs.Runner:
+    """A runner that keeps one call-log line per call, for the caller to write."""
 
     def call(
         prompt: str,
@@ -83,14 +91,14 @@ def logged(runner: jobs.Runner, log: Path, step: str, output: Path) -> jobs.Runn
         try:
             reply = runner(prompt, system=system, model=model, schema=schema)
         except jobs.JobError as error:
-            append_log(log, {**line, "outcome": "failed", "errors": [str(error)]})
+            lines.append({**line, "outcome": "failed", "errors": [str(error)]})
             raise
         tokens = {
             "input_tokens": reply.input_tokens,
             "output_tokens": reply.output_tokens,
         }
-        append_log(
-            log, {**line, **tokens, "seconds": reply.seconds, "outcome": "answered"}
+        lines.append(
+            {**line, **tokens, "seconds": reply.seconds, "outcome": "answered"}
         )
         return reply
 
@@ -116,6 +124,7 @@ class Guarded:
             line: dict[str, object] = {
                 "time": now,
                 "step": "canary",
+                "key": CANARY_KEY,
                 "model": jobs.CANARY_MODEL,
             }
             try:
@@ -152,12 +161,15 @@ def build(
     sources = []
     for name in spec.sources:
         path = (folder / name).resolve()
+        pending: list[dict[str, object]] = []
         understood = understand(
             path,
-            runner=logged(runner, log, "understand", path),
+            runner=logged(runner, pending, "understand", path),
             model=model,
             retries=retries,
         )
+        for line in pending:
+            append_log(log, {**line, "key": understood.record.key})
         ok = understood.record.outcome == "ok"
         status = "reused" if understood.reused else "written" if ok else "failed"
         if not result.add(understood.folder, status):
@@ -179,6 +191,9 @@ def build(
     if not run(plan_job(ctx)) or until == "plan":
         return result
     plan = SeriesPlanV0.model_validate(read_data(folder / "plan.yaml"))
+    if len(plan.episodes) > spec.episodes:
+        count = f"{spec.episodes} of {len(plan.episodes)}"
+        result.notes.append(f"plan.yaml: building {count} episodes")
     for episode in plan.episodes[: spec.episodes]:
         job = outline_job(ctx, episode)
         if not run(job):
@@ -186,6 +201,10 @@ def build(
         if until == "outline":
             continue
         outline = OutlineV0.model_validate(read_data(job.output))
+        if len(outline.segments) > spec.segments:
+            place = job.output.relative_to(folder)
+            count = f"{spec.segments} of {len(outline.segments)}"
+            result.notes.append(f"{place}: building {count} segments")
         for segment in outline.segments[: spec.segments]:
             job = script_job(ctx, outline, segment)
             if not run(job):

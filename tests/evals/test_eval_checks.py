@@ -7,6 +7,7 @@ from unfold.evals import (
     beats_are_grounded,
     episode_stays_in_plan,
     first_episode_reaches_title,
+    flagged_beats,
     narration_fits_target,
     no_source_framing,
     plan_fits_source,
@@ -67,3 +68,7 @@ def test_the_first_episode_reaches_the_title() -> None:
     assert first_episode_reaches_title(knn, ["nearest-neighbor-set"])
     money = "Velocity of money (spoken Wikipedia)"
     assert not first_episode_reaches_title(money, ["money-supply", "price-level"])
+
+
+def test_flagged_beats_are_those_with_no_anchor() -> None:
+    assert flagged_beats({"a": [], "b": ["s#p-1"], "c": []}) == 2

@@ -154,6 +154,10 @@ def test_a_build_writes_the_first_episode_with_two_segments(series: Path) -> Non
         assert problems(path) == [], path
     assert not (episode / "s3-extra").exists()
     assert not (series / "E02-spread").exists()
+    assert result.notes == [
+        "plan.yaml: building 1 of 2 episodes",
+        "E01-center/outline.yaml: building 2 of 3 segments",
+    ]
     expected = ["canary", "understand", "PlanReply", "OutlineReply"]
     assert runner.calls == expected + ["ScriptReply", "StoryboardReply"] * 2
 
@@ -256,6 +260,7 @@ def test_every_call_adds_one_line_to_the_call_log(series: Path) -> None:
     assert steps == ["canary", "understand", "plan", "outline", "script", "script"]
     assert [line["outcome"] for line in lines][-2:] == ["retry", "failed"]
     assert all(line["model"] for line in lines)
+    assert all(line["key"] for line in lines)
 
 
 def test_the_command_exits_3_when_the_canary_fails(

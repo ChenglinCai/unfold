@@ -105,3 +105,11 @@ Task: "T013 Write tests/build/test_write.py"
 2. User Story 1: schemas and `unfold check`, which stand alone.
 3. User Stories 3, 2, and 4: the steps, the graph, and the guards, all driven by fake runners.
 4. User Story 5: the real build, then error analysis and the report.
+
+## Phase 9: Convergence
+
+- [ ] T031 CRITICAL: Carry progress items 13 and 14 into `docs/retros/M4.md` and the morning report. Every new M4 step writes one file, but the understand step and every key still wait for the maintainer, per Constitution II (contradicts)
+- [X] T032 Make `unfold eval` count flagged beats, which cite no anchor, for each series. Check: a test in `tests/evals/test_eval_checks.py`, per FR-003 and US3/AC3 (partial)
+- [X] T033 Add the key to the call-log lines of canary and understand calls in `src/unfold/build/graph.py`. Check: a test in `tests/build/test_graph.py`, per FR-011 (partial)
+- [X] T034 Make `unfold build` print what its limits skipped, such as later episodes and segments. Check: a test in `tests/build/test_graph.py`, per Edge Cases (partial)
+- [X] T035 Record the reply schemas of `src/unfold/build/replies.py` in `data-model.md`, per plan structure (unrequested)

@@ -86,6 +86,17 @@ The M2 record, plus two fields. `format` names the record's version, and `tries`
 | `input_tokens`, `output_tokens`, `seconds` | What the call cost |
 | `outcome`, `errors` | `ok`, `retry`, or `failed`, and any errors |
 
+## Reply schemas
+
+A job asks the model for less than its file holds. `src/unfold/build/replies.py` defines what each step asks for, and code adds the fields it knows: `format`, the ids, the audience, and `written_by`.
+
+| Step | Reply |
+|---|---|
+| series plan | `episodes`, from 1 to 8 |
+| outline | `title`, `core_question`, `segments` from 2 to 4, and `transitions` |
+| script | `beats` from 3 to 12, each with `cue`, `text`, and `anchors` |
+| storyboard | `entries`, one for each cue |
+
 ## Keys
 
 A key hashes four parts: the step's prompt, the request, the model, and the JSON Schema. The request holds the contents of every input file, so a changed input changes the key.

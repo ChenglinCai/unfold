@@ -85,6 +85,21 @@ def beats_are_grounded(anchors: dict[str, list[str]], topic: bool) -> bool:
     return topic or 2 * cited >= len(anchors)
 
 
+def flagged_beats(anchors: dict[str, list[str]]) -> int:
+    """Beats that cite no anchor. The maintainer reviews each one."""
+    return sum(1 for refs in anchors.values() if not refs)
+
+
+def count_flags(folder: Path) -> tuple[int, int]:
+    """The flagged beats and all beats, across a series' scripts."""
+    flagged = beats = 0
+    for path in sorted(folder.glob("E*/s*/script.md")):
+        anchors = load_script(path).anchors()
+        flagged += flagged_beats(anchors)
+        beats += len(anchors)
+    return flagged, beats
+
+
 def no_source_framing(narration: str) -> bool:
     """The narration never speaks as if it were the source, such as "this course"."""
     return FRAMING.search(narration) is None

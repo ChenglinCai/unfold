@@ -41,6 +41,8 @@ def run_build(args: argparse.Namespace) -> int:
         return fail(f"{error}. No other job ran.", 3)
     for line in result.lines:
         print(f"{line.status:8} {line.output}")
+    for note in result.notes:
+        print(f"note     {note}")
     counts = Counter(line.status for line in result.lines)
     print(
         f"{counts['written']} written, {counts['reused']} reused, {counts['failed']} failed"
