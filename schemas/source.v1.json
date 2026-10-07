@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "source.v1.json",
+  "$defs": {
+    "Anchor": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "title"
+      ],
+      "title": "Anchor",
+      "type": "object"
+    },
+    "Profile": {
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Family"
+        },
+        "format": {
+          "minLength": 1,
+          "title": "Format",
+          "type": "string"
+        },
+        "size": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": "Size",
+          "type": "object"
+        },
+        "quality": {
+          "additionalProperties": true,
+          "title": "Quality",
+          "type": "object"
+        },
+        "subject": {
+          "title": "Subject",
+          "type": "string"
+        },
+        "needs": {
+          "minLength": 1,
+          "title": "Needs",
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "size",
+        "quality",
+        "subject",
+        "needs"
+      ],
+      "title": "Profile",
+      "type": "object"
+    },
+    "Rights": {
+      "additionalProperties": false,
+      "properties": {
+        "license": {
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "owner": {
+          "title": "Owner",
+          "type": "string"
+        },
+        "attribution": {
+          "title": "Attribution",
+          "type": "string"
+        },
+        "public_outputs": {
+          "title": "Public Outputs",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "license",
+        "owner",
+        "attribution",
+        "public_outputs"
+      ],
+      "title": "Rights",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The manifest of a source document that `unfold ingest` wrote.",
+  "properties": {
+    "format": {
+      "const": "source/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "textbook",
+        "slides",
+        "web",
+        "recording",
+        "topic"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "origin": {
+      "title": "Origin",
+      "type": "string"
+    },
+    "retrieved": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Retrieved"
+    },
+    "files": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Files",
+      "type": "object"
+    },
+    "rights": {
+      "$ref": "#/$defs/Rights"
+    },
+    "profile": {
+      "$ref": "#/$defs/Profile"
+    },
+    "anchors": {
+      "items": {
+        "$ref": "#/$defs/Anchor"
+      },
+      "title": "Anchors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "title",
+    "family",
+    "origin",
+    "retrieved",
+    "rights",
+    "profile",
+    "anchors"
+  ],
+  "title": "SourceV1",
+  "type": "object"
+}

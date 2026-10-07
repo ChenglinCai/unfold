@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "job.v0.json",
+  "additionalProperties": false,
+  "description": "What one model job did. M2 records have no format or tries.",
+  "properties": {
+    "format": {
+      "const": "job/v0",
+      "default": "job/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "key": {
+      "minLength": 1,
+      "title": "Key",
+      "type": "string"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "attempts": {
+      "default": 0,
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "input_tokens": {
+      "default": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "output_tokens": {
+      "default": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "seconds": {
+      "default": 0.0,
+      "title": "Seconds",
+      "type": "number"
+    },
+    "outcome": {
+      "enum": [
+        "running",
+        "ok",
+        "failed"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "errors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "tries": {
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Tries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "key",
+    "model",
+    "outcome"
+  ],
+  "title": "JobV0",
+  "type": "object"
+}

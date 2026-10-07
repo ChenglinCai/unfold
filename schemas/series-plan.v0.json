@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "series-plan.v0.json",
+  "$defs": {
+    "PlannedEpisode": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^E\\d{2}-[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "core_question": {
+          "minLength": 1,
+          "title": "Core Question",
+          "type": "string"
+        },
+        "concepts": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Concepts",
+          "type": "array"
+        },
+        "anchors": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "core_question",
+        "concepts"
+      ],
+      "title": "PlannedEpisode",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The episodes that a series could hold, in teaching order.",
+  "properties": {
+    "format": {
+      "const": "series-plan/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "series": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Series",
+      "type": "string"
+    },
+    "written_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Written By"
+    },
+    "episodes": {
+      "items": {
+        "$ref": "#/$defs/PlannedEpisode"
+      },
+      "minItems": 1,
+      "title": "Episodes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "series",
+    "episodes"
+  ],
+  "title": "SeriesPlanV0",
+  "type": "object"
+}

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "knowledge-map.v0.json",
+  "$defs": {
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "anchors": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        },
+        "unsupported": {
+          "default": false,
+          "title": "Unsupported",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "Concept": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "meaning": {
+          "minLength": 1,
+          "title": "Meaning",
+          "type": "string"
+        },
+        "requires": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Requires",
+          "type": "array"
+        },
+        "anchors": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "meaning"
+      ],
+      "title": "Concept",
+      "type": "object"
+    },
+    "SuspectedError": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "anchors": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "SuspectedError",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "knowledge-map/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "source": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Source",
+      "type": "string"
+    },
+    "written_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Written By"
+    },
+    "concepts": {
+      "items": {
+        "$ref": "#/$defs/Concept"
+      },
+      "minItems": 1,
+      "title": "Concepts",
+      "type": "array"
+    },
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/Claim"
+      },
+      "title": "Claims",
+      "type": "array"
+    },
+    "gaps": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Gaps",
+      "type": "array"
+    },
+    "suspected_errors": {
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/$defs/SuspectedError"
+          }
+        ]
+      },
+      "title": "Suspected Errors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "source",
+    "concepts",
+    "claims",
+    "gaps",
+    "suspected_errors"
+  ],
+  "title": "KnowledgeMapV0",
+  "type": "object"
+}
