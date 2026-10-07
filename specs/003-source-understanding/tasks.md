@@ -46,8 +46,8 @@
 
 - [X] T017 [P] [US3] Write `tests/understand/test_jobs.py` for the runner's command: no tools, no settings, no MCP servers, and JSON output. Check: the tests fail.
 - [X] T018 [US3] Implement `src/unfold/jobs.py` with the runner, saved results, and job records. Check: `tests/understand/test_jobs.py` passes.
-- [ ] T019 [P] [US3] Write `tests/understand/test_checks.py` for the knowledge-map and study-note checks. Check: the tests fail.
-- [ ] T020 [US3] Implement `src/unfold/understand/checks.py`. Check: `tests/understand/test_checks.py` passes.
+- [X] T019 [P] [US3] Write `tests/understand/test_checks.py` for the knowledge-map and study-note checks. Check: the tests fail.
+- [X] T020 [US3] Implement `src/unfold/understand/checks.py`. Check: `tests/understand/test_checks.py` passes.
 - [ ] T021 [US3] Write `tests/understand/test_understand.py`, which uses a fake runner for every path. Check: the tests fail.
 - [ ] T022 [US3] Implement `src/unfold/understand/__init__.py` and `unfold understand`. Check: `tests/understand/test_understand.py` passes.
 
