@@ -33,12 +33,33 @@ class Job:
 
     @property
     def schema(self) -> dict[str, object]:
-        return self.reply.model_json_schema()
+        return portable(self.reply.model_json_schema())
 
     @property
     def key(self) -> str:
         schema = json.dumps(self.schema, sort_keys=True)
         return jobs.key(self.system, self.request, self.model, schema)
+
+
+# Keywords that Pydantic writes but JSON Schema lacks. The runner checks schemas
+# strictly, so a job's schema drops them. The union still holds, because each
+# variant pins its own `component` value.
+NONSTANDARD = {"discriminator"}
+
+
+def portable(schema: object) -> dict[str, object]:
+    """A copy of a schema without the keywords that JSON Schema lacks."""
+
+    def clean(node: object) -> object:
+        if isinstance(node, dict):
+            return {k: clean(v) for k, v in node.items() if k not in NONSTANDARD}
+        if isinstance(node, list):
+            return [clean(item) for item in node]
+        return node
+
+    cleaned = clean(schema)
+    assert isinstance(cleaned, dict)
+    return cleaned
 
 
 @dataclass(frozen=True)

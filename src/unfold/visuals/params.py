@@ -43,14 +43,19 @@ class BarChart(Model):
         return self
 
 
+# A pair of numbers. A two-item list, not a tuple, because the runner rejects
+# the prefixItems keyword that Pydantic writes for tuples.
+Pair = Annotated[list[float], Field(min_length=2, max_length=2)]
+
+
 class ScatterPlot(Model):
     component: Literal["scatter-plot"]
-    points: Annotated[list[tuple[float, float]], Field(min_length=1, max_length=60)]
+    points: Annotated[list[Pair], Field(min_length=1, max_length=60)]
     groups: list[Annotated[int, Field(ge=0, le=4)]] = Field(default_factory=list)
     x_label: str = ""
     y_label: str = ""
     # An optional line, as its slope and intercept.
-    line: tuple[float, float] | None = None
+    line: Pair | None = None
 
 
 class Event(Model):

@@ -117,3 +117,14 @@ def test_a_job_error_stops_without_a_retry(tmp_path: Path) -> None:
 
     assert outcome.record.outcome == "failed"
     assert outcome.record.errors == ["the usage limit was reached"]
+
+
+def test_job_schemas_use_only_standard_keywords() -> None:
+    from unfold.build.replies import SceneReply
+
+    job = make_job(Path("/tmp"))
+    scene = Job(**{**job.__dict__, "reply": SceneReply})
+
+    assert "discriminator" not in json.dumps(scene.schema)
+    assert "prefixItems" not in json.dumps(scene.schema)
+    assert "oneOf" in json.dumps(scene.schema)
