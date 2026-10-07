@@ -9,6 +9,8 @@ from unfold.sources import Anchor, Meta, SourceDocument, build
 from unfold.sources.profile import quality
 
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
+# Fewer words of main text means a menu or a stub, not an article.
+MIN_WORDS = 20
 
 
 def _slug(title: str, seen: set[str]) -> str:
@@ -65,9 +67,15 @@ def read_html(html: str, meta: Meta) -> SourceDocument:
     markdown = trafilatura.extract(
         html, output_format="markdown", include_formatting=True, include_comments=False
     )
-    if not markdown:
-        raise ValueError("the page has no main text")
+    words = len((markdown or "").split())
+    if markdown is None or words < MIN_WORDS:
+        raise ValueError(f"the page has no main text, only {words} words")
     return _document(markdown, meta, "html")
+
+
+def read_page(path: Path, meta: Meta) -> SourceDocument:
+    """Read a web page saved as a file."""
+    return read_html(path.read_text(encoding="utf-8", errors="replace"), meta)
 
 
 def read_url(url: str, meta: Meta) -> SourceDocument:

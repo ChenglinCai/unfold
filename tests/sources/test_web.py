@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import pytest
+
 from unfold.sources import Meta
 from unfold.sources.web import read_html, read_markdown
 
@@ -62,3 +64,8 @@ def test_a_web_page_keeps_its_article_and_drops_its_clutter() -> None:
     assert "privacy policy" not in text
     assert [a.id for a in doc.anchors][-2:] == ["explanations", "generalizations"]
     assert doc.profile["format"] == "html"
+
+
+def test_a_page_with_only_a_menu_has_no_main_text() -> None:
+    with pytest.raises(ValueError, match="no main text"):
+        read_html("<html><body><nav>Home</nav></body></html>", META)
