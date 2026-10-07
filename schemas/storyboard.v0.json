@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyboard.v0.json",
+  "$defs": {
+    "Entry": {
+      "additionalProperties": false,
+      "properties": {
+        "cue": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Cue",
+          "type": "string"
+        },
+        "visual": {
+          "minLength": 1,
+          "title": "Visual",
+          "type": "string"
+        },
+        "component": {
+          "minLength": 1,
+          "title": "Component",
+          "type": "string"
+        },
+        "region": {
+          "minLength": 1,
+          "title": "Region",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cue",
+        "visual",
+        "component",
+        "region"
+      ],
+      "title": "Entry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "storyboard/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "episode": {
+      "pattern": "^E\\d{2}-[a-z0-9][a-z0-9-]*$",
+      "title": "Episode",
+      "type": "string"
+    },
+    "segment": {
+      "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+      "title": "Segment",
+      "type": "string"
+    },
+    "written_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Written By"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/Entry"
+      },
+      "minItems": 1,
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "episode",
+    "segment",
+    "entries"
+  ],
+  "title": "StoryboardV0",
+  "type": "object"
+}

@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "outline.v0.json",
+  "$defs": {
+    "Callback": {
+      "additionalProperties": false,
+      "properties": {
+        "to": {
+          "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+          "title": "To",
+          "type": "string"
+        },
+        "visual": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visual"
+        },
+        "how": {
+          "minLength": 1,
+          "title": "How",
+          "type": "string"
+        }
+      },
+      "required": [
+        "to",
+        "how"
+      ],
+      "title": "Callback",
+      "type": "object"
+    },
+    "Segment": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "target_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Target Seconds",
+          "type": "integer"
+        },
+        "requires": {
+          "items": {
+            "pattern": "^(term|idea|visual):[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Requires",
+          "type": "array"
+        },
+        "establishes": {
+          "items": {
+            "pattern": "^(term|idea|visual):[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Establishes",
+          "type": "array"
+        },
+        "anchors": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$",
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        },
+        "callbacks": {
+          "items": {
+            "$ref": "#/$defs/Callback"
+          },
+          "title": "Callbacks",
+          "type": "array"
+        },
+        "setups": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ]
+          },
+          "title": "Setups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "target_seconds"
+      ],
+      "title": "Segment",
+      "type": "object"
+    },
+    "Transition": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+          "title": "To",
+          "type": "string"
+        },
+        "idea": {
+          "minLength": 1,
+          "title": "Idea",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "idea"
+      ],
+      "title": "Transition",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "outline/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "series": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Series",
+      "type": "string"
+    },
+    "episode": {
+      "pattern": "^E\\d{2}-[a-z0-9][a-z0-9-]*$",
+      "title": "Episode",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "core_question": {
+      "minLength": 1,
+      "title": "Core Question",
+      "type": "string"
+    },
+    "audience": {
+      "minLength": 1,
+      "title": "Audience",
+      "type": "string"
+    },
+    "written_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Written By"
+    },
+    "previously": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Previously",
+      "type": "array"
+    },
+    "segments": {
+      "items": {
+        "$ref": "#/$defs/Segment"
+      },
+      "minItems": 1,
+      "title": "Segments",
+      "type": "array"
+    },
+    "transitions": {
+      "items": {
+        "$ref": "#/$defs/Transition"
+      },
+      "title": "Transitions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "series",
+    "episode",
+    "title",
+    "core_question",
+    "audience",
+    "segments"
+  ],
+  "title": "OutlineV0",
+  "type": "object"
+}

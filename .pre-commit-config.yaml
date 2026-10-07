@@ -1,0 +1,58 @@
+# Checks that run before each commit, and in CI on every pull request.
+# Install the git hook once with: uv run pre-commit install
+# Run every check on every file with: uv run pre-commit run --all-files
+
+# Spec Kit generates these files, so we keep them exactly as it wrote them.
+# The constitution is the exception, because people write it.
+exclude: ^(\.specify/(?!memory/constitution\.md$)|\.claude/skills/speckit-)
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: f12be1ebaa5351c1fc76472de98db2c3446c8253  # frozen: v0.16.10
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: a1785f8e81fe9936d828bef574e6db07e8c8c374  # frozen: 0.12.23
+    hooks:
+      - id: uv-lock
+
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: no-pdfs-or-media
+        name: keep PDFs, videos, and audio out of this public repo
+        entry: These files belong in the private content folder.
+        language: fail
+        files: (?i)\.(pdf|mp4|mov|webm|wav|mp3|m4a)$
+      - id: lint-docs
+        name: lint docs with the written profile
+        entry: uv run unfold lint --profile written
+        language: system
+        files: \.md$
+        exclude: (^|/)script\.md$|^tests/lint/sets/
+      - id: lint-narration
+        name: lint narration with the spoken profile
+        entry: uv run unfold lint --profile spoken
+        language: system
+        files: (^|/)script\.md$

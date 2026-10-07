@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "script.v0.json",
+  "$defs": {
+    "Beat": {
+      "additionalProperties": false,
+      "properties": {
+        "cue": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Cue",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cue",
+        "text"
+      ],
+      "title": "Beat",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A script written by hand in M1, with no anchors.",
+  "properties": {
+    "format": {
+      "const": "script/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "episode": {
+      "pattern": "^E\\d{2}-[a-z0-9][a-z0-9-]*$",
+      "title": "Episode",
+      "type": "string"
+    },
+    "segment": {
+      "pattern": "^s\\d+-[a-z0-9][a-z0-9-]*$",
+      "title": "Segment",
+      "type": "string"
+    },
+    "voice": {
+      "minLength": 1,
+      "title": "Voice",
+      "type": "string"
+    },
+    "beats": {
+      "items": {
+        "$ref": "#/$defs/Beat"
+      },
+      "minItems": 1,
+      "title": "Beats",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "episode",
+    "segment",
+    "voice",
+    "beats"
+  ],
+  "title": "ScriptV0",
+  "type": "object"
+}

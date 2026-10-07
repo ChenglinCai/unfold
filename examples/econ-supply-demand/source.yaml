@@ -1,0 +1,31 @@
+format: source/v0
+id: openstax-econ-2e-3-1
+title: Demand, Supply, and Equilibrium in Markets for Goods and Services
+family: textbook
+subject: economics
+work: Principles of Economics 2e, section 3.1
+authors: [Steven A. Greenlaw, David Shapiro]
+publisher: OpenStax
+published: 2017-10-11
+url: https://openstax.org/books/principles-economics-2e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services
+rights:
+  license: CC-BY-4.0
+  license_url: https://creativecommons.org/licenses/by/4.0/
+  attribution: >-
+    Steven A. Greenlaw and David Shapiro, Principles of Economics 2e, OpenStax,
+    2017. Access for free at
+    https://openstax.org/books/principles-economics-2e/pages/1-introduction
+  public_outputs: true
+anchors:
+  - {id: learning-objectives, kind: list, title: "Learning Objectives"}
+  - {id: demand, kind: heading, title: "Demand for Goods and Services"}
+  - {id: clear-it-up-demand, kind: box, title: "Is demand the same as quantity demanded?"}
+  - {id: table-3-1, kind: table, title: "Price and Quantity Demanded of Gasoline"}
+  - {id: figure-3-2, kind: figure, title: "A Demand Curve for Gasoline"}
+  - {id: supply, kind: heading, title: "Supply of Goods and Services"}
+  - {id: clear-it-up-supply, kind: box, title: "Is supply the same as quantity supplied?"}
+  - {id: table-3-2, kind: table, title: "Price and Supply of Gasoline"}
+  - {id: figure-3-3, kind: figure, title: "A Supply Curve for Gasoline"}
+  - {id: equilibrium, kind: heading, title: "Equilibrium—Where Demand and Supply Intersect"}
+  - {id: table-3-3, kind: table, title: "Price, Quantity Demanded, and Quantity Supplied"}
+  - {id: figure-3-4, kind: figure, title: "Demand and Supply for Gasoline"}

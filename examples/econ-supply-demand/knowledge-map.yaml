@@ -1,0 +1,82 @@
+format: knowledge-map/v0
+source: openstax-econ-2e-3-1
+written_by: hand, for M1
+concepts:
+  - id: demand
+    name: demand
+    meaning: How much of a good buyers are willing and able to buy at each possible price. It is the whole relationship, not one number.
+    requires: []
+    anchors: [openstax-econ-2e-3-1#demand, openstax-econ-2e-3-1#clear-it-up-demand]
+  - id: quantity-demanded
+    name: quantity demanded
+    meaning: How much buyers would buy at one particular price. It is one point on the demand curve.
+    requires: [demand]
+    anchors: [openstax-econ-2e-3-1#demand, openstax-econ-2e-3-1#clear-it-up-demand]
+  - id: law-of-demand
+    name: law of demand
+    meaning: When the price rises, the quantity demanded falls, if nothing else changes.
+    requires: [quantity-demanded]
+    anchors: [openstax-econ-2e-3-1#demand]
+  - id: demand-schedule
+    name: demand schedule
+    meaning: A table of the quantity demanded at each price.
+    requires: [quantity-demanded]
+    anchors: [openstax-econ-2e-3-1#table-3-1]
+  - id: demand-curve
+    name: demand curve
+    meaning: A graph of the demand schedule, with price on the vertical axis and quantity on the horizontal axis. It slopes down.
+    requires: [demand-schedule, law-of-demand]
+    anchors: [openstax-econ-2e-3-1#figure-3-2]
+  - id: supply
+    name: supply
+    meaning: How much of a good sellers are willing and able to sell at each possible price.
+    requires: []
+    anchors: [openstax-econ-2e-3-1#supply, openstax-econ-2e-3-1#clear-it-up-supply]
+  - id: quantity-supplied
+    name: quantity supplied
+    meaning: How much sellers would sell at one particular price. It is one point on the supply curve.
+    requires: [supply]
+    anchors: [openstax-econ-2e-3-1#supply, openstax-econ-2e-3-1#clear-it-up-supply]
+  - id: law-of-supply
+    name: law of supply
+    meaning: When the price rises, the quantity supplied rises, if nothing else changes.
+    requires: [quantity-supplied]
+    anchors: [openstax-econ-2e-3-1#supply]
+  - id: supply-schedule
+    name: supply schedule
+    meaning: A table of the quantity supplied at each price.
+    requires: [quantity-supplied]
+    anchors: [openstax-econ-2e-3-1#table-3-2]
+  - id: supply-curve
+    name: supply curve
+    meaning: A graph of the supply schedule. It slopes up.
+    requires: [supply-schedule, law-of-supply]
+    anchors: [openstax-econ-2e-3-1#figure-3-3]
+  - id: equilibrium
+    name: equilibrium
+    meaning: The price and quantity where the demand and supply curves cross, so buyers' plans and sellers' plans agree.
+    requires: [demand-curve, supply-curve]
+    anchors: [openstax-econ-2e-3-1#equilibrium, openstax-econ-2e-3-1#figure-3-4]
+  - id: surplus
+    name: surplus, or excess supply
+    meaning: At a price above equilibrium, sellers offer more than buyers want.
+    requires: [equilibrium]
+    anchors: [openstax-econ-2e-3-1#equilibrium, openstax-econ-2e-3-1#table-3-3]
+  - id: shortage
+    name: shortage, or excess demand
+    meaning: At a price below equilibrium, buyers want more than sellers offer.
+    requires: [equilibrium]
+    anchors: [openstax-econ-2e-3-1#equilibrium, openstax-econ-2e-3-1#table-3-3]
+claims:
+  - text: At 1 dollar 40 cents a gallon, buyers want 600 million gallons, and sellers offer 600 million gallons. That is the equilibrium.
+    anchors: [openstax-econ-2e-3-1#table-3-3]
+  - text: At 1 dollar 80 cents a gallon, sellers offer 680 million gallons, but buyers want only 500 million, a surplus of 180 million.
+    anchors: [openstax-econ-2e-3-1#table-3-3]
+  - text: At 1 dollar 20 cents a gallon, buyers want 700 million gallons, but sellers offer only 550 million, a shortage of 150 million.
+    anchors: [openstax-econ-2e-3-1#table-3-3]
+  - text: A surplus pushes the price down, and a shortage pushes it up, until the market reaches equilibrium.
+    anchors: [openstax-econ-2e-3-1#equilibrium]
+gaps:
+  - The section says that prices move toward equilibrium, but it does not show how sellers and buyers adjust. A video needs that story.
+  - The section asserts the law of demand without explaining why it holds. Later sections give reasons, so a video should flag that it will return to them.
+suspected_errors: []

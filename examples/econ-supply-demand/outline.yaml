@@ -1,0 +1,37 @@
+format: outline/v0
+series: econ-principles
+episode: E01-supply-demand
+title: Where demand meets supply
+core_question: Why does a market settle on one price, out of all the prices it could charge?
+audience: Readers with no economics background, who know what a price and a graph are.
+previously: []
+segments:
+  - id: s1-demand
+    title: Buyers want less as the price rises
+    target_seconds: 120
+    requires: [term:price, term:quantity]
+    establishes: [term:demand, term:quantity-demanded, idea:law-of-demand, visual:demand-curve]
+    anchors: [openstax-econ-2e-3-1#demand, openstax-econ-2e-3-1#table-3-1, openstax-econ-2e-3-1#figure-3-2]
+  - id: s2-supply
+    title: Sellers offer more as the price rises
+    target_seconds: 120
+    requires: [term:price, term:quantity]
+    establishes: [term:supply, term:quantity-supplied, idea:law-of-supply, visual:supply-curve]
+    anchors: [openstax-econ-2e-3-1#supply, openstax-econ-2e-3-1#table-3-2, openstax-econ-2e-3-1#figure-3-3]
+  - id: s3-equilibrium
+    title: The price where plans agree
+    target_seconds: 150
+    requires: [visual:demand-curve, visual:supply-curve]
+    establishes: [term:equilibrium, term:surplus, term:shortage]
+    anchors: [openstax-econ-2e-3-1#equilibrium, openstax-econ-2e-3-1#table-3-3, openstax-econ-2e-3-1#figure-3-4]
+    callbacks:
+      - to: s1-demand
+        visual: demand-curve
+        how: The same demand curve returns, with the supply curve drawn on the same axes.
+transitions:
+  - from: s1-demand
+    to: s2-supply
+    idea: Buyers are only half of a market. What do sellers want?
+  - from: s2-supply
+    to: s3-equilibrium
+    idea: The two curves point in opposite directions. Somewhere, they must cross.

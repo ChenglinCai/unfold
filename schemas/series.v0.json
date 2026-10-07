@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "series.v0.json",
+  "additionalProperties": false,
+  "description": "What the user asks for: the sources, the audience, and the limits.",
+  "properties": {
+    "format": {
+      "const": "series/v0",
+      "title": "Format",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    },
+    "audience": {
+      "minLength": 1,
+      "title": "Audience",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "episodes": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Episodes",
+      "type": "integer"
+    },
+    "segments": {
+      "default": 2,
+      "minimum": 1,
+      "title": "Segments",
+      "type": "integer"
+    },
+    "model": {
+      "default": "sonnet",
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "audience",
+    "sources"
+  ],
+  "title": "SeriesV0",
+  "type": "object"
+}

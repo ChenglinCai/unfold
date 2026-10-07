@@ -1,0 +1,203 @@
+{
+  "about": "Each milestone's done-when gates from the plan. A gate passes only with evidence, such as a command, a CI run, or a file. Claude flips 'passes' only after running the check.",
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Foundations",
+      "gates": [
+        {
+          "id": "M0.render",
+          "check": "uv run manim -ql examples/hello.py Hello renders a video",
+          "passes": true,
+          "evidence": "tests/test_hello.py, CI run 37479999081"
+        },
+        {
+          "id": "M0.tests",
+          "check": "uv run pytest passes",
+          "passes": true,
+          "evidence": "13 tests pass on dev"
+        },
+        {
+          "id": "M0.precommit",
+          "check": "uv run pre-commit run --all-files passes",
+          "passes": true,
+          "evidence": "11 hooks pass on dev"
+        },
+        {
+          "id": "M0.claude-hooks",
+          "check": ".claude/settings.json wires the format and Stop hooks",
+          "passes": false,
+          "blocked_on": "The maintainer writes .claude/settings.json"
+        },
+        {
+          "id": "M0.first-pr",
+          "check": "The first pull request passes CI",
+          "passes": true,
+          "evidence": "PR #1, CI run 37479999081"
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "title": "Walking skeleton, by hand",
+      "gates": [
+        {
+          "id": "M1.video",
+          "check": "A 2-minute CIS 5200 episode about k-NN, in two segments, plays",
+          "passes": true,
+          "evidence": "content/cis5200/episodes/E01-knn/render.sh renders a 102-second, two-segment episode with sound; contact sheets reviewed in four rounds"
+        },
+        {
+          "id": "M1.econ-by-hand",
+          "check": "A knowledge map and an outline exist for the economics source, written by hand",
+          "passes": true,
+          "evidence": "examples/econ-supply-demand/ knowledge map with 13 concepts and outline; tests/test_examples.py passes"
+        },
+        {
+          "id": "M1.formats",
+          "check": "docs/formats.md describes the formats, each with two examples",
+          "passes": true,
+          "evidence": "docs/formats.md, with a public economics example and a private CIS 5200 example for each format"
+        },
+        {
+          "id": "M1.retro",
+          "check": "A retro lists what was hard",
+          "passes": true,
+          "evidence": "docs/retros/M1.md"
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Source understanding",
+      "gates": [
+        {
+          "id": "M2.adapters",
+          "check": "One source from each family ingests into a source document",
+          "passes": true,
+          "evidence": "unfold ingest wrote six source documents in ../content/sources: a textbook PDF, a slide PDF, two web pages, a recording, and a bare topic. The slowest took 12 seconds. tests/sources has 41 tests, 3 of them slow, and all pass."
+        },
+        {
+          "id": "M2.understand",
+          "check": "Each ingested source produces a valid knowledge map and study notes",
+          "passes": true,
+          "evidence": "unfold understand wrote a knowledge map and study notes for all six sources, with 8 model calls in all. Only one source needed a second try. A later run reused all six results with no model call."
+        },
+        {
+          "id": "M2.anchors",
+          "check": "Every anchor in the knowledge maps resolves",
+          "passes": true,
+          "evidence": "check_map and check_notes report 0 errors on all six outputs. All 154 anchor references and 193 citations resolve."
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "title": "Language",
+      "gates": [
+        {
+          "id": "M3.linter",
+          "check": "unfold lint has written, spoken, and strict profiles, and its tests pass",
+          "passes": true,
+          "evidence": "unfold lint has written, spoken, and strict profiles with 16 rules; the 61 tests in tests/lint pass"
+        },
+        {
+          "id": "M3.breath-groups",
+          "check": "The breath-group hypothesis is tested on at least 50 transcripts",
+          "passes": true,
+          "evidence": "docs/studies/breath-groups.md: 139 of 144 transcripts studied; 92.4 percent of breath groups have 19 words or fewer, so the hypothesis holds"
+        },
+        {
+          "id": "M3.quiet-on-3b1b",
+          "check": "The spoken profile rarely fires on 3Blue1Brown transcripts",
+          "passes": true,
+          "evidence": "docs/studies/breath-groups.md: 1.03 spoken-profile errors per 1,000 words at the calibrated limit of 31"
+        },
+        {
+          "id": "M3.catches-ai-text",
+          "check": "The linter catches AI writing habits in a test set",
+          "passes": true,
+          "evidence": "tests/lint/test_sets.py: all 13 AI-style paragraphs get an AI-habit finding in every profile, and the 6 clean ones get none"
+        },
+        {
+          "id": "M3.repo-docs",
+          "check": "The repo's docs pass the written profile in CI",
+          "passes": true,
+          "evidence": "the lint-docs pre-commit hook passed in CI run 37571602753"
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "title": "Text generation",
+      "gates": [
+        {
+          "id": "M4.schemas",
+          "check": "Every file format has a versioned schema",
+          "passes": true,
+          "evidence": "src/unfold/formats defines 10 schemas, one per format and version, and schemas/ holds them as JSON Schema files. unfold check passes all 108 example and content files."
+        },
+        {
+          "id": "M4.reuse",
+          "check": "A second build run reuses every saved result",
+          "passes": true,
+          "evidence": "A second build of all six golden series reused all 42 outputs. It made no model call, and took 0.7 seconds."
+        },
+        {
+          "id": "M4.eval-report",
+          "check": "The first eval report exists, after error analysis",
+          "passes": true,
+          "evidence": "docs/evals/M4-report.md: Claude read all 36 golden outputs, found 9 failure types, and wrote 7 binary checks. Their pass rates run from 33 to 92 percent."
+        }
+      ]
+    },
+    {
+      "id": "M5",
+      "title": "Visuals",
+      "gates": [
+        {
+          "id": "M5.layout",
+          "check": "Golden-set segments render with no layout failures",
+          "passes": false
+        },
+        {
+          "id": "M5.contact-sheets",
+          "check": "Each render produces a contact sheet",
+          "passes": false
+        }
+      ]
+    },
+    {
+      "id": "M6",
+      "title": "Episodes",
+      "gates": [
+        {
+          "id": "M6.three-episodes",
+          "check": "Two consecutive episodes with callbacks, and one from a second family, play correctly",
+          "passes": false
+        },
+        {
+          "id": "M6.idea-links",
+          "check": "The idea-link check passes",
+          "passes": false
+        }
+      ]
+    },
+    {
+      "id": "M7",
+      "title": "Product and release",
+      "gates": [
+        {
+          "id": "M7.quickstart",
+          "check": "On a clean machine, the quickstart produces a rendered segment",
+          "passes": false
+        },
+        {
+          "id": "M7.surfaces",
+          "check": "The MCP server, plugin, unfold doctor, review page, and gallery exist",
+          "passes": false
+        }
+      ]
+    }
+  ]
+}

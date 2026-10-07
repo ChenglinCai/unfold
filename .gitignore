@@ -1,8 +1,9 @@
 # Python
 __pycache__/
 *.py[cod]
-.venv/
-build/
+.venv
+.venv.nosync/
+/build/
 dist/
 *.egg-info/
 .pytest_cache/
