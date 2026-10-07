@@ -5,12 +5,15 @@ from pathlib import Path
 from unfold.cli import main
 from unfold.evals import (
     beats_are_grounded,
+    chart_numbers_grounded,
     episode_stays_in_plan,
     first_episode_reaches_title,
     flagged_beats,
     narration_fits_target,
     no_source_framing,
+    numbers_in,
     plan_fits_source,
+    scene_uses_components,
     storyboard_reuses_components,
 )
 
@@ -72,3 +75,22 @@ def test_the_first_episode_reaches_the_title() -> None:
 
 def test_flagged_beats_are_those_with_no_anchor() -> None:
     assert flagged_beats({"a": [], "b": ["s#p-1"], "c": []}) == 2
+
+
+def test_numbers_come_from_digits_and_words() -> None:
+    text = "One hundred five dollars, then 1,200 more, and ten thousand later."
+
+    assert {105, 1200, 10000} <= numbers_in(text)
+    assert 55 in numbers_in("Fifty five heads came up.")
+
+
+def test_chart_numbers_must_come_from_the_narration_or_storyboard() -> None:
+    said = "Growth takes one hundred dollars to one hundred five."
+
+    assert chart_numbers_grounded([100, 105], said)
+    assert not chart_numbers_grounded([100, 72], said)
+
+
+def test_a_scene_mostly_uses_components() -> None:
+    assert scene_uses_components(["custom", "bar-chart"])
+    assert not scene_uses_components(["custom", "custom", "text-card"])

@@ -6,6 +6,7 @@ as data.
 """
 
 from dataclasses import dataclass
+from importlib import metadata
 from pathlib import Path
 
 import yaml
@@ -18,12 +19,25 @@ from unfold.build.checks import (
     check_script,
     check_storyboard,
 )
-from unfold.build.replies import OutlineReply, PlanReply, ScriptReply, StoryboardReply
-from unfold.build.write import outline_text, plan_text, script_text, storyboard_text
-from unfold.formats.episode import OutlineV0, Segment
+from unfold.build.replies import (
+    OutlineReply,
+    PlanReply,
+    SceneReply,
+    ScriptReply,
+    StoryboardReply,
+)
+from unfold.build.write import (
+    outline_text,
+    plan_text,
+    scene_text,
+    script_text,
+    storyboard_text,
+)
+from unfold.formats.episode import OutlineV0, SceneV0, Segment
 from unfold.formats.series import PlannedEpisode, SeriesV0
 from unfold.script import Script
 from unfold.sources import SourceDocument
+from unfold.visuals import params
 
 PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
 
@@ -222,6 +236,47 @@ def storyboard_job(
         system,
         request,
         StoryboardReply,
+        ctx.model,
+        check,
+        render,
+    )
+
+
+def scene_job(
+    ctx: Context, outline: OutlineV0, segment: Segment, script: Script, storyboard: str
+) -> Job:
+    output = ctx.folder / outline.episode / segment.id / "scene.yaml"
+    beats = "\n\n".join(f"[[{beat.cue}]] {beat.text}" for beat in script.beats)
+    # The versions sit in the request, so the key covers them, as principle II says.
+    versions = (
+        f"Components: version {params.VERSION}. manim: {metadata.version('manim')}."
+    )
+    request = (
+        f"{versions}\n\n<script>\n{beats}\n</script>\n\n"
+        f"<storyboard>\n{storyboard.strip()}\n</storyboard>"
+    )
+    cues = [beat.cue for beat in script.beats]
+
+    def check(reply: BaseModel) -> list[str]:
+        assert isinstance(reply, SceneReply)
+        from unfold.visuals.scene import check_scene  # loads manim only when needed
+
+        head = {"format": "scene/v0", "episode": outline.episode, "segment": segment.id}
+        scene = SceneV0.model_validate({**head, **reply.model_dump(mode="json")})
+        return check_scene(scene, cues)
+
+    def render(reply: BaseModel) -> str:
+        assert isinstance(reply, SceneReply)
+        return scene_text(reply, outline.episode, segment.id, ctx.model)
+
+    system = prompt("scene")
+    return Job(
+        "scene",
+        output,
+        ctx.record(output),
+        system,
+        request,
+        SceneReply,
         ctx.model,
         check,
         render,

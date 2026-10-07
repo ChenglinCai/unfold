@@ -21,6 +21,7 @@ from unfold.build.steps import (
     Source,
     outline_job,
     plan_job,
+    scene_job,
     script_job,
     storyboard_job,
 )
@@ -31,7 +32,7 @@ from unfold.script import load_script
 from unfold.sources import load
 from unfold.understand import MAP_FILE, NOTES_FILE, understand
 
-STEPS = ("understand", "plan", "outline", "script", "storyboard")
+STEPS = ("understand", "plan", "outline", "script", "storyboard", "scene")
 CANARY_KEY = jobs.key(
     "canary", jobs.CANARY_MODEL, json.dumps(jobs.CANARY_SCHEMA, sort_keys=True)
 )
@@ -148,7 +149,7 @@ class Guarded:
 def build(
     folder: Path,
     runner: jobs.Runner,
-    until: str = "storyboard",
+    until: str = "scene",
     model: str | None = None,
     retries: int = RETRIES,
 ) -> Result:
@@ -211,6 +212,13 @@ def build(
                 return result
             if until == "script":
                 continue
-            if not run(storyboard_job(ctx, outline, segment, load_script(job.output))):
+            script = load_script(job.output)
+            board = storyboard_job(ctx, outline, segment, script)
+            if not run(board):
+                return result
+            if until == "storyboard":
+                continue
+            text = board.output.read_text(encoding="utf-8")
+            if not run(scene_job(ctx, outline, segment, script, text)):
                 return result
     return result

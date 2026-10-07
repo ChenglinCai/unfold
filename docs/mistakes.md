@@ -97,3 +97,15 @@ These came from earlier drafts of the project plan.
 - What happened: pytest skips folders named build by default, so the 28 tests in `tests/build` ran only when named. The full suite, CI, and the commit gate all missed them.
 - Cause: Claude trusted the passing count without checking that it grew.
 - Guardrail: after adding a test folder, compare the full suite's count with the new folder's count. `pyproject.toml` now lists the folders that pytest skips.
+
+### A loop ran one build instead of three, for the second time
+
+- What happened: a loop over a variable that held three series names ran one build, with all three names as one path. It failed at once.
+- Cause: zsh, unlike bash, does not split an unquoted variable into words. Claude hit the same trap on the first night, and did not record it then.
+- Guardrail: in zsh, write each list out in full, or use an array. Check that a batch started as many jobs as it should.
+
+### The commit gate said pushed when the push failed
+
+- What happened: GitHub returned server errors, and two commits and a tag stayed local. The commit script still printed "pushed".
+- Cause: the script piped the push through a filter and ignored its exit code.
+- Guardrail: the script now stops with "PUSH FAILED" when a push fails. Check `git status -sb` before opening a pull request.

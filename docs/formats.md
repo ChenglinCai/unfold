@@ -151,6 +151,21 @@ A region is where the visual goes on screen, such as `plot`, `top`, or `right`. 
 
 Examples: `examples/econ-supply-demand/s3-equilibrium/storyboard.yaml`, and `content/cis5200/episodes/E01-knn/s2-choosing-k/storyboard.yaml`.
 
+## Scene: `scene.yaml`, format `scene/v0`
+
+The scene step writes this file after each storyboard. Each entry gives one cue a region and a component, with that component's parameters. Tested code draws every component, so the model writes data and never code.
+
+```yaml
+entries:
+  - cue: growth
+    region: plot
+    visual: {component: bar-chart, labels: [Now, Later], values: [100, 105]}
+```
+
+The regions are `full`, `top`, `bottom`, `plot`, `left`, and `right`. The components are `text-card`, `equation`, `bar-chart`, `scatter-plot`, `timeline`, and `custom`. A `custom` entry draws as a labeled card, which a person reviews. `src/unfold/visuals/params.py` defines each component's parameters.
+
+`unfold render` turns each scene into `segment.mp4` and `contact-sheet.png`, and records its key in `render.json`.
+
 ## Scene code
 
 M1 writes scenes by hand. One Python file holds every segment of an episode, with one manim `Scene` class per segment. Each scene reads its narration from the script, and wraps each beat in `unfold.voice.voiced()`, so the animation lasts as long as the speech. Checks at the top of the file fail the render when the data stops matching the narration. M5 replaces hand-written scenes with tested components.

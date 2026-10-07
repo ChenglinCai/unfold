@@ -65,6 +65,19 @@
       },
       "title": "Tries",
       "type": "array"
+    },
+    "last_reply": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Reply"
     }
   },
   "required": [

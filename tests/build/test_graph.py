@@ -91,6 +91,16 @@ REPLIES: dict[str, dict[str, object]] = {
             for cue in BEATS
         ]
     },
+    "SceneReply": {
+        "entries": [
+            {
+                "cue": cue,
+                "region": "full",
+                "visual": {"component": "text-card", "title": f"Beat {cue}"},
+            }
+            for cue in BEATS
+        ]
+    },
 }
 
 
@@ -149,6 +159,8 @@ def test_a_build_writes_the_first_episode_with_two_segments(series: Path) -> Non
         episode / "s1-mean" / "storyboard.yaml",
         episode / "s2-variance" / "script.md",
         episode / "s2-variance" / "storyboard.yaml",
+        episode / "s1-mean" / "scene.yaml",
+        episode / "s2-variance" / "scene.yaml",
     ]
     for path in written:
         assert problems(path) == [], path
@@ -159,7 +171,9 @@ def test_a_build_writes_the_first_episode_with_two_segments(series: Path) -> Non
         "E01-center/outline.yaml: building 2 of 3 segments",
     ]
     expected = ["canary", "understand", "PlanReply", "OutlineReply"]
-    assert runner.calls == expected + ["ScriptReply", "StoryboardReply"] * 2
+    assert (
+        runner.calls == expected + ["ScriptReply", "StoryboardReply", "SceneReply"] * 2
+    )
 
 
 def test_a_second_build_calls_nothing(series: Path) -> None:
@@ -214,7 +228,7 @@ def test_the_command_reports_each_output(
     assert main(["build", str(series)]) == 0
     out = capsys.readouterr().out
     assert not any(line.startswith("written") for line in out.splitlines())
-    assert out.strip().endswith("0 written, 7 reused, 0 failed")
+    assert out.strip().endswith("0 written, 9 reused, 0 failed")
 
 
 def test_the_command_exits_1_when_a_step_fails(
@@ -269,3 +283,33 @@ def test_the_command_exits_3_when_the_canary_fails(
     monkeypatch.setattr(build_command, "RUNNER", StepRunner(canary=4))
 
     assert main(["build", str(series)]) == 3
+
+
+def test_until_storyboard_skips_the_scenes(series: Path) -> None:
+    build(series, StepRunner(), until="storyboard")
+
+    assert (series / "E01-center" / "s1-mean" / "storyboard.yaml").exists()
+    assert not (series / "E01-center" / "s1-mean" / "scene.yaml").exists()
+
+
+def test_a_scene_with_a_layout_failure_retries_with_the_error(series: Path) -> None:
+    long_title = {"component": "text-card", "title": "Long " * 60}
+    bad: dict[str, object] = {
+        "entries": [{"cue": c, "region": "top", "visual": long_title} for c in BEATS]
+    }
+    runner = StepRunner()
+
+    def first_scene_bad(
+        prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
+        is_scene = isinstance(schema, dict) and schema.get("title") == "SceneReply"
+        if is_scene and "SceneReply" not in runner.calls:
+            runner.calls.append("SceneReply")
+            return jobs.Reply(json.dumps(bad), 10, 5, 0.1, bad)
+        return runner(prompt, system=system, model=model, schema=schema)
+
+    result = build(series, first_scene_bad)
+
+    assert not result.failed
+    record = series / "records" / "E01-center" / "s1-mean" / "scene.yaml.json"
+    assert "below 18" in json.loads(record.read_text())["tries"][0][0]

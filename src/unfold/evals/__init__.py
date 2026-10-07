@@ -36,7 +36,56 @@ CHECKS = (
     "beats-are-grounded",
     "no-source-framing",
     "storyboard-reuses-components",
+    "scene-uses-components",
+    "chart-numbers-grounded",
 )
+UNITS = {
+    w: n
+    for n, w in enumerate(
+        [
+            "zero",
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+            "eleven",
+            "twelve",
+            "thirteen",
+            "fourteen",
+            "fifteen",
+            "sixteen",
+            "seventeen",
+            "eighteen",
+            "nineteen",
+        ]
+    )
+}
+TENS = {
+    w: 10 * n
+    for n, w in enumerate(
+        [
+            "x",
+            "x",
+            "twenty",
+            "thirty",
+            "forty",
+            "fifty",
+            "sixty",
+            "seventy",
+            "eighty",
+            "ninety",
+        ]
+    )
+    if n > 1
+}
+SCALES = {"thousand": 1_000, "million": 1_000_000, "billion": 1_000_000_000}
+DIGITS = re.compile(r"\d[\d,]*(?:\.\d+)?")
 
 
 def plan_fits_source(episodes: int, words: int, topic: bool) -> bool:
@@ -111,6 +160,40 @@ def storyboard_reuses_components(components: list[str]) -> bool:
     return 2 * custom <= len(components)
 
 
+def numbers_in(text: str) -> set[float]:
+    """Every number in a text, written in digits or in words."""
+    found = {float(match.replace(",", "")) for match in DIGITS.findall(text)}
+    current: int | None = None
+    total = 0
+    for word in [*re.findall(r"[a-z]+", text.lower()), "."]:
+        if word in UNITS or word in TENS:
+            current = (current or 0) + UNITS.get(word, TENS.get(word, 0))
+        elif word == "hundred" and current is not None:
+            current *= 100
+        elif word in SCALES and current is not None:
+            total, current = total + current * SCALES[word], 0
+        elif word == "and" and current is not None:
+            continue
+        else:
+            if current is not None:
+                found.add(float(total + current))
+            current, total = None, 0
+    return found
+
+
+def chart_numbers_grounded(values: list[float], said: str) -> bool:
+    """Every number a chart shows appears in the narration or the storyboard."""
+    known = numbers_in(said)
+    return all(
+        any(abs(v - k) <= max(0.01, 0.005 * abs(k)) for k in known) for v in values
+    )
+
+
+def scene_uses_components(components: list[str]) -> bool:
+    """At most half a scene's entries fall back to a custom card."""
+    return storyboard_reuses_components(components)
+
+
 @dataclass(frozen=True)
 class Verdict:
     check: str
@@ -172,4 +255,39 @@ def _segment(folder: Path, segment: dict[str, object], topic: bool) -> list[Verd
         components = [str(entry["component"]) for entry in board["entries"]]
         reuses = storyboard_reuses_components(components)
         verdicts.append(Verdict("storyboard-reuses-components", board_path, reuses))
+    scene_path = folder / "scene.yaml"
+    if scene_path.is_file():
+        verdicts += _scene(scene_path, narration, board_path)
     return verdicts
+
+
+def _scene(path: Path, narration: str, board_path: Path) -> list[Verdict]:
+    entries = yaml.safe_load(path.read_text(encoding="utf-8"))["entries"]
+    visuals = [entry["visual"] for entry in entries]
+    board = board_path.read_text(encoding="utf-8") if board_path.is_file() else ""
+    values = [
+        float(v)
+        for vis in visuals
+        if vis["component"] == "bar-chart"
+        for v in vis["values"]
+    ]
+    values += [
+        float(event["amount"])
+        for vis in visuals
+        if vis["component"] == "timeline"
+        for event in vis["events"]
+        if event.get("amount") is not None
+    ]
+    said = f"{narration} {board}"
+    return [
+        Verdict(
+            "scene-uses-components",
+            path,
+            scene_uses_components([v["component"] for v in visuals]),
+        ),
+        Verdict(
+            "chart-numbers-grounded",
+            path,
+            chart_numbers_grounded([abs(v) for v in values], said),
+        ),
+    ]

@@ -8,7 +8,13 @@ from collections.abc import Mapping
 
 import yaml
 
-from unfold.build.replies import OutlineReply, PlanReply, ScriptReply, StoryboardReply
+from unfold.build.replies import (
+    OutlineReply,
+    PlanReply,
+    SceneReply,
+    ScriptReply,
+    StoryboardReply,
+)
 
 VOICE = "default"
 
@@ -68,4 +74,9 @@ def storyboard_text(
     reply: StoryboardReply, episode: str, segment: str, model: str
 ) -> str:
     head = {"format": "storyboard/v0", "episode": episode, "segment": segment}
+    return yaml_text({**head, "written_by": by(model), **reply.model_dump(mode="json")})
+
+
+def scene_text(reply: SceneReply, episode: str, segment: str, model: str) -> str:
+    head = {"format": "scene/v0", "episode": episode, "segment": segment}
     return yaml_text({**head, "written_by": by(model), **reply.model_dump(mode="json")})

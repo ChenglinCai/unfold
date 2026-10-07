@@ -158,12 +158,14 @@
         {
           "id": "M5.layout",
           "check": "Golden-set segments render with no layout failures",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold render rendered all 12 golden segments with 0 layout failures. The check covers regions, the frame, text below 18 points, and overlapping labels."
         },
         {
           "id": "M5.contact-sheets",
           "check": "Each render produces a contact sheet",
-          "passes": false
+          "passes": true,
+          "evidence": "Each of the 12 renders made a contact sheet. Reviewing them found five failure types, and docs/evals/M5-report.md records each fix."
         }
       ]
     },

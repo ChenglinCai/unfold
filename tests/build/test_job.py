@@ -83,6 +83,7 @@ def test_four_failures_write_nothing_and_keep_every_try(tmp_path: Path) -> None:
 
     assert (outcome.record.outcome, outcome.record.attempts) == ("failed", 4)
     assert len(outcome.record.tries) == 4
+    assert outcome.record.last_reply == BAD
     assert not (tmp_path / "out.txt").exists()
 
 
@@ -117,3 +118,14 @@ def test_a_job_error_stops_without_a_retry(tmp_path: Path) -> None:
 
     assert outcome.record.outcome == "failed"
     assert outcome.record.errors == ["the usage limit was reached"]
+
+
+def test_job_schemas_use_only_standard_keywords() -> None:
+    from unfold.build.replies import SceneReply
+
+    job = make_job(Path("/tmp"))
+    scene = Job(**{**job.__dict__, "reply": SceneReply})
+
+    assert "discriminator" not in json.dumps(scene.schema)
+    assert "prefixItems" not in json.dumps(scene.schema)
+    assert "oneOf" in json.dumps(scene.schema)

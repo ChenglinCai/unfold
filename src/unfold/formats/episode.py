@@ -6,6 +6,7 @@ from pydantic import ConfigDict, Field, StringConstraints, model_validator
 
 from unfold.formats.series import EpisodeId
 from unfold.formats.sources import Model, Ref, Slug, Text
+from unfold.visuals.params import Region, Visual
 
 SegmentId = Annotated[str, StringConstraints(pattern=r"^s\d+-[a-z0-9][a-z0-9-]*$")]
 # What a segment needs or teaches, such as term:demand or visual:demand-curve.
@@ -104,3 +105,19 @@ class StoryboardV0(Model):
     segment: SegmentId
     written_by: str | None = None
     entries: Annotated[list[Entry], Field(min_length=1)]
+
+
+class SceneEntry(Model):
+    cue: Slug
+    region: Region
+    visual: Visual
+
+
+class SceneV0(Model):
+    """One segment's visuals: for each cue, a region and a component's parameters."""
+
+    format: Literal["scene/v0"]
+    episode: EpisodeId
+    segment: SegmentId
+    written_by: str | None = None
+    entries: Annotated[list[SceneEntry], Field(min_length=1)]

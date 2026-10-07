@@ -33,12 +33,33 @@ class Job:
 
     @property
     def schema(self) -> dict[str, object]:
-        return self.reply.model_json_schema()
+        return portable(self.reply.model_json_schema())
 
     @property
     def key(self) -> str:
         schema = json.dumps(self.schema, sort_keys=True)
         return jobs.key(self.system, self.request, self.model, schema)
+
+
+# Keywords that Pydantic writes but JSON Schema lacks. The runner checks schemas
+# strictly, so a job's schema drops them. The union still holds, because each
+# variant pins its own `component` value.
+NONSTANDARD = {"discriminator"}
+
+
+def portable(schema: object) -> dict[str, object]:
+    """A copy of a schema without the keywords that JSON Schema lacks."""
+
+    def clean(node: object) -> object:
+        if isinstance(node, dict):
+            return {k: clean(v) for k, v in node.items() if k not in NONSTANDARD}
+        if isinstance(node, list):
+            return [clean(item) for item in node]
+        return node
+
+    cleaned = clean(schema)
+    assert isinstance(cleaned, dict)
+    return cleaned
 
 
 @dataclass(frozen=True)
@@ -62,6 +83,7 @@ def run_job(
         return Outcome(job, saved, reused=True)
     record = jobs.Record(key=job.key, model=job.model)
     ask = job.request
+    last: jobs.Reply | None = None
     for attempt in range(1, retries + 2):
         try:
             reply = runner(ask, system=job.system, model=job.model, schema=job.schema)
@@ -70,6 +92,7 @@ def run_job(
             log_call(log, job, record, attempt, None, final=True)
             break
         record.add(reply)
+        last = reply
         errors, text = evaluate(job, reply)
         record.errors = errors
         if not errors:
@@ -82,6 +105,7 @@ def run_job(
         ask = retry_request(job.request, reply, errors)
     if record.outcome != "ok":
         record.outcome = "failed"
+        record.last_reply = last.data if last is not None else None
     job.record.parent.mkdir(parents=True, exist_ok=True)
     record.save(job.record)
     return Outcome(job, record, reused=False)
