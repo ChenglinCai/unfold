@@ -20,6 +20,8 @@ LINK = re.compile(r"\[([^\]]+)\]\([^)]*\)")
 URL = re.compile(r"<https?://[^>]+>|https?://\S+")
 STRONG = re.compile(r"\*\*|__")
 EMPHASIS = re.compile(r"(?<![\w*])\*(?!\s)([^*\n]+?)(?<!\s)\*(?![\w*])")
+# A citation of a source anchor, such as [§p-3], which no one reads aloud.
+CITATION = re.compile(r"\s*\[§[^\]\n]*\]")
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 
 ABBREVIATIONS = (
@@ -94,6 +96,7 @@ def breath_groups(sentence: str) -> list[str]:
 
 
 def _inline(line: str) -> str:
+    line = CITATION.sub("", line)
     line = IMAGE.sub("", line)
     line = INLINE_CODE.sub("code", line)
     line = LINK.sub(r"\1", line)

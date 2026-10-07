@@ -139,3 +139,9 @@ def test_task_checkboxes_are_not_words() -> None:
 
 def test_empty_text_has_no_paragraphs() -> None:
     assert paragraphs("") == []
+
+
+def test_source_citations_are_not_prose() -> None:
+    assert texts("The mean is the center [§p-1, §p-2]. Spread grows [§t-0042].\n") == [
+        "The mean is the center. Spread grows."
+    ]
