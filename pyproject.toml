@@ -8,11 +8,19 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
     "manim>=0.21.0,<0.22",
+    "pypdfium2>=5.14",
+    "python-pptx>=1.0",
     "pyyaml>=6.0",
+    "trafilatura>=2.3",
 ]
 
 [project.scripts]
 unfold = "unfold.cli:main"
+
+[project.optional-dependencies]
+audio = [
+    "faster-whisper>=1.2",
+]
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]

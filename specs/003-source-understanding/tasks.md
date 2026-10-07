@@ -11,7 +11,7 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Add pypdfium2, python-pptx, and trafilatura, and faster-whisper as the `audio` extra. Log each one in `docs/dependencies.md`. Check: `uv sync --extra audio` succeeds.
+- [X] T001 Add pypdfium2, python-pptx, and trafilatura, and faster-whisper as the `audio` extra. Log each one in `docs/dependencies.md`. Check: `uv sync --extra audio` succeeds.
 
 ## Phase 2: Foundational
 
