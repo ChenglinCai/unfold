@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-07
 
+- Finished M2: readers for every family, `unfold ingest`, a job runner with no tools, output checks, and `unfold understand`. Six golden sources passed with 8 model calls, and every anchor resolves. Tagged `m2-done`.
 - Finished M3: `unfold lint` with three profiles and 16 rules, a fixer, and a breath-group study on 144 transcripts. The hypothesis holds, and CI now lints the docs. Tagged `m3-done`.
 - Finished M1: wrote `docs/formats.md` and the retro, recorded every gate's evidence, and tagged `m1-done`.
 

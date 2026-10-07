@@ -6,8 +6,8 @@ This file holds the current state of the work, so that a new session can resume 
 
 - Mode: overnight autonomous run, which began on 2026-10-06. Decision record 0006 sets its rules.
 - Branch: `dev`. Nothing merges into `main` without the maintainer.
-- Done: M1, tagged `m1-done`, and M3, tagged `m3-done`. M0 lacks only the settings file that the maintainer writes.
-- Now: M2, source understanding. `unfold ingest` and `unfold understand` work, and the gate run is under way.
+- Done: M1, M2, and M3, tagged `m1-done`, `m2-done`, and `m3-done`. M0 lacks only the settings file that the maintainer writes.
+- Next: M4, the build graph and the first error analysis.
 - Backup job: a session-only job checks in every hour at minute 17. It resumes the run after a usage limit, and it ends when this session closes. The run deletes it when the run finishes.
 
 ## Check-ins
@@ -26,6 +26,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Evidence: every M3 gate in `docs/milestones.json`. CI now runs the linter on every pull request.
 - Walkthrough to ask for: `src/unfold/lint/prose.py`, which shows how text becomes sentences and breath groups.
 - Not done, by design: labeling teaching moves with models, and the narration and visual style guides. They wait for the M4 job runner and M5. Khan Academy transcripts were not downloaded, because their policy forbids commercial use.
+
+### M2, source understanding
+
+- What to try: `uv run unfold ingest <file or URL> --out ../content/sources --id <id>`, then `uv run unfold understand ../content/sources/<id>`.
+- What to read: the six outputs in `content/sources/*/understand/`, then `docs/retros/M2.md` and `docs/studies/study-notes-lint.md`.
+- Evidence: every M2 gate in `docs/milestones.json`, and `specs/003-source-understanding/tasks.md` with its convergence phase.
+- Walkthrough to ask for: `src/unfold/understand/__init__.py`, which shows one job's loop: prompt, check, retry, and save.
+- Not done, by design: the CUNY deck, which needs a browser download, and your handwritten page. Items 13 and 14 below wait for you.
 
 ## Decisions for the maintainer to confirm
 

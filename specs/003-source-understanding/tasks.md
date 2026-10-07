@@ -59,7 +59,7 @@
 ## Phase 6: Polish
 
 - [X] T025 Lint the study notes with the written profile, and record the results. Check: `docs/studies/` holds the counts per source. Result: `docs/studies/study-notes-lint.md`.
-- [ ] T026 Converge: compare the result with the spec, record the M2 gates, and tag `m2-done`. Check: every M2 gate has evidence.
+- [X] T026 Converge: compare the result with the spec, record the M2 gates, and tag `m2-done`. Check: every M2 gate has evidence.
 
 ## Dependencies & Execution Order
 
@@ -87,7 +87,7 @@ Task: "T010 Write tests/sources/test_web.py"
 
 - [X] T027 CRITICAL: Ask the maintainer to resolve the one-output rule. The understand job writes two files, a knowledge map and study notes. Record the question in `docs/progress.md`, with the recommendation to split the job in M4, per Constitution II (contradicts)
 - [X] T028 CRITICAL: Ask the maintainer which versions a key must cover. The understand key leaves out the manim and component-library versions, which its outputs never use. Record proposed wording in `docs/progress.md`, per Constitution II (contradicts)
-- [ ] T029 CRITICAL: Add a finance source to the golden set, then ingest and understand it with one model job. Check: six outputs pass their checks, per Constitution IV (missing)
+- [X] T029 CRITICAL: Add a finance source to the golden set, then ingest and understand it with one model job. Check: six outputs pass their checks, per Constitution IV (missing)
 - [X] T030 State the safety implications of downloads and parsing libraries in `docs/dependencies.md`. Say what they allow, what could go wrong, and how to undo them, per Constitution IX (partial)
 - [X] T031 Add a hint to the profile of a PDF with almost no text, which suggests the scan reader. Check: a test in `tests/sources/test_pdf.py`, per Edge Cases (partial)
 - [X] T032 Add a slow test that a recording with a long silence keeps correct timestamps, in `tests/sources/test_recording.py`, per Edge Cases (missing)

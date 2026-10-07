@@ -74,17 +74,20 @@
         {
           "id": "M2.adapters",
           "check": "One source from each family ingests into a source document",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold ingest wrote six source documents in ../content/sources: a textbook PDF, a slide PDF, two web pages, a recording, and a bare topic. The slowest took 12 seconds. tests/sources has 41 tests, 3 of them slow, and all pass."
         },
         {
           "id": "M2.understand",
           "check": "Each ingested source produces a valid knowledge map and study notes",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold understand wrote a knowledge map and study notes for all six sources, with 8 model calls in all. Only one source needed a second try. A later run reused all six results with no model call."
         },
         {
           "id": "M2.anchors",
           "check": "Every anchor in the knowledge maps resolves",
-          "passes": false
+          "passes": true,
+          "evidence": "check_map and check_notes report 0 errors on all six outputs. All 154 anchor references and 193 citations resolve."
         }
       ]
     },
