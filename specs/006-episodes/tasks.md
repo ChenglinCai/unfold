@@ -13,7 +13,7 @@
 ## Phase 2: User Story 2, episodes with subtitles (Priority: P1)
 
 - [X] T004 [US2] Write `tests/episodes/test_subtitles.py`, then implement `src/unfold/episodes/subtitles.py`. Check: the tests pass.
-- [ ] T005 [US2] Write `tests/episodes/test_stitch.py`, then implement `src/unfold/episodes/stitch.py`, and stitch episodes in `unfold render`. Check: the tests pass.
+- [X] T005 [US2] Write `tests/episodes/test_stitch.py`, then implement `src/unfold/episodes/stitch.py`, and stitch episodes in `unfold render`. Check: the tests pass.
 
 ## Phase 3: User Story 3, linked ideas (Priority: P1)
 

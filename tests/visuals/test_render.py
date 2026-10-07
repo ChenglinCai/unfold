@@ -149,3 +149,29 @@ def test_a_voiced_segment_carries_its_narration(tmp_path: Path) -> None:
         seconds = float(container.duration or 0) / av.time_base
     assert timing["voice"].startswith("say:")
     assert abs(seconds - timing["beats"][-1]["end"]) < 0.5
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(shutil.which("say") is None, reason="the voice needs macOS say")
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="stitching needs ffmpeg")
+def test_render_stitches_the_episode_and_checks_the_audio(tmp_path: Path) -> None:
+    import importlib.util
+
+    folder = segment_folder(tmp_path)
+    outline = {
+        "format": "outline/v0",
+        "series": "growth",
+        "episode": "E01-growth",
+        "title": "Growth",
+        "core_question": "Why does money grow?",
+        "audience": "Adults.",
+        "segments": [{"id": "s1-interest", "title": "Interest", "target_seconds": 30}],
+    }
+    (folder.parent / "outline.yaml").write_text(yaml.safe_dump(outline))
+    check = importlib.util.find_spec("faster_whisper") is not None
+
+    assert main(["render", str(tmp_path), *(["--check-audio"] if check else [])]) == 0
+
+    assert (folder / "segment.srt").read_text().startswith("1\n00:00:00,000")
+    assert (folder.parent / "episode.mp4").stat().st_size > 0
+    assert "Money grows" in (folder.parent / "episode.srt").read_text()

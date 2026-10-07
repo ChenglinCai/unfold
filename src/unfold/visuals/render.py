@@ -17,7 +17,7 @@ from unfold.formats import read_data
 from unfold.formats.episode import SceneV0
 from unfold.script import load_script
 from unfold.visuals import params
-from unfold.visuals.scene import FADE_SECONDS, durations
+from unfold.visuals.scene import FADE_SECONDS, PAUSE, durations
 from unfold.voice import default_voice
 
 VIDEO = "segment.mp4"
@@ -107,6 +107,17 @@ def render_segment(folder: Path, quality: str = "low") -> Path:
     ]
     timing = {"voice": voice.name if voice else None, "beats": beats}
     (folder / TIMING).write_text(json.dumps(timing, indent=2) + "\n", encoding="utf-8")
+    from unfold.episodes.subtitles import beat_cues, srt_text
+
+    pause = PAUSE if voice else 0.0
+    cues = [
+        cue
+        for beat, timed in zip(script.beats, beats, strict=True)
+        for cue in beat_cues(
+            beat.text, timed["start"], max(timed["start"], timed["end"] - pause)
+        )
+    ]
+    (folder / "segment.srt").write_text(srt_text(cues), encoding="utf-8")
     contact_sheet(folder / VIDEO, times, [b.cue for b in script.beats], folder / SHEET)
     record = {"key": render_key(folder, quality), "quality": quality}
     (folder / RECORD).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
