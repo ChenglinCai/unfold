@@ -75,7 +75,7 @@ src/unfold/
 │   ├── checks.py         meaning checks for each step
 │   ├── write.py          output files from validated data
 │   └── command.py        unfold build
-├── prompts/              series-plan.md, outline.md, script.md, and storyboard.md
+├── prompts/              series-plan.md, outline.md, narration.md, and storyboard.md
 └── evals/
     ├── __init__.py       binary checks from error analysis
     └── command.py        unfold eval
