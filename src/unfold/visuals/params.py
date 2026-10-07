@@ -12,7 +12,7 @@ from unfold.formats.sources import Model
 from unfold.formats.sources import Text as NonEmpty
 
 # Raise this whenever a component draws differently, so saved scenes rebuild.
-VERSION = "2"
+VERSION = "3"
 REGION_NAMES = ("full", "plot", "top", "bottom", "left", "right")
 Region = Literal["full", "plot", "top", "bottom", "left", "right"]
 

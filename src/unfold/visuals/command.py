@@ -1,6 +1,7 @@
 """The `unfold render` subcommand: check every scene, then render in parallel."""
 
 import argparse
+import multiprocessing
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -40,7 +41,9 @@ def run_render(args: argparse.Namespace) -> int:
         print(f"{len(failures)} layout failures, so nothing was rendered")
         return 1
     todo = [folder for folder in found if not current(folder, args.quality)]
-    with ProcessPoolExecutor(max_workers=max(1, args.jobs)) as pool:
+    # Fresh worker processes: a fork after manim and cairo load can crash on Linux.
+    spawn = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=max(1, args.jobs), mp_context=spawn) as pool:
         list(pool.map(render_segment, todo, [args.quality] * len(todo)))
     for folder in found:
         print(f"{'rendered' if folder in todo else 'reused':8} {folder}")

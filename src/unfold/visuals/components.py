@@ -46,6 +46,8 @@ __all__ = ["NAMES", "ComponentError", "build", "crowded", "parse"]
 
 PAD = 0.92
 WRAP = 42
+# A wide letter's share of the frame at the body size, with room for wider fonts.
+CHAR_WIDTH = 0.2
 
 
 def build(visual: BaseModel, region: str) -> tuple[VGroup, float | None]:
@@ -81,8 +83,9 @@ def _text(words: str, size: int = theme.BODY_SIZE, color: str = theme.TEXT) -> T
     return Text(words, font_size=size, color=color)
 
 
-def _wrapped(words: str, size: int = theme.BODY_SIZE) -> VGroup:
-    lines = textwrap.wrap(words, WRAP) or [words]
+def _wrapped(words: str, width: float, size: int = theme.BODY_SIZE) -> VGroup:
+    """Wrap words to the width at hand, so fonts that run wide still fit."""
+    lines = textwrap.wrap(words, max(12, min(WRAP, int(width / CHAR_WIDTH)))) or [words]
     return VGroup(*[_text(line, size) for line in lines]).arrange(
         DOWN, aligned_edge=LEFT, buff=0.15
     )
@@ -92,7 +95,7 @@ def _text_card(card: TextCard, width: float, height: float) -> VGroup:
     parts: list[VGroup | Text] = []
     if card.title:
         parts.append(_text(card.title, theme.TITLE_SIZE, theme.YELLOW))
-    parts += [_wrapped(line) for line in card.lines]
+    parts += [_wrapped(line, width) for line in card.lines]
     return VGroup(*parts).arrange(DOWN, aligned_edge=LEFT, buff=0.35)
 
 
@@ -244,7 +247,7 @@ def _timeline(timeline: Timeline, width: float, height: float) -> VGroup:
 def _custom(custom: Custom, width: float, height: float) -> VGroup:
     words = VGroup(
         _text("Custom visual, to review", theme.LABEL_SIZE, theme.YELLOW),
-        _wrapped(custom.description),
+        _wrapped(custom.description, width - 0.8),
     ).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
     frame = RoundedRectangle(
         corner_radius=0.2,

@@ -103,3 +103,9 @@ These came from earlier drafts of the project plan.
 - What happened: a loop over a variable that held three series names ran one build, with all three names as one path. It failed at once.
 - Cause: zsh, unlike bash, does not split an unquoted variable into words. Claude hit the same trap on the first night, and did not record it then.
 - Guardrail: in zsh, write each list out in full, or use an array. Check that a batch started as many jobs as it should.
+
+### The commit gate said pushed when the push failed
+
+- What happened: GitHub returned server errors, and two commits and a tag stayed local. The commit script still printed "pushed".
+- Cause: the script piped the push through a filter and ignored its exit code.
+- Guardrail: the script now stops with "PUSH FAILED" when a push fails. Check `git status -sb` before opening a pull request.
