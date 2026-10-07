@@ -1033,6 +1033,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "manim" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -1044,7 +1045,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "manim", specifier = ">=0.21.0,<0.22" }]
+requires-dist = [
+    { name = "manim", specifier = ">=0.21.0,<0.22" },
+    { name = "pyyaml", specifier = ">=6.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [

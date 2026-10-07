@@ -4,7 +4,7 @@
 
 ## Summary
 
-Write every M1 file by hand, so the formats come from real use rather than guesses. Two segments on k-NN get scripts, storyboards, and manim scenes. A small voice helper in the package turns each beat into audio with the macOS `say` command and returns its length, so each animation can last as long as its narration. The economics section gets a source manifest, a knowledge map, and an outline, with a test that its anchors resolve.
+Write every M1 file by hand, so the formats come from real use rather than guesses. Two segments on k-NN get scripts, storyboards, and manim scenes. A small voice helper in the package turns each beat into audio with the macOS `say` command. It returns the audio's length, so each animation can last as long as its narration. The economics section gets a source manifest, a knowledge map, and an outline, with a test that its anchors resolve.
 
 ## Technical Context
 

@@ -39,6 +39,10 @@ You need macOS or Linux, [uv](https://docs.astral.sh/uv/), and LaTeX.
 
    The second command writes a short video to `media/videos/hello/480p15/Hello.mp4`.
 
+## Troubleshooting
+
+If Python cannot import `unfold` on macOS, and `python -v` reports "Skipping hidden .pth file", run `chflags -R nohidden .venv`. Recent Python versions skip `.pth` files that macOS marks as hidden.
+
 ## Checks
 
 Every pull request runs the same checks as the git hook, and then the tests. The checks make no calls to language models.

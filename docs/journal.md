@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-06
 
+- Added a stand-in voice that uses the macOS `say` command, and a parser for the script format. Nine tests cover them. Found that macOS hid the `.pth` file that makes the package importable, and guarded the tests against it.
 - Set up the overnight harness: the `dev` branch, `docs/progress.md`, `docs/milestones.json` with a test, `docs/dependencies.md`, and decision record 0006.
 - Wrote the first five decision records and started the mistake log with thirteen entries.
 - Installed Spec Kit 1.1.0 with its bug and idea-assessment extensions. Wrote constitution 1.0.0 from the plan, with a ninth principle on safety, and moved the glossary into `docs/glossary.md`.

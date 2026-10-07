@@ -8,6 +8,7 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
     "manim>=0.21.0,<0.22",
+    "pyyaml>=6.0",
 ]
 
 [build-system]
@@ -35,6 +36,11 @@ typeCheckingMode = "standard"
 
 [tool.pytest]
 testpaths = ["tests"]
+# macOS can mark .venv files as hidden, and Python then skips the .pth file
+# that makes the package importable. This path keeps the tests working anyway.
+pythonpath = ["src"]
 addopts = ["-ra"]
 strict = true
 markers = ["slow: renders a video, so it takes seconds. Skip with -m 'not slow'."]
+# pydub, a manim dependency, imports a module that Python 3.13 removes.
+filterwarnings = ["ignore:'audioop' is deprecated:DeprecationWarning"]

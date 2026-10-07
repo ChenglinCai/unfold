@@ -5,6 +5,7 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | Package | Kind | License | Added | Reason |
 |---|---|---|---|---|
 | manim | runtime | MIT | M0 | Renders every scene |
+| pyyaml | runtime | MIT | M1 | Reads the YAML front matter of scripts, and the YAML formats |
 | pytest | dev | MIT | M0 | Runs the tests |
 | ruff | dev | MIT | M0 | Lints and formats Python |
 | pyright | dev | MIT | M0 | Checks types |
