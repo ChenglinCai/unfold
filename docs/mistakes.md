@@ -79,3 +79,9 @@ These came from earlier drafts of the project plan.
 
 - Cause: Claude relied on what it already knew.
 - Guardrail: each milestone and each feature starts with a short research step.
+
+### A partial commit failed, and the failure stayed hidden
+
+- What happened: Claude committed some files while new, untracked files needed edits that were not staged. Pre-commit set the unstaged edits aside, so pyright saw the new files without them and failed.
+- Cause: Claude piped the commit gate into `tail`, which hid the failure. The command chain also kept going, because the shell had no `pipefail`.
+- Guardrail: before a partial commit, move aside the untracked files that depend on unstaged edits. Never pipe a gate's output where its exit code matters.
