@@ -48,11 +48,11 @@
 
 ### Tests for User Story 2
 
-- [ ] T009 [US2] Write `tests/lint/test_rules_spoken.py` for rules N101 to N206 in the spoken profile. It also covers N206 at "more than 15 words after the cue", and cue markers that do not count as words. Check: the tests fail.
+- [X] T009 [US2] Write `tests/lint/test_rules_spoken.py` for rules N101 to N206 in the spoken profile. It also covers N206 at "more than 15 words after the cue", and cue markers that do not count as words. Check: the tests fail.
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Implement the spoken and strict profiles and rules N103 to N206 in `src/unfold/lint/rules.py`, with a provisional breath-group limit of 20 words. Check: `tests/lint/test_rules_spoken.py` passes.
+- [X] T010 [US2] Implement the spoken and strict profiles and rules N103 to N206 in `src/unfold/lint/rules.py`, with a provisional breath-group limit of 20 words. Check: `tests/lint/test_rules_spoken.py` passes.
 
 ## Phase 5: User Story 3, AI writing habits and replaced terms (Priority: P2)
 

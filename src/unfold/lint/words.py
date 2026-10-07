@@ -14,3 +14,16 @@ IRREGULAR_PARTICIPLES = frozenset(
     written run put set cut hit read
     """.split()
 )
+
+# Abbreviations, each with what a speaker would say instead.
+ABBREVIATIONS = {
+    "e.g.": "for example",
+    "i.e.": "that is",
+    "etc.": "and so on",
+    "vs.": "versus",
+    "cf.": "compare",
+    "approx.": "about",
+    "a.k.a.": "also known as",
+    "w.r.t.": "with respect to",
+    "et al.": "and others",
+}

@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from unfold.lint import words as lists
-from unfold.lint.prose import Paragraph, words
+from unfold.lint.prose import Paragraph, breath_groups, words
 
 Severity = Literal["error", "warning"]
 ERROR: Severity = "error"
@@ -144,6 +144,75 @@ def parentheses(context: Context) -> Iterator[Hit]:
             excerpt(match.group(0)),
             "Use a separate sentence instead of parentheses.",
         )
+
+
+@rule("N103", "breath-group-length")
+def breath_group_length(context: Context) -> Iterator[Hit]:
+    limit = context.profile.breath_words
+    if limit is None:
+        return
+    for paragraph in context.paragraphs:
+        for sentence in paragraph.sentences:
+            for group in breath_groups(sentence.text):
+                count = len(words(group))
+                if count > limit:
+                    message = f"A breath group of {count} words; the limit is {limit}."
+                    yield Hit(sentence.line, excerpt(group), message)
+
+
+ABBREVIATION = re.compile(
+    r"(?<![\w.])(" + "|".join(re.escape(a) for a in lists.ABBREVIATIONS) + r")",
+    re.IGNORECASE,
+)
+
+
+@rule("N203", "abbreviation")
+def abbreviation(context: Context) -> Iterator[Hit]:
+    for line, match in matches(context, ABBREVIATION):
+        short = match.group(1)
+        spoken = lists.ABBREVIATIONS[short.lower()]
+        yield Hit(line, short, f"Say {spoken!r} instead.", fix=(short, spoken))
+
+
+MATH = re.compile(
+    "[=+\u00d7\u00f7^<>\u2264\u2265\u2260\u2248\u2211\u222b\u221a\u00b1]|\\$(?!\\d)"
+)
+
+
+@rule("N204", "math-symbols")
+def math_symbols(context: Context) -> Iterator[Hit]:
+    for line, match in matches(context, MATH):
+        yield Hit(line, match.group(0), "Say the math in words, as a narrator would.")
+
+
+SOURCE_LAYOUT = re.compile(
+    r"\b(?:figure|fig\.|table|slide|equation|eq\.|page|section|appendix|footnote)s?\s+\d"
+    r"|\b(?:the|this)\s+(?:figure|table|slide|diagram|equation|chart)\s+(?:above|below)\b"
+    r"|\bas shown (?:above|below)\b",
+    re.IGNORECASE,
+)
+
+
+@rule("N205", "source-layout")
+def source_layout(context: Context) -> Iterator[Hit]:
+    for line, match in matches(context, SOURCE_LAYOUT):
+        message = "Viewers cannot see the source. Describe what to look at instead."
+        yield Hit(line, match.group(0), message)
+
+
+DEIXIS = {"this", "here"}
+CUE_REACH = 15
+
+
+@rule("N206", "far-deixis")
+def far_deixis(context: Context) -> Iterator[Hit]:
+    for paragraph in context.paragraphs:
+        if paragraph.cue is None:
+            continue
+        for position, word in enumerate(words(paragraph.text), start=1):
+            if word.lower() in DEIXIS and position > CUE_REACH:
+                message = f"{word!r} is {position} words after the cue; move it closer."
+                yield Hit(paragraph.line, excerpt(paragraph.text), message)
 
 
 BE = r"\b(?:am|is|are|was|were|be|been|being)"
