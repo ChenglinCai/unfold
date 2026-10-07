@@ -24,9 +24,9 @@
 
 **Independent Test**: check every example file, then files with one deliberate error each.
 
-- [ ] T004 [P] [US1] Write `tests/formats/test_formats.py`. Every example file validates, a broken outline names its missing field and place, and an unknown format fails. Check: the tests fail.
-- [ ] T005 [US1] Implement source/v0, source/v1, knowledge-map/v0, and job/v0 in `src/unfold/formats/sources.py`. Check: their tests pass.
-- [ ] T006 [US1] Implement series/v0 and series-plan/v0 in `src/unfold/formats/series.py`. Implement outline/v0, script/v0, script/v1, and storyboard/v0 in `src/unfold/formats/episode.py`. Add the registry and `load_any()` to `src/unfold/formats/__init__.py`. Check: `tests/formats` passes.
+- [X] T004 [P] [US1] Write `tests/formats/test_formats.py`. Every example file validates, a broken outline names its missing field and place, and an unknown format fails. Check: the tests fail.
+- [X] T005 [US1] Implement source/v0, source/v1, knowledge-map/v0, and job/v0 in `src/unfold/formats/sources.py`. Check: their tests pass.
+- [X] T006 [US1] Implement series/v0 and series-plan/v0 in `src/unfold/formats/series.py`. Implement outline/v0, script/v0, script/v1, and storyboard/v0 in `src/unfold/formats/episode.py`. Add the registry and `load_any()` to `src/unfold/formats/__init__.py`. Check: `tests/formats` passes.
 - [ ] T007 [P] [US1] Write `tests/formats/test_export.py`, which compares `schemas/` with each model's JSON Schema. Then write `src/unfold/formats/export.py` and export the files. Check: the test passes.
 - [ ] T008 [US1] Write `tests/test_check.py` for exit codes 0, 1, and 2, and for folders. Then implement `unfold check` in `src/unfold/check.py`. Check: the tests pass, and `uv run unfold check examples/econ-supply-demand` exits 0.
 
