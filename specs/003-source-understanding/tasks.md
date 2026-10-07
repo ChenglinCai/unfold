@@ -15,10 +15,10 @@
 
 ## Phase 2: Foundational
 
-- [ ] T002 Write `tests/sources/test_document.py` for saving and loading a source document, its anchor markers, and its manifest. Check: the tests fail.
-- [ ] T003 Implement the SourceDocument type in `src/unfold/sources/__init__.py`. Check: `tests/sources/test_document.py` passes.
-- [ ] T004 [P] Write `tests/sources/test_profile.py` for the public-output rule and the low-quality flag. Check: the tests fail.
-- [ ] T005 Implement `src/unfold/sources/profile.py`. Check: `tests/sources/test_profile.py` passes.
+- [X] T002 Write `tests/sources/test_document.py` for saving and loading a source document, its anchor markers, and its manifest. Check: the tests fail.
+- [X] T003 Implement the SourceDocument type in `src/unfold/sources/__init__.py`. Check: `tests/sources/test_document.py` passes.
+- [X] T004 [P] Write `tests/sources/test_profile.py` for the public-output rule and the low-quality flag. Check: the tests fail.
+- [X] T005 Implement `src/unfold/sources/profile.py`. Check: `tests/sources/test_profile.py` passes.
 
 ## Phase 3: User Stories 1 and 2, ingest and profile (Priority: P1) MVP
 
