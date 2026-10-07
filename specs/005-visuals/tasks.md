@@ -20,8 +20,8 @@
 
 ## Phase 3: User Story 3, renders and contact sheets (Priority: P1)
 
-- [ ] T009 [US3] Write `tests/visuals/test_render.py`, with a slow test that renders a small scene. Check: the tests fail.
-- [ ] T010 [US3] Implement `src/unfold/visuals/render.py` and `unfold render`. Check: the tests pass.
+- [X] T009 [US3] Write `tests/visuals/test_render.py`, with a slow test that renders a small scene. Check: the tests fail.
+- [X] T010 [US3] Implement `src/unfold/visuals/render.py` and `unfold render`. Check: the tests pass.
 - [ ] T011 [US3] Build the scenes of the six golden series, then render all 12 segments. Check: no layout failures, and 12 contact sheets.
 
 ## Phase 4: Polish
