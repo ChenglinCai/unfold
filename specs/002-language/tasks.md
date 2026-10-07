@@ -21,8 +21,8 @@
 
 **Purpose**: units of prose, which every rule reads. No story can start before this phase ends.
 
-- [ ] T003 Write `tests/lint/test_prose.py`. It covers removing front matter, code blocks, inline code, tables, link addresses, HTML comments, and cue markers. It also covers splitting at sentence ends but not at decimals, versions, or "e.g.", list items as sentences, breath groups, and line numbers. Check: the tests fail, because the module is missing.
-- [ ] T004 Implement `src/unfold/lint/prose.py`, with paragraphs, sentences, and breath groups that keep their line numbers. Check: `uv run pytest tests/lint/test_prose.py` passes.
+- [X] T003 Write `tests/lint/test_prose.py`. It covers removing front matter, code blocks, inline code, tables, link addresses, HTML comments, and cue markers. It also covers splitting at sentence ends but not at decimals, versions, or "e.g.", list items as sentences, breath groups, and line numbers. Check: the tests fail, because the module is missing.
+- [X] T004 Implement `src/unfold/lint/prose.py`, with paragraphs, sentences, and breath groups that keep their line numbers. Check: `uv run pytest tests/lint/test_prose.py` passes.
 
 ## Phase 3: User Story 1, lint a doc with the written profile (Priority: P1) MVP
 
