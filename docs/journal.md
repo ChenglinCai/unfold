@@ -2,6 +2,10 @@
 
 One line for each finished task, newest first.
 
+## 2026-10-07
+
+- Finished M1: wrote `docs/formats.md` and the retro, recorded every gate's evidence, and tagged `m1-done`.
+
 ## 2026-10-06
 
 - Wrote the economics example by hand: a source manifest, a knowledge map with 13 concepts, an outline, and one segment's script and storyboard. Added an anchor checker, and tests that every example anchor resolves.

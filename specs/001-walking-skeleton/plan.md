@@ -41,21 +41,30 @@ Write every M1 file by hand, so the formats come from real use rather than guess
 ```text
 unfold/
 ├── src/unfold/voice.py                     stand-in voice: text to audio, and its length
-├── tests/test_voice.py
+├── src/unfold/script.py                    reads the script format
+├── src/unfold/anchors.py                   resolves source#anchor references
+├── tests/test_voice.py, test_script.py, test_anchors.py
 ├── tests/test_examples.py                  anchors in the examples resolve
 ├── examples/econ-supply-demand/
 │   ├── source.yaml                         manifest, license, and anchors
 │   ├── knowledge-map.yaml
-│   └── outline.yaml
+│   ├── outline.yaml
+│   └── s3-equilibrium/script.md, storyboard.yaml
 ├── docs/formats.md
 └── docs/retros/M1.md
 
-content/cis5200/episodes/E01-knn/           private
-├── outline.yaml
-├── s1-neighbours-vote/script.md, storyboard.yaml, scene.py
-├── s2-choosing-k/script.md, storyboard.yaml, scene.py
-└── render.sh                               renders both segments and joins them
+content/cis5200/                            private
+├── manifests/lecture-03.yaml               the source manifest and its anchors
+├── knowledge/lecture-03.yaml               the knowledge map
+└── episodes/E01-knn/
+    ├── outline.yaml
+    ├── s1-neighbours-vote/script.md, storyboard.yaml
+    ├── s2-choosing-k/script.md, storyboard.yaml
+    ├── episode.py                          both segments, one Scene class each
+    └── render.sh                           renders both segments and joins them
 ```
+
+The build differs from the first draft of this plan in one way: one scene file holds both segments, because two files would need to share the data and its checks.
 
 ## Complexity Tracking
 

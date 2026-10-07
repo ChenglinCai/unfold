@@ -5,74 +5,187 @@
       "id": "M0",
       "title": "Foundations",
       "gates": [
-        {"id": "M0.render", "check": "uv run manim -ql examples/hello.py Hello renders a video", "passes": true, "evidence": "tests/test_hello.py, CI run 37479999081"},
-        {"id": "M0.tests", "check": "uv run pytest passes", "passes": true, "evidence": "13 tests pass on dev"},
-        {"id": "M0.precommit", "check": "uv run pre-commit run --all-files passes", "passes": true, "evidence": "11 hooks pass on dev"},
-        {"id": "M0.claude-hooks", "check": ".claude/settings.json wires the format and Stop hooks", "passes": false, "blocked_on": "The maintainer writes .claude/settings.json"},
-        {"id": "M0.first-pr", "check": "The first pull request passes CI", "passes": true, "evidence": "PR #1, CI run 37479999081"}
+        {
+          "id": "M0.render",
+          "check": "uv run manim -ql examples/hello.py Hello renders a video",
+          "passes": true,
+          "evidence": "tests/test_hello.py, CI run 37479999081"
+        },
+        {
+          "id": "M0.tests",
+          "check": "uv run pytest passes",
+          "passes": true,
+          "evidence": "13 tests pass on dev"
+        },
+        {
+          "id": "M0.precommit",
+          "check": "uv run pre-commit run --all-files passes",
+          "passes": true,
+          "evidence": "11 hooks pass on dev"
+        },
+        {
+          "id": "M0.claude-hooks",
+          "check": ".claude/settings.json wires the format and Stop hooks",
+          "passes": false,
+          "blocked_on": "The maintainer writes .claude/settings.json"
+        },
+        {
+          "id": "M0.first-pr",
+          "check": "The first pull request passes CI",
+          "passes": true,
+          "evidence": "PR #1, CI run 37479999081"
+        }
       ]
     },
     {
       "id": "M1",
       "title": "Walking skeleton, by hand",
       "gates": [
-        {"id": "M1.video", "check": "A 2-minute CIS 5200 episode about k-NN, in two segments, plays", "passes": false},
-        {"id": "M1.econ-by-hand", "check": "A knowledge map and an outline exist for the economics source, written by hand", "passes": false},
-        {"id": "M1.formats", "check": "docs/formats.md describes the formats, each with two examples", "passes": false},
-        {"id": "M1.retro", "check": "A retro lists what was hard", "passes": false}
+        {
+          "id": "M1.video",
+          "check": "A 2-minute CIS 5200 episode about k-NN, in two segments, plays",
+          "passes": true,
+          "evidence": "content/cis5200/episodes/E01-knn/render.sh renders a 102-second, two-segment episode with sound; contact sheets reviewed in four rounds"
+        },
+        {
+          "id": "M1.econ-by-hand",
+          "check": "A knowledge map and an outline exist for the economics source, written by hand",
+          "passes": true,
+          "evidence": "examples/econ-supply-demand/ knowledge map with 13 concepts and outline; tests/test_examples.py passes"
+        },
+        {
+          "id": "M1.formats",
+          "check": "docs/formats.md describes the formats, each with two examples",
+          "passes": true,
+          "evidence": "docs/formats.md, with a public economics example and a private CIS 5200 example for each format"
+        },
+        {
+          "id": "M1.retro",
+          "check": "A retro lists what was hard",
+          "passes": true,
+          "evidence": "docs/retros/M1.md"
+        }
       ]
     },
     {
       "id": "M2",
       "title": "Source understanding",
       "gates": [
-        {"id": "M2.adapters", "check": "One source from each family ingests into a source document", "passes": false},
-        {"id": "M2.understand", "check": "Each ingested source produces a valid knowledge map and study notes", "passes": false},
-        {"id": "M2.anchors", "check": "Every anchor in the knowledge maps resolves", "passes": false}
+        {
+          "id": "M2.adapters",
+          "check": "One source from each family ingests into a source document",
+          "passes": false
+        },
+        {
+          "id": "M2.understand",
+          "check": "Each ingested source produces a valid knowledge map and study notes",
+          "passes": false
+        },
+        {
+          "id": "M2.anchors",
+          "check": "Every anchor in the knowledge maps resolves",
+          "passes": false
+        }
       ]
     },
     {
       "id": "M3",
       "title": "Language",
       "gates": [
-        {"id": "M3.linter", "check": "unfold lint has written, spoken, and strict profiles, and its tests pass", "passes": false},
-        {"id": "M3.breath-groups", "check": "The breath-group hypothesis is tested on at least 50 transcripts", "passes": false},
-        {"id": "M3.quiet-on-3b1b", "check": "The spoken profile rarely fires on 3Blue1Brown transcripts", "passes": false},
-        {"id": "M3.catches-ai-text", "check": "The linter catches AI writing habits in a test set", "passes": false},
-        {"id": "M3.repo-docs", "check": "The repo's docs pass the written profile in CI", "passes": false}
+        {
+          "id": "M3.linter",
+          "check": "unfold lint has written, spoken, and strict profiles, and its tests pass",
+          "passes": false
+        },
+        {
+          "id": "M3.breath-groups",
+          "check": "The breath-group hypothesis is tested on at least 50 transcripts",
+          "passes": false
+        },
+        {
+          "id": "M3.quiet-on-3b1b",
+          "check": "The spoken profile rarely fires on 3Blue1Brown transcripts",
+          "passes": false
+        },
+        {
+          "id": "M3.catches-ai-text",
+          "check": "The linter catches AI writing habits in a test set",
+          "passes": false
+        },
+        {
+          "id": "M3.repo-docs",
+          "check": "The repo's docs pass the written profile in CI",
+          "passes": false
+        }
       ]
     },
     {
       "id": "M4",
       "title": "Text generation",
       "gates": [
-        {"id": "M4.schemas", "check": "Every file format has a versioned schema", "passes": false},
-        {"id": "M4.reuse", "check": "A second build run reuses every saved result", "passes": false},
-        {"id": "M4.eval-report", "check": "The first eval report exists, after error analysis", "passes": false}
+        {
+          "id": "M4.schemas",
+          "check": "Every file format has a versioned schema",
+          "passes": false
+        },
+        {
+          "id": "M4.reuse",
+          "check": "A second build run reuses every saved result",
+          "passes": false
+        },
+        {
+          "id": "M4.eval-report",
+          "check": "The first eval report exists, after error analysis",
+          "passes": false
+        }
       ]
     },
     {
       "id": "M5",
       "title": "Visuals",
       "gates": [
-        {"id": "M5.layout", "check": "Golden-set segments render with no layout failures", "passes": false},
-        {"id": "M5.contact-sheets", "check": "Each render produces a contact sheet", "passes": false}
+        {
+          "id": "M5.layout",
+          "check": "Golden-set segments render with no layout failures",
+          "passes": false
+        },
+        {
+          "id": "M5.contact-sheets",
+          "check": "Each render produces a contact sheet",
+          "passes": false
+        }
       ]
     },
     {
       "id": "M6",
       "title": "Episodes",
       "gates": [
-        {"id": "M6.three-episodes", "check": "Two consecutive episodes with callbacks, and one from a second family, play correctly", "passes": false},
-        {"id": "M6.idea-links", "check": "The idea-link check passes", "passes": false}
+        {
+          "id": "M6.three-episodes",
+          "check": "Two consecutive episodes with callbacks, and one from a second family, play correctly",
+          "passes": false
+        },
+        {
+          "id": "M6.idea-links",
+          "check": "The idea-link check passes",
+          "passes": false
+        }
       ]
     },
     {
       "id": "M7",
       "title": "Product and release",
       "gates": [
-        {"id": "M7.quickstart", "check": "On a clean machine, the quickstart produces a rendered segment", "passes": false},
-        {"id": "M7.surfaces", "check": "The MCP server, plugin, unfold doctor, review page, and gallery exist", "passes": false}
+        {
+          "id": "M7.quickstart",
+          "check": "On a clean machine, the quickstart produces a rendered segment",
+          "passes": false
+        },
+        {
+          "id": "M7.surfaces",
+          "check": "The MCP server, plugin, unfold doctor, review page, and gallery exist",
+          "passes": false
+        }
       ]
     }
   ]

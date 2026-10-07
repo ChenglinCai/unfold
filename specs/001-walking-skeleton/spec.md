@@ -12,7 +12,7 @@
 
 ### User Story 1 - Watch a first episode (Priority: P1)
 
-The maintainer plays a video of about two minutes on k-nearest neighbours, in two segments. Narration plays in step with the animation.
+The maintainer plays a video of about two minutes on k-nearest neighbors, in two segments. Narration plays in step with the animation.
 
 **Why this priority**: it proves the whole path from source to video before anything is automated. A path this thin is called a tracer bullet.
 

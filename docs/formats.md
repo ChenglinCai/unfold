@@ -1,0 +1,79 @@
+# File formats
+
+These are the formats that M1 wrote by hand. Each file names its format and version in a `format` field, such as `outline/v0`. M4 turns each format into a versioned schema, and then the tools check every file against it.
+
+Every format has two examples from different source families:
+
+- Public: the economics textbook example in `examples/econ-supply-demand/`.
+- Private: the CIS 5200 lecture notes in the maintainer's content folder, under `content/cis5200/`. They stay private because they come from copyrighted course notes.
+
+## Anchors
+
+An anchor is a pointer to one place in a source, such as a heading, table, figure, slide, or timestamp. A source manifest lists the anchors its source offers. Other files point at them as `<source-id>#<anchor-id>`, in a list under a key named `anchors`. `unfold.anchors.unresolved()` reports every reference that names nothing.
+
+## Source manifest: `source.yaml`, format `source/v0`
+
+| Field | Meaning |
+|---|---|
+| `id` | A short name, unique across a series |
+| `title`, `work`, `authors`, `published`, `url` | Where the source came from |
+| `family` | The source family, such as `textbook` or `lecture-notes` |
+| `subject` | One of the five subjects |
+| `rights` | The license or owner, the attribution text, and `public_outputs`, which says whether videos made from it may be public |
+| `anchors` | Each place the source offers: `id`, `kind`, and `title` |
+
+Examples: `examples/econ-supply-demand/source.yaml`, and `content/cis5200/manifests/lecture-03.yaml`.
+
+## Knowledge map: format `knowledge-map/v0`
+
+| Field | Meaning |
+|---|---|
+| `source` | The source manifest's id |
+| `concepts` | Each idea: `id`, `name`, `meaning` in our own words, the ids it `requires`, and its `anchors` |
+| `claims` | Each statement a video may make, with the anchors that support it |
+| `gaps` | What the source leaves unexplained, which a video must fill |
+| `suspected_errors` | Places where the source may be wrong |
+
+Examples: `examples/econ-supply-demand/knowledge-map.yaml`, and `content/cis5200/knowledge/lecture-03.yaml`.
+
+## Outline: `outline.yaml`, format `outline/v0`
+
+| Field | Meaning |
+|---|---|
+| `series`, `episode`, `title` | Where the episode belongs |
+| `core_question` | The one question the episode answers |
+| `audience` | What viewers already know |
+| `previously` | Earlier episodes whose ideas this one uses |
+| `segments` | Each segment: `id`, `title`, `target_seconds`, what it `requires` and `establishes`, `anchors`, and optional `callbacks` and `setups` |
+| `transitions` | The idea that carries viewers from one segment to the next |
+
+Items in `requires` and `establishes` have a kind and a name, such as `term:demand`, `idea:law-of-demand`, or `visual:demand-curve`. The idea-link check in M6 uses them.
+
+Examples: `examples/econ-supply-demand/outline.yaml`, and `content/cis5200/episodes/E01-knn/outline.yaml`.
+
+## Script: `script.md`, format `script/v0`
+
+A script is Markdown with YAML front matter. The front matter names the `episode`, the `segment`, and the `voice`. Each beat is one paragraph that starts with its cue in double square brackets:
+
+```markdown
+[[cross]] They cross at one point: one dollar and forty cents a gallon.
+```
+
+Cue names use lower-case letters, digits, and hyphens, and each appears once per script. Narration follows the spoken profile of the Narration Standard. `unfold.script.parse_script()` reads the format.
+
+Examples: `examples/econ-supply-demand/s3-equilibrium/script.md`, and `content/cis5200/episodes/E01-knn/s1-neighbours-vote/script.md`.
+
+## Storyboard: `storyboard.yaml`, format `storyboard/v0`
+
+| Field | Meaning |
+|---|---|
+| `episode`, `segment` | The segment the storyboard belongs to |
+| `entries` | One entry for each cue, in script order: `cue`, `visual` in plain words, `component` or `custom`, and `region` |
+
+A region is where the visual goes on screen, such as `plot`, `top`, or `right`. M5 replaces these names with a layout grid.
+
+Examples: `examples/econ-supply-demand/s3-equilibrium/storyboard.yaml`, and `content/cis5200/episodes/E01-knn/s2-choosing-k/storyboard.yaml`.
+
+## Scene code
+
+M1 writes scenes by hand. One Python file holds every segment of an episode, with one manim `Scene` class per segment. Each scene reads its narration from the script, and wraps each beat in `unfold.voice.voiced()`, so the animation lasts as long as the speech. Checks at the top of the file fail the render when the data stops matching the narration. M5 replaces hand-written scenes with tested components.
