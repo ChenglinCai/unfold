@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import trafilatura
+from lxml import html as lxml_html
 
 from unfold.sources import Anchor, Meta, SourceDocument, build
 from unfold.sources.profile import quality
@@ -11,6 +12,20 @@ from unfold.sources.profile import quality
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
 # Fewer words of main text means a menu or a stub, not an article.
 MIN_WORDS = 20
+TEX_WRAPPER = re.compile(r"^\{\\(?:display|text)style\s*(.*)\}$", re.DOTALL)
+
+
+def _with_class(tag: str, name: str) -> str:
+    return f"//{tag}[contains(concat(' ', normalize-space(@class), ' '), ' {name} ')]"
+
+
+# Wiki clutter: edit links, reference marks, and navigation boxes.
+CLUTTER = [
+    _with_class("*", "mw-editsection"),
+    _with_class("sup", "reference"),
+    _with_class("*", "navbox"),
+    _with_class("table", "sidebar"),
+]
 
 
 def _slug(title: str, seen: set[str]) -> str:
@@ -62,10 +77,45 @@ def read_markdown(path: Path, meta: Meta) -> SourceDocument:
     return _document(path.read_text(encoding="utf-8"), meta, "md")
 
 
+def prepare(html: str) -> lxml_html.HtmlElement:
+    """Keep each formula's TeX, and drop wiki clutter, before extraction.
+
+    Pages such as Wikipedia's put TeX in the `alttext` of each `<math>` element.
+    trafilatura drops `<math>`, so without this step every formula vanishes.
+    """
+    tree = lxml_html.fromstring(html)
+    for math in list(tree.iter("math")):
+        tex = TEX_WRAPPER.sub(r"\1", (math.get("alttext") or "").strip()).strip()
+        wrapper = next(
+            (
+                span
+                for span in math.iterancestors("span")
+                if "mwe-math-element" in (span.get("class") or "")
+            ),
+            math,
+        )
+        parent = wrapper.getparent()
+        if not tex or parent is None:
+            continue
+        formula = lxml_html.Element("span")
+        formula.text = f"${tex}$"
+        formula.tail = wrapper.tail
+        parent.replace(wrapper, formula)
+    for xpath in CLUTTER:
+        for element in tree.xpath(xpath):
+            element.drop_tree()
+    return tree
+
+
 def read_html(html: str, meta: Meta) -> SourceDocument:
-    """Keep the page's main text, without menus and footers."""
+    """Keep the page's main text and formulas, without menus and footers."""
+    if not html.strip():
+        raise ValueError("the page is empty")
     markdown = trafilatura.extract(
-        html, output_format="markdown", include_formatting=True, include_comments=False
+        prepare(html),
+        output_format="markdown",
+        include_formatting=True,
+        include_comments=False,
     )
     words = len((markdown or "").split())
     if markdown is None or words < MIN_WORDS:

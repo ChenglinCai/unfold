@@ -69,3 +69,26 @@ def test_a_web_page_keeps_its_article_and_drops_its_clutter() -> None:
 def test_a_page_with_only_a_menu_has_no_main_text() -> None:
     with pytest.raises(ValueError, match="no main text"):
         read_html("<html><body><nav>Home</nav></body></html>", META)
+
+
+MATH_PAGE = r"""<html><body><article><h1>Euler's identity</h1>
+<table class="sidebar"><tr><td>Part of a series of articles</td></tr></table>
+<p>Euler's identity is the equality
+<span class="mwe-math-element"><span style="display: none;"><math
+alttext="{\displaystyle e^{i\pi }+1=0}"><mi>e</mi></math></span><img
+class="mwe-math-fallback-image-display" alt="{\displaystyle e^{i\pi }+1=0}"></span>
+where e is Euler's number.<sup class="reference"><a href="#n1">[1]</a></sup>
+It links five constants in one short line, and many people call it beautiful.</p>
+<h2>History<span class="mw-editsection">[edit]</span></h2>
+<p>Euler never wrote the identity in this form, but it follows from his formula.</p>
+</article></body></html>"""
+
+
+def test_formulas_keep_their_tex_and_wiki_clutter_goes() -> None:
+    doc = read_html(MATH_PAGE, META)
+    text = " ".join(a.text for a in doc.anchors)
+
+    assert "$e^{i\\pi }+1=0$" in text
+    assert "[1]" not in text
+    assert "[edit]" not in [a.title for a in doc.anchors][-1]
+    assert "Part of a series" not in text
