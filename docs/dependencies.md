@@ -19,3 +19,12 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | pre-commit | dev | MIT | M0 | Runs the checks before each commit |
 
 System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, and a LaTeX distribution for equations. Scans use Apple's Vision framework, which ships with macOS. Install the audio extra with `uv sync --extra audio`.
+
+## Safety
+
+`unfold ingest` downloads files and reads them with the libraries above. Each item says what it allows, what could go wrong, and how to undo it.
+
+- Downloads: ingest fetches any http or https URL you give it, up to 500 MB. The file lands in a temporary folder, then in your private content folder. Delete the source's folder to undo it.
+- Parsers: pypdfium2, python-pptx, lxml, and PyAV read files that strangers made. A crafted file could exploit a bug in one of them. Ingest only files you would open on your own computer, and let Dependabot keep these packages current.
+- Speech model: faster-whisper downloads its model from Hugging Face once, into `~/.cache/huggingface`. Delete that folder to remove it.
+- Model jobs: `unfold understand` sends each source's text to Claude under your own account. The job has no tools, so text in a source can change only the job's reply. Code checks every reply before it writes a file.

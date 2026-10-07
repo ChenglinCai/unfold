@@ -49,3 +49,21 @@ Each decision lists what we chose, why, and what else we considered.
 - Decision: study notes cite anchors as `[§anchor-id]`. The validator checks that each one resolves.
 - Rationale: the marker is short, unusual in prose, and easy to find with a pattern.
 - Alternatives: Markdown links, which would point at files that do not exist yet.
+
+## Formulas on web pages
+
+- Decision: before extraction, the web reader swaps each MathML formula for the TeX in its `alttext`. It also drops wiki edit links, reference marks, and navigation boxes.
+- Rationale: trafilatura drops every `<math>` element. The Euler's identity article lost all its equations, and a math source cannot spare them.
+- Alternatives: formula images, which the model cannot read as text, or the raw MathML, which spends many tokens on markup.
+
+## Citations in the linter
+
+- Decision: the linter skips citations such as `[§p-3]` when it counts words.
+- Rationale: readers skip citations, so they make no sentence longer. Counting them pushed 4 sentences in the M2 notes over the limit.
+- Alternatives: a higher word limit for study notes, which would hide sentences that really are too long.
+
+## Silence in recordings
+
+- Decision: faster-whisper runs with its voice filter on.
+- Rationale: without it, speech after a long pause joins the segment before it and takes that segment's start time. A test caught this.
+- Alternatives: word timestamps, which take longer and still need segment boundaries.
