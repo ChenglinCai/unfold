@@ -71,11 +71,11 @@
 
 **Independent Test**: run the checks on the golden outputs, and compare the pass rates with the report.
 
-- [ ] T023 [US5] Write six series files in `../content/series/`, one per golden source, and build each. Check: every output passes `unfold check`, and the call logs hold at most 60 calls.
-- [ ] T024 [US5] Build all six again. Check: no call log gains a line.
-- [ ] T025 [US5] Read every output, and write open notes in `../content/series/notes.md`. Group them into failure types. Check: at least 3 failure types, each with a count.
-- [ ] T026 [P] [US5] Write `tests/evals/test_checks.py`, with one binary check per failure type on small examples. Check: the tests fail.
-- [ ] T027 [US5] Implement the checks in `src/unfold/evals/__init__.py` and `unfold eval` in `src/unfold/evals/command.py`. Check: the tests pass, and `unfold eval` prints a pass rate per check.
+- [X] T023 [US5] Write six series files in `../content/series/`, one per golden source, and build each. Check: every output passes `unfold check`, and the call logs hold at most 60 calls.
+- [X] T024 [US5] Build all six again. Check: no call log gains a line.
+- [X] T025 [US5] Read every output, and write open notes in `../content/series/notes.md`. Group them into failure types. Check: at least 3 failure types, each with a count.
+- [X] T026 [P] [US5] Write `tests/evals/test_eval_checks.py`, with one binary check per failure type on small examples. Check: the tests fail.
+- [X] T027 [US5] Implement the checks in `src/unfold/evals/__init__.py` and `unfold eval` in `src/unfold/evals/command.py`. Check: the tests pass, and `unfold eval` prints a pass rate per check.
 - [ ] T028 [US5] Write `docs/evals/M4-report.md` with the failure types, checks, and pass rates. Check: it passes `unfold lint`, and it quotes only sources with public outputs.
 
 ## Phase 8: Polish
