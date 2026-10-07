@@ -93,7 +93,7 @@
 - [X] T021 Fix every error that the linter finds in the repo's docs. Check: `uv run unfold lint README.md CLAUDE.md docs specs` exits 0.
 - [X] T022 [P] Replace the scratch measurement script with `unfold lint` in `.specify/memory/constitution.md` and `CLAUDE.md`. Check: both name `unfold lint`.
 - [X] T023 Time a lint of the whole repo. Check: under 5 seconds, as SC-005 requires.
-- [ ] T024 Converge: compare the result with the spec, record the M3 gates in `docs/milestones.json`, and tag `m3-done`. Check: every M3 gate has evidence or a stated reason.
+- [X] T024 Converge: compare the result with the spec, record the M3 gates in `docs/milestones.json`, and tag `m3-done`. Check: every M3 gate has evidence or a stated reason.
 
 ## Dependencies & Execution Order
 
@@ -143,3 +143,9 @@ Finish Setup, Foundational, and US1. The written profile alone can then lint the
 
 - Commit after each task or each pair of test and code, and keep each commit under 300 changed lines.
 - The transcripts never enter the repo. Tests use invented text only.
+
+## Phase 8: Convergence
+
+- [X] T025 Record in `plan.md` that the `lint` subcommand lives in `src/unfold/lint/command.py` per plan: project structure (unrequested)
+- [X] T026 Document in `data-model.md` that `lint_text()` also accepts a Profile object per plan: data model (unrequested)
+- [X] T027 Justify the ruff settings added in M3 in `plan.md` per plan: constraints (unrequested)

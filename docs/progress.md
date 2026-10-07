@@ -6,8 +6,8 @@ This file holds the current state of the work, so that a new session can resume 
 
 - Mode: overnight autonomous run, which began on 2026-10-06. Decision record 0006 sets its rules.
 - Branch: `dev`. Nothing merges into `main` without the maintainer.
-- Done: M1, tagged `m1-done`. M0 is done except the settings file that the maintainer writes.
-- Next: M2 and M3.
+- Done: M1, tagged `m1-done`, and M3, tagged `m3-done`. M0 is done except the settings file that the maintainer writes.
+- Next: M2, source understanding.
 
 ## Check-ins
 
@@ -18,10 +18,21 @@ This file holds the current state of the work, so that a new session can resume 
 - Evidence: every M1 gate in `docs/milestones.json`. The beat timing holds by construction, because each beat's audio starts at the same scene time as its first animation. No test measures it yet.
 - Walkthrough to ask for: `src/unfold/voice.py`, which shows how a scene waits for its narration.
 
+### M3, the Narration Standard linter
+
+- What to try: `uv run unfold lint docs`, then `uv run unfold lint --profile spoken examples/econ-supply-demand/s3-equilibrium/script.md`.
+- What to read: `docs/studies/breath-groups.md`, and `specs/002-language/`, which Spec Kit's own skills produced this time.
+- Evidence: every M3 gate in `docs/milestones.json`. CI now runs the linter on every pull request.
+- Walkthrough to ask for: `src/unfold/lint/prose.py`, which shows how text becomes sentences and breath groups.
+- Not done, by design: labeling teaching moves with models, and the narration and visual style guides. They wait for the M4 job runner and M5. Khan Academy transcripts were not downloaded, because their policy forbids commercial use.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
 2. The economics source is OpenStax Principles of Economics 2e, which is CC BY 4.0. The 3rd edition is CC BY-NC-SA, which forbids commercial use.
 3. The stand-in voice is the macOS `say` command at rate 140, which is about 165 words per minute. M6 replaces it with Kokoro.
 4. New dependency: PyYAML, under the MIT license.
-5. macOS hides the `.pth` file in `.venv`. If imports fail, run `chflags -R nohidden .venv`. The tests no longer depend on that file.
+5. iCloud syncs your Desktop, so it hid `.venv` and broke imports. The environment now lives in `.venv.nosync`, with a `.venv` link. Moving the project out of iCloud would be cleaner.
+6. The spoken breath-group limit is 31 words, from the study. The strict profile keeps 20.
+7. The linter treats every numbered list item as a procedure step, which allows 20 words. Bullet lists allow 25.
+8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.

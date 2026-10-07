@@ -25,7 +25,7 @@ Preprocessing removes YAML front matter, fenced code blocks, HTML comments, tabl
 
 ## Profile
 
-A name, the rules it runs, and its limits:
+A name, the rules it runs, and its limits. `lint_text()` takes a profile's name or a Profile object, so the study can test a limit before the code adopts it:
 
 | Limit | written | spoken | strict |
 |---|---|---|---|

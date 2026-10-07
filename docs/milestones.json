@@ -95,27 +95,32 @@
         {
           "id": "M3.linter",
           "check": "unfold lint has written, spoken, and strict profiles, and its tests pass",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold lint has written, spoken, and strict profiles with 16 rules; the 61 tests in tests/lint pass"
         },
         {
           "id": "M3.breath-groups",
           "check": "The breath-group hypothesis is tested on at least 50 transcripts",
-          "passes": false
+          "passes": true,
+          "evidence": "docs/studies/breath-groups.md: 139 of 144 transcripts studied; 92.4 percent of breath groups have 19 words or fewer, so the hypothesis holds"
         },
         {
           "id": "M3.quiet-on-3b1b",
           "check": "The spoken profile rarely fires on 3Blue1Brown transcripts",
-          "passes": false
+          "passes": true,
+          "evidence": "docs/studies/breath-groups.md: 1.03 spoken-profile errors per 1,000 words at the calibrated limit of 31"
         },
         {
           "id": "M3.catches-ai-text",
           "check": "The linter catches AI writing habits in a test set",
-          "passes": false
+          "passes": true,
+          "evidence": "tests/lint/test_sets.py: all 13 AI-style paragraphs get an AI-habit finding in every profile, and the 6 clean ones get none"
         },
         {
           "id": "M3.repo-docs",
           "check": "The repo's docs pass the written profile in CI",
-          "passes": false
+          "passes": true,
+          "evidence": "the lint-docs pre-commit hook passed in CI run 37571602753"
         }
       ]
     },

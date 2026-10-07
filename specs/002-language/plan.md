@@ -24,7 +24,7 @@ Build `unfold lint`, a linter for the Narration Standard with written, spoken, a
 
 **Performance Goals**: lint the whole repo in under 5 seconds
 
-**Constraints**: no model calls, no new dependencies, and no transcripts in the repo
+**Constraints**: no model calls, no new dependencies, and no transcripts in the repo. Ruff lets strings and comments run to 100 characters, because the formatter cannot wrap them. `words.py` is exempt from rule SIM905, because word lists read better as one split string.
 
 **Scale/Scope**: about 15 rules, and 144 transcripts in the study
 
@@ -66,7 +66,8 @@ specs/002-language/
 src/unfold/
 ├── cli.py              the unfold command and its lint subcommand
 └── lint/
-    ├── __init__.py     lint_text() and lint_paths()
+    ├── __init__.py     lint_text()
+    ├── command.py      the lint subcommand, which cli.py registers
     ├── prose.py        preprocessing, and splitting into units
     ├── rules.py        the rules and the profiles
     ├── words.py        word lists: AI habits, abbreviations, irregular participles
