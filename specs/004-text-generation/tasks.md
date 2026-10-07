@@ -80,7 +80,7 @@
 
 ## Phase 8: Polish
 
-- [ ] T029 Describe series/v0, series-plan/v0, script/v1, and `schemas/` in `docs/formats.md`. Check: `unfold lint docs` passes.
+- [X] T029 Describe series/v0, series-plan/v0, script/v1, and `schemas/` in `docs/formats.md`. Check: `unfold lint docs` passes.
 - [ ] T030 Converge, record the M4 gates in `docs/milestones.json`, write `docs/retros/M4.md`, and tag `m4-done`. Check: every M4 gate has evidence.
 
 ## Dependencies & Execution Order

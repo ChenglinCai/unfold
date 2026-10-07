@@ -1,6 +1,6 @@
 # File formats
 
-These are the formats that M1 wrote by hand. Each file names its format and version in a `format` field, such as `outline/v0`. M4 turns each format into a versioned schema, and then the tools check every file against it.
+These are the formats that unfold reads and writes. Each file names its format and version in a `format` field, such as `outline/v0`. Since M4, each format and version has a schema in `src/unfold/formats/`. `schemas/` holds each schema as a JSON Schema file, and `unfold check` validates any file against its schema.
 
 Every format has two examples from different source families:
 
@@ -82,6 +82,26 @@ Each model job writes a record next to its outputs.
 | `input_tokens`, `output_tokens` | The tokens of every try, summed |
 | `seconds` | The total time |
 | `outcome`, `errors` | `ok` or `failed`, and the last errors |
+| `tries` | The errors of each failed try, in order |
+| `format` | `job/v0`. Records from M2 have no format field, and still load |
+
+A build keeps its records under `records/` in the series folder, and appends one line per model call to `calls.jsonl`.
+
+## Series: `series.yaml`, format `series/v0`
+
+The user writes this file to ask for a series.
+
+| Field | Meaning |
+|---|---|
+| `id` | The series name |
+| `audience` | Who watches, and what they already know |
+| `sources` | Source document folders, as paths relative to the series folder |
+| `episodes`, `segments` | How many episodes, and segments of each, to write. The defaults are 1 and 2 |
+| `model` | The model for generation. The default is `sonnet` |
+
+## Series plan: `plan.yaml`, format `series-plan/v0`
+
+The series-plan step writes this file. Each episode has an `id` such as `E01-equation-of-exchange`, a `title`, a `core_question`, the knowledge-map `concepts` it teaches, and its `anchors`.
 
 ## Outline: `outline.yaml`, format `outline/v0`
 
@@ -109,6 +129,16 @@ A script is Markdown with YAML front matter. The front matter names the `episode
 Cue names use lower-case letters, digits, and hyphens, and each appears once per script. Narration follows the spoken profile of the Narration Standard. `unfold.script.parse_script()` reads the format.
 
 Examples: `examples/econ-supply-demand/s3-equilibrium/script.md`, and `content/cis5200/episodes/E01-knn/s1-neighbours-vote/script.md`.
+
+## Script: format `script/v1`
+
+script/v1 adds an `anchors` map to the front matter. It lists, for each cue, the anchors that support its beat, as principle V requires. A cue with an empty list is a flagged claim. The script step writes this version, and `Script.anchors()` reads it.
+
+```yaml
+anchors:
+  cross: [openstax-econ-2e-3-1#table-3-3]
+  settle: []
+```
 
 ## Storyboard: `storyboard.yaml`, format `storyboard/v0`
 
