@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-06
 
+- Rendered the first episode: two segments on k-NN, 102 seconds, in the private content repo. Contact sheets found four problems, and each one is fixed. The voice now takes a speaking rate and a pause after each beat.
 - Added a stand-in voice that uses the macOS `say` command, and a parser for the script format. Nine tests cover them. Found that macOS hid the `.pth` file that makes the package importable, and guarded the tests against it.
 - Set up the overnight harness: the `dev` branch, `docs/progress.md`, `docs/milestones.json` with a test, `docs/dependencies.md`, and decision record 0006.
 - Wrote the first five decision records and started the mistake log with thirteen entries.

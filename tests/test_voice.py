@@ -37,5 +37,15 @@ def test_different_text_gets_a_different_clip(tmp_path: Path) -> None:
     assert first.path != second.path
 
 
+@needs_say
+def test_a_slower_rate_makes_a_longer_clip(tmp_path: Path) -> None:
+    text = "A slower voice is easier to follow."
+    fast = voice.synthesize(text, tmp_path, rate=220)
+    slow = voice.synthesize(text, tmp_path, rate=140)
+
+    assert slow.path != fast.path
+    assert slow.seconds > fast.seconds
+
+
 def test_reports_whether_the_voice_is_available() -> None:
     assert isinstance(voice.available(), bool)
