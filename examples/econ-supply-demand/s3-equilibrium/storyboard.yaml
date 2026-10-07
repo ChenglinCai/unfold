@@ -1,0 +1,32 @@
+format: storyboard/v0
+episode: E01-supply-demand
+segment: s3-equilibrium
+entries:
+  - cue: both-curves
+    visual: Axes with price up the side and quantity along the bottom. The demand curve from segment 1 returns, and the supply curve draws in.
+    component: supply-demand-chart
+    region: plot
+  - cue: cross
+    visual: A dot marks the crossing, with dashed lines down to 600 and across to 1.40 dollars.
+    component: supply-demand-chart
+    region: plot
+  - cue: too-high
+    visual: A horizontal line at 1.80 dollars meets both curves. Two dots mark 500 on demand and 680 on supply.
+    component: supply-demand-chart
+    region: plot
+  - cue: surplus
+    visual: A bracket labelled surplus spans the gap from 500 to 680. An arrow on the price axis points down.
+    component: supply-demand-chart
+    region: plot
+  - cue: too-low
+    visual: The line moves to 1.20 dollars. Dots mark 550 on supply and 700 on demand.
+    component: supply-demand-chart
+    region: plot
+  - cue: shortage
+    visual: A bracket labelled shortage spans the gap from 550 to 700. An arrow on the price axis points up.
+    component: supply-demand-chart
+    region: plot
+  - cue: settle
+    visual: Both arrows slide the price line toward the crossing point, which glows.
+    component: supply-demand-chart
+    region: plot
