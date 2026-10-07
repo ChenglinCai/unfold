@@ -36,8 +36,8 @@
 
 **Independent Test**: a fake runner returns good data, bad data, and data that is good on the second try.
 
-- [ ] T009 [P] [US3] Write `tests/build/test_job.py` for the job loop. Success writes the output, and a retry carries the errors. Four failures write nothing and keep every try's errors. Data that breaks the schema counts as a failed try, and a matching key means reuse. Check: the tests fail.
-- [ ] T010 [US3] Implement the job loop, keys, and records in `src/unfold/build/__init__.py`. Check: `tests/build/test_job.py` passes.
+- [X] T009 [P] [US3] Write `tests/build/test_job.py` for the job loop. Success writes the output, and a retry carries the errors. Four failures write nothing and keep every try's errors. Data that breaks the schema counts as a failed try, and a matching key means reuse. Check: the tests fail.
+- [X] T010 [US3] Implement the job loop, keys, and records in `src/unfold/build/__init__.py`. Check: `tests/build/test_job.py` passes.
 - [ ] T011 [P] [US3] Write `tests/build/test_checks.py` for the meaning checks of each step, as `data-model.md` lists them. Check: the tests fail.
 - [ ] T012 [US3] Implement `src/unfold/build/checks.py`. Check: `tests/build/test_checks.py` passes.
 - [ ] T013 [P] [US3] Write `tests/build/test_write.py`. A written script/v1 reads back through `parse_script()`, and each YAML output validates. Check: the tests fail.

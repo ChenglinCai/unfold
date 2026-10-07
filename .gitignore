@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 .venv
 .venv.nosync/
-build/
+/build/
 dist/
 *.egg-info/
 .pytest_cache/
