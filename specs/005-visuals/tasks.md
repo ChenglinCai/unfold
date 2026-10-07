@@ -22,8 +22,8 @@
 
 - [X] T009 [US3] Write `tests/visuals/test_render.py`, with a slow test that renders a small scene. Check: the tests fail.
 - [X] T010 [US3] Implement `src/unfold/visuals/render.py` and `unfold render`. Check: the tests pass.
-- [ ] T011 [US3] Build the scenes of the six golden series, then render all 12 segments. Check: no layout failures, and 12 contact sheets.
+- [X] T011 [US3] Build the scenes of the six golden series, then render all 12 segments. Check: no layout failures, and 12 contact sheets.
 
 ## Phase 4: Polish
 
-- [ ] T012 Describe scene/v0 in `docs/formats.md`, then converge, record the M5 gates, write `docs/retros/M5.md`, and tag `m5-done`. Check: every M5 gate has evidence.
+- [X] T012 Describe scene/v0 in `docs/formats.md`, then converge, record the M5 gates, write `docs/retros/M5.md`, and tag `m5-done`. Check: every M5 gate has evidence.

@@ -5,9 +5,9 @@ This file holds the current state of the work, so that a new session can resume 
 ## Current state
 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
-- Branch: `dev`. Nothing merges into `main` without the maintainer.
-- Done: M1 through M4, each tagged, such as `m4-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: M5, visuals. It waits for your review of M2 and M4, and for your answers to items 13 and 14.
+- Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
+- Done: M1 through M5, each tagged, such as `m5-done`. M0 lacks only the settings file that the maintainer writes.
+- Next: M6, episodes: voice, audio check, stitching, subtitles, and the idea-link check.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -43,6 +43,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `src/unfold/build/__init__.py`, which shows the job loop that every step shares.
 - Not done, by design: model checks for paraphrase drift, and the fixes that the report proposes. They wait for your review.
 
+### M5, visuals
+
+- What to try: `uv run unfold render ../content/series/net-present-value`, which reuses its videos. Then open a `contact-sheet.png`.
+- What to read: `docs/evals/M5-report.md`, then `docs/retros/M5.md`.
+- Evidence: every M5 gate in `docs/milestones.json`.
+- Walkthrough to ask for: `src/unfold/visuals/components.py`, which shows how a component fits its region.
+- Not done, by design: model-written manim code for custom visuals, and its sandbox. Custom entries render as cards to review.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
@@ -61,3 +69,5 @@ This file holds the current state of the work, so that a new session can resume 
 14. Principle II says every key covers the manim and component-library versions. The understand outputs use neither, so the key leaves them out, and a manim upgrade costs no model calls. Proposed patch: "A key MUST cover everything its output depends on: the inputs, the prompt version, and the model. Scene jobs add the component-library and manim versions."
 15. Claude did the M4 error analysis, a step that principle IV prefers a domain expert for. Please read the open notes, and correct any failure type.
 16. New dependencies overnight: PyAV, NumPy, lxml, and pydantic. Each uses a permissive license, and `docs/dependencies.md` logs each one.
+17. Five golden charts show numbers that the narration never states. Some are correct computations, and one is an invented poll. Please review them, and decide whether charts may show computed numbers.
+18. M6 needs a voice. Kokoro, the plan's default, depends on espeak-ng and phonemizer for some words, and both use the GPL. Until you decide, M6 keeps the macOS voice behind an interface that Kokoro can fill later.
