@@ -8,8 +8,8 @@
 
 - [X] T001 [US1] Write `tests/visuals/test_layout.py` for the regions and the layout check. Check: the tests fail.
 - [X] T002 [US1] Implement `src/unfold/visuals/theme.py` and `src/unfold/visuals/layout.py`. Check: `tests/visuals/test_layout.py` passes.
-- [ ] T003 [US1] Write `tests/visuals/test_components.py`, which builds every component in every region and checks the fit. Check: the tests fail.
-- [ ] T004 [US1] Implement the five components in `src/unfold/visuals/components.py`. Check: `tests/visuals/test_components.py` passes.
+- [X] T003 [US1] Write `tests/visuals/test_components.py`, which builds every component in every region and checks the fit. Check: the tests fail.
+- [X] T004 [US1] Implement the five components in `src/unfold/visuals/components.py`. Check: `tests/visuals/test_components.py` passes.
 
 ## Phase 2: User Story 2, scenes from storyboards (Priority: P1)
 
