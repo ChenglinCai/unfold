@@ -41,7 +41,15 @@ You need macOS or Linux, [uv](https://docs.astral.sh/uv/), and LaTeX.
 
 ## Troubleshooting
 
-If Python cannot import `unfold` on macOS, and `python -v` reports "Skipping hidden .pth file", run `chflags -R nohidden .venv`. Recent Python versions skip `.pth` files that macOS marks as hidden.
+If the repo sits in a folder that iCloud Drive syncs, such as the Desktop, iCloud marks `.venv` as hidden. Recent Python versions then skip the `.pth` file that makes `unfold` importable, and `python -v` reports "Skipping hidden .pth file". iCloud also uploads the whole environment. Keep the environment out of iCloud instead:
+
+```sh
+rm -rf .venv
+UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync
+ln -s .venv.nosync .venv
+```
+
+iCloud skips any name that ends in `.nosync`, and the `.venv` link lets every command work as before.
 
 ## Checks
 
