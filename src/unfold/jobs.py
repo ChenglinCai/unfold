@@ -27,6 +27,24 @@ class JobError(RuntimeError):
     """The job itself failed, before any check could read its reply."""
 
 
+class CanaryError(RuntimeError):
+    """The runner failed its canary, so the build stops before any real job.
+
+    It is not a JobError, so no job loop mistakes it for one failed job.
+    """
+
+
+# The canary: a tiny job with a known answer, which proves the login, the usage
+# limit, and structured output before a build spends anything.
+CANARY_MODEL = "haiku"
+CANARY_SCHEMA: dict[str, object] = {
+    "type": "object",
+    "properties": {"answer": {"type": "integer"}},
+    "required": ["answer"],
+    "additionalProperties": False,
+}
+
+
 @dataclass(frozen=True)
 class Reply:
     text: str
@@ -184,3 +202,20 @@ class Record:
         if not path.is_file():
             return None
         return cls(**json.loads(path.read_text(encoding="utf-8")))
+
+
+def canary(runner: Runner) -> Reply:
+    """Ask "What is 2 plus 3?" and expect 5. Raise CanaryError otherwise."""
+    try:
+        reply = runner(
+            "What is 2 plus 3?",
+            system="Answer with the number only.",
+            model=CANARY_MODEL,
+            schema=CANARY_SCHEMA,
+        )
+    except JobError as error:
+        raise CanaryError(f"the canary job failed: {error}") from error
+    answer = (reply.data or {}).get("answer")
+    if answer != 5:
+        raise CanaryError(f"the canary expected 5, and got {answer!r}")
+    return reply

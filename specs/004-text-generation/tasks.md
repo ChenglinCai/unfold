@@ -62,8 +62,8 @@
 
 **Independent Test**: a build whose canary fails makes no other call.
 
-- [ ] T021 [P] [US4] Write `tests/build/test_canary.py`. A failing canary stops the build, and a build with nothing to run makes no call. Each call adds one line to `calls.jsonl`. Check: the tests fail.
-- [ ] T022 [US4] Implement the canary in `src/unfold/jobs.py` and the call log in `src/unfold/build/__init__.py`. Check: `tests/build/test_canary.py` passes.
+- [X] T021 [P] [US4] Write the canary tests in `tests/build/test_graph.py`, beside the shared fake runner. A failing canary stops the build, and a build with nothing to run makes no call. Each call adds one line to `calls.jsonl`. Check: the tests fail.
+- [X] T022 [US4] Implement the canary in `src/unfold/jobs.py` and the call log in `src/unfold/build/__init__.py`. Check: `tests/build/test_canary.py` passes.
 
 ## Phase 7: User Story 5, the first eval report (Priority: P2)
 

@@ -67,7 +67,7 @@ def run_job(
             reply = runner(ask, system=job.system, model=job.model, schema=job.schema)
         except jobs.JobError as error:
             record.errors = [str(error)]
-            log_call(log, job, record, attempt, None)
+            log_call(log, job, record, attempt, None, final=True)
             break
         record.add(reply)
         errors, text = evaluate(job, reply)
@@ -78,7 +78,7 @@ def run_job(
             log_call(log, job, record, attempt, reply)
             break
         record.tries.append(errors)
-        log_call(log, job, record, attempt, reply)
+        log_call(log, job, record, attempt, reply, final=attempt == retries + 1)
         ask = retry_request(job.request, reply, errors)
     if record.outcome != "ok":
         record.outcome = "failed"
@@ -122,11 +122,12 @@ def log_call(
     record: jobs.Record,
     attempt: int,
     reply: jobs.Reply | None,
+    final: bool = False,
 ) -> None:
     """Append one line about one model call to the call log."""
     if log is None:
         return
-    outcome = "ok" if record.outcome == "ok" else "retry" if reply else "failed"
+    outcome = "ok" if record.outcome == "ok" else "failed" if final else "retry"
     line = {
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "step": job.step,

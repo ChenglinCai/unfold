@@ -97,6 +97,45 @@ def logged(runner: jobs.Runner, log: Path, step: str, output: Path) -> jobs.Runn
     return call
 
 
+class Guarded:
+    """A runner that proves itself with the canary before its first real call."""
+
+    def __init__(self, runner: jobs.Runner, log: Path) -> None:
+        self.runner, self.log, self.proven = runner, log, False
+
+    def __call__(
+        self,
+        prompt: str,
+        *,
+        system: str,
+        model: str,
+        schema: Mapping[str, object] | None = None,
+    ) -> jobs.Reply:
+        if not self.proven:
+            now = datetime.datetime.now().isoformat(timespec="seconds")
+            line: dict[str, object] = {
+                "time": now,
+                "step": "canary",
+                "model": jobs.CANARY_MODEL,
+            }
+            try:
+                reply = jobs.canary(self.runner)
+            except jobs.CanaryError as error:
+                append_log(
+                    self.log, {**line, "outcome": "failed", "errors": [str(error)]}
+                )
+                raise
+            tokens = {
+                "input_tokens": reply.input_tokens,
+                "output_tokens": reply.output_tokens,
+            }
+            append_log(
+                self.log, {**line, **tokens, "seconds": reply.seconds, "outcome": "ok"}
+            )
+            self.proven = True
+        return self.runner(prompt, system=system, model=model, schema=schema)
+
+
 def build(
     folder: Path,
     runner: jobs.Runner,
@@ -108,6 +147,7 @@ def build(
     spec = read_series(folder)
     model = model or spec.model
     log = folder / "calls.jsonl"
+    runner = Guarded(runner, log)
     result = Result()
     sources = []
     for name in spec.sources:

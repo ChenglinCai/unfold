@@ -37,6 +37,8 @@ def run_build(args: argparse.Namespace) -> int:
         result = build(Path(args.series), runner, args.until, args.model, args.retries)
     except SeriesError as error:
         return fail(str(error), 2)
+    except jobs.CanaryError as error:
+        return fail(f"{error}. No other job ran.", 3)
     for line in result.lines:
         print(f"{line.status:8} {line.output}")
     counts = Counter(line.status for line in result.lines)

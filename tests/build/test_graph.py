@@ -11,6 +11,7 @@ from unfold.build import command as build_command
 from unfold.build.graph import build
 from unfold.cli import main
 from unfold.formats import problems
+from unfold.jobs import CanaryError
 from unfold.sources import Anchor, SourceDocument
 
 MAP = """format: knowledge-map/v0
@@ -96,16 +97,21 @@ REPLIES: dict[str, dict[str, object]] = {
 class StepRunner:
     """Answers each step by the title of the schema it receives."""
 
-    def __init__(self, refuse: bool = False, bad: str = "") -> None:
-        self.refuse, self.bad = refuse, bad
+    def __init__(self, refuse: bool = False, bad: str = "", canary: int = 5) -> None:
+        self.refuse, self.bad, self.canary = refuse, bad, canary
         self.calls: list[str] = []
 
     def __call__(
         self, prompt: str, *, system: str, model: str, schema: object = None
     ) -> jobs.Reply:
-        step = str(schema["title"]) if isinstance(schema, dict) else "understand"
+        step = "understand"
+        if isinstance(schema, dict):
+            step = str(schema.get("title", "canary"))
         self.calls.append(step)
         assert not self.refuse, f"the build called the model for {step}"
+        if step == "canary":
+            data: dict[str, object] = {"answer": self.canary}
+            return jobs.Reply(json.dumps(data), 3, 1, 0.1, data)
         if step == "understand":
             return jobs.Reply(UNDERSTOOD, 10, 5, 0.1)
         data = {} if step == self.bad else copy.deepcopy(REPLIES[step])
@@ -148,15 +154,8 @@ def test_a_build_writes_the_first_episode_with_two_segments(series: Path) -> Non
         assert problems(path) == [], path
     assert not (episode / "s3-extra").exists()
     assert not (series / "E02-spread").exists()
-    assert (
-        runner.calls
-        == ["understand", "PlanReply", "OutlineReply"]
-        + [
-            "ScriptReply",
-            "StoryboardReply",
-        ]
-        * 2
-    )
+    expected = ["canary", "understand", "PlanReply", "OutlineReply"]
+    assert runner.calls == expected + ["ScriptReply", "StoryboardReply"] * 2
 
 
 def test_a_second_build_calls_nothing(series: Path) -> None:
@@ -227,3 +226,41 @@ def test_the_command_exits_2_on_a_bad_series(tmp_path: Path) -> None:
 
     assert main(["build", str(tmp_path)]) == 2
     assert main(["build", str(tmp_path / "missing")]) == 2
+
+
+def test_a_failing_canary_stops_the_build_before_any_real_call(series: Path) -> None:
+    runner = StepRunner(canary=4)
+
+    with pytest.raises(CanaryError, match="expected 5"):
+        build(series, runner)
+
+    assert runner.calls == ["canary"]
+    assert not (series.parent / "sources" / "demo" / "understand").exists()
+
+
+def test_a_build_with_nothing_to_run_makes_no_canary_call(series: Path) -> None:
+    build(series, StepRunner())
+    runner = StepRunner()
+
+    build(series, runner)
+
+    assert runner.calls == []
+
+
+def test_every_call_adds_one_line_to_the_call_log(series: Path) -> None:
+    build(series, StepRunner(bad="ScriptReply"), retries=1)
+
+    log = (series / "calls.jsonl").read_text().splitlines()
+    lines = [json.loads(line) for line in log]
+    steps = [line["step"] for line in lines]
+    assert steps == ["canary", "understand", "plan", "outline", "script", "script"]
+    assert [line["outcome"] for line in lines][-2:] == ["retry", "failed"]
+    assert all(line["model"] for line in lines)
+
+
+def test_the_command_exits_3_when_the_canary_fails(
+    series: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(build_command, "RUNNER", StepRunner(canary=4))
+
+    assert main(["build", str(series)]) == 3
