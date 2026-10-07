@@ -19,7 +19,7 @@
 
 - [X] T006 [US3] Write tests for ledger/v0 and the idea-link check. Then implement `src/unfold/episodes/ledger.py` and `src/unfold/episodes/links.py`, and add `knows` to series/v0. Check: the tests pass.
 - [X] T007 [US3] Write the ledger after each episode, show it to the outline step, and let callbacks name an earlier episode. Check: tests in `tests/build/test_graph.py` pass.
-- [ ] T008 [US3] Add the `ideas-link` check to `unfold eval`. Check: a test passes.
+- [X] T008 [US3] Add the `ideas-link` check to `unfold eval`. Check: a test passes.
 
 ## Phase 4: The gate
 

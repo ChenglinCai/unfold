@@ -12,6 +12,9 @@ from pathlib import Path
 
 import yaml
 
+from unfold.episodes.links import check_links
+from unfold.formats import read_data
+from unfold.formats.episode import OutlineV0
 from unfold.script import load_script
 from unfold.sources import load
 
@@ -38,6 +41,7 @@ CHECKS = (
     "storyboard-reuses-components",
     "scene-uses-components",
     "chart-numbers-grounded",
+    "ideas-link",
 )
 UNITS = {
     w: n
@@ -194,6 +198,15 @@ def scene_uses_components(components: list[str]) -> bool:
     return storyboard_reuses_components(components)
 
 
+def links_by_episode(outlines: list[OutlineV0], knows: set[str]) -> dict[str, bool]:
+    """Whether every idea each episode needs comes from earlier, or is known."""
+    errors = check_links(outlines, knows)
+    return {
+        o.episode: not any(e.startswith(f"{o.episode}/") for e in errors)
+        for o in outlines
+    }
+
+
 @dataclass(frozen=True)
 class Verdict:
     check: str
@@ -214,6 +227,16 @@ def evaluate(folder: Path) -> list[Verdict]:
     title = " ".join(doc.title for doc in docs)
     reaches = first_episode_reaches_title(title, episodes[0]["concepts"])
     verdicts.append(Verdict("first-episode-reaches-title", plan_path, reaches))
+    built = [
+        OutlineV0.model_validate(read_data(folder / e["id"] / "outline.yaml"))
+        for e in episodes
+        if (folder / e["id"] / "outline.yaml").is_file()
+    ]
+    links = links_by_episode(built, set(series.get("knows") or []))
+    verdicts += [
+        Verdict("ideas-link", folder / episode / "outline.yaml", ok)
+        for episode, ok in links.items()
+    ]
     for index, episode in enumerate(episodes):
         outline_path = folder / episode["id"] / "outline.yaml"
         if not outline_path.is_file():
