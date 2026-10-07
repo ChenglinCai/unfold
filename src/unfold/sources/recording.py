@@ -37,8 +37,8 @@ def decode(path: Path) -> np.ndarray:
 
 
 def read(path: Path, meta: Meta, model: str = MODEL) -> SourceDocument:
-    try:
-        from faster_whisper import WhisperModel
+    try:  # The audio extra is optional, so CI type-checks without it.
+        from faster_whisper import WhisperModel  # pyright: ignore[reportMissingImports]
     except ImportError as error:
         raise RuntimeError(
             "Recordings need the audio extra: uv sync --extra audio"

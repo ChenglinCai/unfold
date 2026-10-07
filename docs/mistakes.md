@@ -85,3 +85,9 @@ These came from earlier drafts of the project plan.
 - What happened: Claude committed some files while new, untracked files needed edits that were not staged. Pre-commit set the unstaged edits aside, so pyright saw the new files without them and failed.
 - Cause: Claude piped the commit gate into `tail`, which hid the failure. The command chain also kept going, because the shell had no `pipefail`.
 - Guardrail: before a partial commit, move aside the untracked files that depend on unstaged edits. Never pipe a gate's output where its exit code matters.
+
+### CI stayed red for about 40 minutes
+
+- What happened: the recording reader imports faster-whisper, an optional extra. CI skips the extra, so CI's pyright failed, and nobody looked.
+- Cause: Claude trusted local checks, and the local environment has every extra. Claude also stopped checking CI after each push.
+- Guardrail: check the CI run after any push that changes dependencies or imports. Type-check once without the extras before such a push.
