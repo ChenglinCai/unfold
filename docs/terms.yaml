@@ -1,0 +1,32 @@
+# Terms to avoid, each with the term to use instead and the reason.
+# `unfold lint` warns about each one, and `unfold lint --fix` replaces it.
+bookmark:
+  prefer: cue
+  reason: The glossary calls a marker in a script a cue. manim-voiceover calls it a bookmark.
+bookmarks:
+  prefer: cues
+  reason: The glossary calls a marker in a script a cue.
+licence:
+  prefer: license
+  reason: The project uses American spelling.
+neighbours:
+  prefer: neighbors
+  reason: The project uses American spelling.
+neighbour:
+  prefer: neighbor
+  reason: The project uses American spelling.
+colour:
+  prefer: color
+  reason: The project uses American spelling.
+colours:
+  prefer: colors
+  reason: The project uses American spelling.
+behaviour:
+  prefer: behavior
+  reason: The project uses American spelling.
+utilize:
+  prefer: use
+  reason: The plain word reads faster.
+in order to:
+  prefer: to
+  reason: The shorter phrase means the same.

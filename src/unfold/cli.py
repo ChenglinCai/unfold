@@ -1,0 +1,27 @@
+"""The `unfold` command. `docs/` describes each subcommand's contract."""
+
+import argparse
+import sys
+from collections.abc import Sequence
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="unfold",
+        description="Turn learning material into explainer videos.",
+    )
+    commands = parser.add_subparsers(dest="command", required=True)
+    from unfold.lint.command import add_lint_command
+
+    add_lint_command(commands)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    return args.run(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -14,8 +14,8 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Create `src/unfold/lint/__init__.py` and `src/unfold/cli.py`, and add `unfold = "unfold.cli:main"` under `[project.scripts]` in `pyproject.toml`. Check: `uv run unfold --help` prints the usage.
-- [ ] T002 [P] Write `docs/terms.yaml`, mapping each term to avoid to its preferred term and a reason, starting with "bookmark" to "cue". Check: it loads as a YAML mapping.
+- [X] T001 Create `src/unfold/lint/__init__.py` and `src/unfold/cli.py`, and add `unfold = "unfold.cli:main"` under `[project.scripts]` in `pyproject.toml`. Check: `uv run unfold --help` prints the usage.
+- [X] T002 [P] Write `docs/terms.yaml`, mapping each term to avoid to its preferred term and a reason, starting with "bookmark" to "cue". Check: it loads as a YAML mapping.
 
 ## Phase 2: Foundational
 
