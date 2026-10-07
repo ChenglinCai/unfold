@@ -26,10 +26,10 @@
 
 **Independent Test**: each adapter's test builds a small sample, ingests it, and checks the anchors and profile.
 
-- [ ] T006 [P] [US1] Write `tests/sources/test_pdf.py`, which draws a two-page PDF with cairo. Check: the tests fail.
-- [ ] T007 [US1] Implement `src/unfold/sources/pdf.py` for textbooks and slides. Check: `tests/sources/test_pdf.py` passes.
-- [ ] T008 [P] [US1] Write `tests/sources/test_pptx.py`, which builds a two-slide deck. Check: the tests fail.
-- [ ] T009 [US1] Implement `src/unfold/sources/pptx.py`. Check: `tests/sources/test_pptx.py` passes.
+- [X] T006 [P] [US1] Write `tests/sources/test_pdf.py`, which draws a two-page PDF with cairo. Check: the tests fail.
+- [X] T007 [US1] Implement `src/unfold/sources/pdf.py` for textbooks and slides. Check: `tests/sources/test_pdf.py` passes.
+- [X] T008 [P] [US1] Write `tests/sources/test_deck.py`, which builds a two-slide deck. The name avoids `pptx`, the package it reads. Check: the tests fail.
+- [X] T009 [US1] Implement `src/unfold/sources/deck.py`. Check: `tests/sources/test_deck.py` passes.
 - [ ] T010 [P] [US1] Write `tests/sources/test_web.py` for a Markdown file and a local HTML page. Check: the tests fail.
 - [ ] T011 [US1] Implement `src/unfold/sources/web.py`. Check: `tests/sources/test_web.py` passes.
 - [ ] T012 [P] [US1] Write `tests/sources/test_scan.py`, which draws text into an image and skips off macOS. Check: the tests fail.
@@ -72,7 +72,7 @@
 
 ```text
 Task: "T006 Write tests/sources/test_pdf.py"
-Task: "T008 Write tests/sources/test_pptx.py"
+Task: "T008 Write tests/sources/test_deck.py"
 Task: "T010 Write tests/sources/test_web.py"
 ```
 

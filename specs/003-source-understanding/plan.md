@@ -64,7 +64,7 @@ src/unfold/
 │   ├── __init__.py       SourceDocument: load and save the manifest and the text
 │   ├── profile.py        rights and quality facts
 │   ├── pdf.py            PDFs as textbooks or slides
-│   ├── pptx.py           PowerPoint decks
+│   ├── deck.py           PowerPoint decks
 │   ├── scan.py           images, through vision.swift
 │   ├── vision.swift      Apple Vision text recognition
 │   ├── web.py            web pages and Markdown

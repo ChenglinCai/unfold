@@ -13,6 +13,8 @@ from pathlib import Path
 
 import yaml
 
+from unfold.sources.profile import needs, rights
+
 FORMAT = "source/v1"
 MANIFEST = "source.yaml"
 TEXT = "document.md"
@@ -86,6 +88,31 @@ class SourceDocument:
             partial.write_text(content, encoding="utf-8")
             partial.replace(folder / name)
         return folder
+
+
+@dataclass(frozen=True)
+class Meta:
+    """What the user tells ingest about a source, beyond the file itself."""
+
+    id: str
+    title: str
+    family: str
+    origin: str
+    license: str | None = None
+    owner: str = ""
+    attribution: str = ""
+    subject: str = ""
+
+
+def build(
+    meta: Meta, anchors: list[Anchor], profile: dict[str, object]
+) -> SourceDocument:
+    """Make a source document, adding the rights, subject, and needs to the profile."""
+    full = {**profile, "subject": meta.subject, "needs": needs(meta.family)}
+    granted = rights(meta.license, meta.owner, meta.attribution)
+    return SourceDocument(
+        meta.id, meta.title, meta.family, meta.origin, granted, full, anchors
+    )
 
 
 def load(folder: Path) -> SourceDocument:
