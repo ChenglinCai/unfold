@@ -82,3 +82,16 @@ Task: "T010 Write tests/sources/test_web.py"
 2. The PDF and web adapters first, because three golden sources need them.
 3. The understand step, driven by a fake runner, so no model call happens until the gate.
 4. The gate, which makes the real model calls.
+
+## Phase 7: Convergence
+
+- [ ] T027 CRITICAL: Ask the maintainer to resolve the one-output rule. The understand job writes two files, a knowledge map and study notes. Record the question in `docs/progress.md`, with the recommendation to split the job in M4, per Constitution II (contradicts)
+- [ ] T028 CRITICAL: Ask the maintainer which versions a key must cover. The understand key leaves out the manim and component-library versions, which its outputs never use. Record proposed wording in `docs/progress.md`, per Constitution II (contradicts)
+- [ ] T029 CRITICAL: Add a finance source to the golden set, then ingest and understand it with one model job. Check: six outputs pass their checks, per Constitution IV (missing)
+- [ ] T030 State the safety implications of downloads and parsing libraries in `docs/dependencies.md`. Say what they allow, what could go wrong, and how to undo them, per Constitution IX (partial)
+- [ ] T031 Add a hint to the profile of a PDF with almost no text, which suggests the scan reader. Check: a test in `tests/sources/test_pdf.py`, per Edge Cases (partial)
+- [ ] T032 Add a slow test that a recording with a long silence keeps correct timestamps, in `tests/sources/test_recording.py`, per Edge Cases (missing)
+- [ ] T033 Add `files` to the manifest, naming the text file and any original, in `src/unfold/sources/__init__.py`, per data-model source/v1 (partial)
+- [ ] T034 Add `family` to the profile, so the profile states every fact that FR-004 names, per FR-004 (partial)
+- [ ] T035 Record the formula-keeping web reader and the citation-skipping linter as decisions in `research.md`, per plan research decisions (unrequested)
+- [ ] T036 Make `unfold understand` say "1 try", not "1 tries", per contracts/cli.md (partial)
