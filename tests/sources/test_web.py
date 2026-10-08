@@ -92,3 +92,16 @@ def test_formulas_keep_their_tex_and_wiki_clutter_goes() -> None:
     assert "[1]" not in text
     assert "[edit]" not in [a.title for a in doc.anchors][-1]
     assert "Part of a series" not in text
+
+
+def test_a_hash_inside_a_code_fence_is_not_a_heading(tmp_path: Path) -> None:
+    path = tmp_path / "notes.md"
+    fence = "```"
+    path.write_text(
+        f"## Setup\n\n{fence}sh\n# install it\nuv sync\n{fence}\n\n## Use\n\nRun it.\n"
+    )
+
+    doc = read_markdown(path, META)
+
+    assert [a.id for a in doc.anchors] == ["setup", "use"]
+    assert "# install it" in doc.anchors[0].text
