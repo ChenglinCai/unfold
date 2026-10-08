@@ -16,7 +16,8 @@ from unfold.sources.web import _document
 DEPTH = 10  # how deep includes may nest
 READS = 500  # how many files one document may include
 CODE = re.compile(
-    r"\\begin\{(verbatim\*?|lstlisting|minted)\}(.*?)\\end\{\1\}", re.DOTALL
+    r"\\begin\{(verbatim\*?|Verbatim|BVerbatim|semiverbatim|lstlisting|minted)\}(.*?)\\end\{\1\}",
+    re.DOTALL,
 )
 VERB = re.compile(r"\\verb\*?([^\sA-Za-z*])(.*?)\1")
 # A comment also ends its line, unless a blank line follows, as in TeX.
@@ -110,18 +111,11 @@ class _Kept:
         return text
 
 
-def _outside_code(text: str, edit: Callable[[str], str]) -> str:
-    """Apply edit to the text between verbatim blocks, and keep each block as it is."""
-    parts: list[str] = []
-    last = 0
-    for block in CODE.finditer(text):
-        parts += [edit(text[last : block.start()]), block.group(0)]
-        last = block.end()
-    return "".join([*parts, edit(text[last:])])
-
-
-def _uncomment(text: str) -> str:
-    return _outside_code(text, lambda part: SKIPPED.sub("", COMMENT.sub(r"\1", part)))
+def _shield(text: str, keep: _Kept) -> str:
+    """Set code aside, so that no later step reads the commands that it shows."""
+    return VERB.sub(
+        lambda m: keep(m.group(0)), CODE.sub(lambda m: keep(m.group(0)), text)
+    )
 
 
 def _body(text: str) -> str:
@@ -158,8 +152,9 @@ def gather(main: Path) -> str:
         reads += 1
         if reads > READS or len(chain) > DEPTH:
             raise ValueError(f"includes go past {READS} files or {DEPTH} levels")
+        keep = _Kept()
         text = chain[-1].read_text(encoding="utf-8", errors="replace").replace("\0", "")
-        text = _uncomment(text)
+        text = SKIPPED.sub("", COMMENT.sub(r"\1", _shield(text, keep)))
         if len(chain) > 1:
             text = _body(text)
 
@@ -171,7 +166,7 @@ def gather(main: Path) -> str:
                 raise ValueError(f"{target.name} includes itself")
             return read((*chain, target))
 
-        return _outside_code(text, lambda part: INCLUDE.sub(include, part))
+        return keep.restore(INCLUDE.sub(include, text))
 
     return read((main.resolve(),))
 
@@ -217,7 +212,7 @@ def _fence(environment: str, body: str) -> str:
     """A verbatim block as fenced code, with its language when the block names one."""
     language = ""
     options = _optional(body, 0) if body.startswith("[") else None
-    if environment in ("lstlisting", "minted") and options is not None:
+    if environment not in ("verbatim", "verbatim*", "semiverbatim") and options:
         found = re.search(r"language=\{?(\w+)", options[0])
         language, body = (found.group(1).lower() if found else ""), body[options[1] :]
     if environment == "minted" and body.startswith("{") and (name := _group(body, 0)):

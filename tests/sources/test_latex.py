@@ -85,6 +85,25 @@ def test_includes_inside_the_folder_are_followed(tmp_path: Path) -> None:
     assert doc.profile["format"] == "tex"
 
 
+def test_code_that_shows_latex_stays_code(tmp_path: Path) -> None:
+    (tmp_path / "main.tex").write_text(
+        "\\begin{document}\n\\section{Start}\nPut \\verb|\\begin{document}| first.\n"
+        "\\begin{semiverbatim}\n\\begin{document}\n\\end{semiverbatim}\n"
+        "\\input{more}\n\\end{document}\n"
+    )
+    (tmp_path / "more.tex").write_text(
+        "\\documentclass{beamer}\n\\begin{document}\n\\section{More}\n"
+        "\\begin{Verbatim}\n\\end{document}\n\\end{Verbatim}\n"
+        "A second part.\n\\end{document}\n"
+    )
+
+    doc = read_latex(tmp_path / "main.tex", META)
+
+    assert [a.id for a in doc.anchors] == ["start", "more"]
+    assert "Put `\\begin{document}` first." in doc.text()
+    assert "A second part." in doc.text()
+
+
 @pytest.mark.parametrize("kind", ["parent", "absolute", "link", "hidden"])
 def test_includes_cannot_leave_the_folder(tmp_path: Path, kind: str) -> None:
     folder = tmp_path / "notes"
