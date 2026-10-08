@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Changed the storyboard prompt to name only real components and prefer their still pictures. Custom beats fell from 13 to 7 of 96, and grounded chart numbers rose from 7 to 10 of 14, so the change stays.
 - Added an episode contact sheet, with one frame per beat, to each stitched episode and to the review page. The review page also shows the custom share.
 - Added a Jupyter notebook reader to `unfold ingest`, and made the Markdown section parser skip code fences.
 - Added English and Chinese subtitle tracks to the gallery and review players, and fixed a gallery link that PR 11 broke.

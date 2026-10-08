@@ -101,8 +101,8 @@ This file holds the current state of the work, so that a new session can resume 
 22. The plan's M7 gate names Cowork as well as Claude Code. The spec moved Cowork to a later release, so that half of the gate is still open.
 23. M8 began with the four components that the golden set asked for most. They draw a complex plane, a histogram, a present-value chart, and a flow diagram. Claude made the design calls that principle VIII leaves to you. `specs/008-domain-packs/research.md` lists them.
 24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
-25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
+25. Fixed: the storyboard prompt now names only real components and prefers their still pictures. A test keeps the list in step with the library.
 26. Fixed: importing `unfold.visuals.components` first used to fail with a circular import. `unfold/fields.py` now holds the shared field types, and a test imports each affected module first.
-27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.
+27. Resolved: the domain packs first left 13.5 percent of golden beats custom, over the 10 percent goal. After the storyboard fix, 7.3 percent stay custom. The neighborhood circle and motion inside components remain options.
 28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
 29. Claude read the Chinese subtitles of one public episode, and the spec asks for your reading too. Please read `episode.zh.srt` of velocity-of-money beside its video.
