@@ -1,0 +1,26 @@
+name: Idea
+description: Suggest a feature, a component, or a new kind of source.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you tried to make, and what got in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What unfold could do instead. For a component, say where the need recurs.
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Would you build it?
+      options:
+        - Yes, with some guidance
+        - Maybe
+        - No

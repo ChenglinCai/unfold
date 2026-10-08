@@ -104,3 +104,4 @@ This file holds the current state of the work, so that a new session can resume 
 25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
 26. Importing `unfold.visuals.components` first, in a fresh process, fails with a circular import through `unfold.formats`. The command line and the tests load `unfold.formats` first, so nothing breaks today. Moving the shared field types out of `unfold.formats` would end the cycle.
 27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.
+28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
