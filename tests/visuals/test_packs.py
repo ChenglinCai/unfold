@@ -2,6 +2,7 @@
 
 import itertools
 import math
+from collections.abc import Iterator
 from pathlib import Path
 
 import numpy as np
@@ -435,3 +436,34 @@ def test_a_box_label_never_splits_a_word() -> None:
 
     words = " ".join(texts(drawing, "box-label")).split()
     assert sorted(words) == sorted(" ".join([*labels, "No training step"]).split())
+
+
+@pytest.fixture
+def wide_font() -> Iterator[None]:
+    """Draw with Verdana where it exists. Linux's default font already runs as wide."""
+    import manimpango
+
+    wide = "Verdana" in manimpango.list_fonts()
+    if wide:
+        Text.set_default(font="Verdana")
+    yield
+    if wide:
+        Text.set_default()
+
+
+@pytest.mark.parametrize("region", ["left", "right"])
+def test_a_flow_diagram_keeps_room_in_half_regions_with_a_wide_font(
+    wide_font: None, region: str
+) -> None:
+    boxes = [
+        {"id": "data", "label": "Labeled data"},
+        {"id": "method", "label": "A method"},
+        {"id": "guess", "label": "A prediction"},
+    ]
+    links = [{"from": "data", "to": "method", "label": "train"}]
+    visual = {"component": "flow-diagram", "boxes": boxes, "links": links}
+
+    _, min_font = build(parse(visual), region)
+
+    # 19 points leaves room above the 18-point floor for Linux's wider default font.
+    assert min_font is not None and min_font >= 19

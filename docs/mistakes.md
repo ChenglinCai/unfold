@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### A Linux font failure waited until the pull request
+
+- What happened: twenty commits of the domain packs ran no Linux check, because CI runs only on pull requests. When the pull request opened, Linux's wider font shrank a flow diagram below 18 points.
+- Cause: Claude opened the pull request at the end of the feature. M5 had already shown that Linux fonts run wider, but no local test drew with a wide font.
+- Guardrail: open a draft pull request with a feature's first commit, so CI checks every push on Linux. A test now draws flow diagrams with Verdana on macOS, which runs about as wide as Linux's font.
+
 ### iCloud made 90 conflict copies after a pull
 
 - What happened: Claude switched to an old local main and pulled, which deleted and rewrote many files at once. iCloud then saved 80 file copies, such as `pages 2.py`, and 10 empty folder copies.

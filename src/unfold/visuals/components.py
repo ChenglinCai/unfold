@@ -8,7 +8,7 @@ drawing only ever shrinks to fit, so the layout check can catch tiny text.
 import math
 import textwrap
 from collections.abc import Iterable
-from itertools import combinations, pairwise
+from itertools import accumulate, combinations, pairwise
 
 import numpy as np
 from manim import (
@@ -420,28 +420,43 @@ def _flow_diagram(chart: FlowDiagram, width: float, height: float) -> VGroup:
         neighbors = abs(order[link.to] - order[link.from_]) == 1
         return neighbors and (link.to, link.from_) not in pairs
 
-    # In a row, a straight link's label sits between two boxes, so the gap fits it.
-    widest = [
-        _text(link.label, theme.LABEL_SIZE).width
-        for link in chart.links
-        if link.label and straight(link)
-    ]
-    gap = max([0.9, *(width + 0.4 for width in widest)]) if across else 0.6
-    row = min((width - gap * (count - 1)) / count, 3.2)
+    # In a row, a straight link's label sits between two boxes, so its gap fits it.
+    gaps = [0.9 if across else 0.6] * (count - 1)
+    for link in chart.links:
+        if across and link.label and straight(link):
+            slot = min(order[link.from_], order[link.to])
+            label = _text(link.label, theme.LABEL_SIZE).width + 0.4
+            gaps[slot] = max(gaps[slot], label)
+    gap = gaps[0] if gaps else 0.0  # a column's gaps are all the same
+    row = min((width - sum(gaps)) / count, 3.2)
     box_w = row if across else min(width * 0.5, 4.0)
     words = [_box_label(box.label, box_w) for box in chart.boxes]
-    # A word never splits, so a box grows to its widest line. The layout check then
-    # fails a row that no longer fits, and the retry asks for shorter labels.
-    box_w = max(box_w, *(text.width + 0.3 for text in words))
+    # A word never splits, so a box grows to its widest line. In a row, each box grows
+    # on its own, so one long word widens only its box. The layout check then fails a
+    # row that still does not fit, and the retry asks for shorter labels.
+    needs = [text.width + 0.3 for text in words]
+    widths = (
+        [max(box_w, need) for need in needs] if across else [max(box_w, *needs)] * count
+    )
     nominal = 1.0 if across else min((height - gap * (count - 1)) / count, 1.0)
     box_h = max(nominal, *(text.height + 0.3 for text in words))
+    if across:
+        lefts = accumulate(
+            (w + g for w, g in zip(widths[:-1], gaps, strict=True)),
+            initial=-(sum(widths) + sum(gaps)) / 2,
+        )
+        centers = [
+            (left + w / 2, 0.0, 0.0) for left, w in zip(lefts, widths, strict=True)
+        ]
+    else:
+        centers = [
+            (0.0, -(i - (count - 1) / 2) * (box_h + gap), 0.0) for i in range(count)
+        ]
     frames: dict[str, RoundedRectangle] = {}
     group = VGroup()
-    for index, (box, text) in enumerate(zip(chart.boxes, words, strict=True)):
-        step = index - (count - 1) / 2
-        center = (
-            (step * (box_w + gap), 0, 0) if across else (0, -step * (box_h + gap), 0)
-        )
+    for box, text, box_w, center in zip(
+        chart.boxes, words, widths, centers, strict=True
+    ):
         color = theme.YELLOW if box.id == chart.highlight else theme.BLUE
         frame = RoundedRectangle(
             corner_radius=0.15, width=box_w, height=box_h, stroke_color=color
