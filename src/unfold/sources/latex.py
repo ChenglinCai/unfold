@@ -2,12 +2,14 @@
 
 The reader never runs TeX. It follows `\\input`, `\\include`, and `\\subfile` only
 to `.tex` files inside the main file's folder, because a stranger's file could
-otherwise pull private files into the source, and from there to the model.
-Commands that it does not know keep only their text.
+otherwise pull private files into the source, and from there to the model. It
+expands the document's own macros, so that each formula stands alone. Commands
+that it does not know keep only their text.
 """
 
 import re
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
 from unfold.sources import Meta, SourceDocument
@@ -15,6 +17,7 @@ from unfold.sources.web import _document
 
 DEPTH = 10  # how deep includes may nest
 READS = 500  # how many files one document may include
+PASSES = 50  # how many rounds of macro expansion
 CODE = re.compile(
     r"\\begin\{(verbatim\*?|Verbatim|BVerbatim|semiverbatim|lstlisting|minted)\}(.*?)\\end\{\1\}",
     re.DOTALL,
@@ -28,6 +31,13 @@ SKIPPED = re.compile(
 )
 INCLUDE = re.compile(r"\\(?:input|include|subfile)\{([^{}]*)\}")
 DOCUMENT = re.compile(r"\\begin\{document\}(.*?)(?:\\end\{document\}|$)", re.DOTALL)
+WORD = re.compile(r"\\[A-Za-z@]+")
+CONTROL = re.compile(r"\\(?:[A-Za-z@]+|.)", re.DOTALL)
+DEFINE = re.compile(
+    r"\\(newcommand|renewcommand|providecommand|DeclareRobustCommand"
+    r"|DeclareMathOperator|[gex]?def)(?![A-Za-z@])(\*?)"
+)
+PARAMETERS = re.compile(r"(?:#\d)*")
 DISPLAY = {
     "equation": "",
     "displaymath": "",
@@ -93,6 +103,15 @@ STYLE = re.compile(
     r"|hypersetup|geometry|captionsetup|lstset|tcbset|usetikzlibrary|pgfplotsset"
     r"|graphicspath|theoremstyle|newtheoremstyle|numberwithin)\*?(?![A-Za-z@])"
 )
+
+
+@dataclass(frozen=True)
+class Macro:
+    """A macro that the document defines."""
+
+    arguments: int
+    default: str | None  # the first argument's default, when it is optional
+    body: str
 
 
 class _Kept:
@@ -208,6 +227,123 @@ def _optional(text: str, at: int) -> tuple[str, int] | None:
     return None
 
 
+def _argument(text: str, at: int) -> tuple[str, int] | None:
+    """One macro argument: a braced group, a control sequence, or one character."""
+    group = _group(text, at)
+    if group is not None:
+        return group
+    start = _skip(text, at)
+    if start >= len(text) or text[start] in "{}":
+        return None
+    control = CONTROL.match(text, start)
+    return (control.group(0), control.end()) if control else (text[start], start + 1)
+
+
+def _name(text: str, at: int) -> tuple[str, int] | None:
+    """The macro that a definition names, written {\\name} or \\name."""
+    group = _group(text, at)
+    if group is not None:
+        inside = group[0].strip()
+        return (inside[1:], group[1]) if WORD.fullmatch(inside) else None
+    word = WORD.match(text, _skip(text, at))
+    return (word.group(0)[1:], word.end()) if word else None
+
+
+def _macro(text: str, at: int, kind: str, star: str) -> tuple[str, Macro, int] | None:
+    """One definition from `at`: the macro's name, the macro, and where it ends."""
+    named = _name(text, at)
+    if named is None:
+        return None
+    name, at = named
+    arguments, default = 0, None
+    if kind.endswith("def"):
+        parameters = PARAMETERS.match(text, at)
+        if parameters is not None:
+            arguments, at = parameters.group(0).count("#"), parameters.end()
+    elif kind != "DeclareMathOperator" and (count := _optional(text, at)) is not None:
+        if not count[0].strip().isdigit():
+            return None
+        arguments, at = int(count[0]), count[1]
+        if (optional := _optional(text, at)) is not None:
+            default, at = optional
+    body = _group(text, at)
+    if body is None:
+        return None
+    if kind == "DeclareMathOperator":
+        return name, Macro(0, None, f"\\operatorname{star}{{{body[0]}}}"), body[1]
+    return name, Macro(arguments, default, body[0]), body[1]
+
+
+def definitions(text: str) -> tuple[str, dict[str, Macro]]:
+    """The text without its macro definitions, and the macros it defines."""
+    macros: dict[str, Macro] = {}
+    parts: list[str] = []
+    index = 0
+    while (match := DEFINE.search(text, index)) is not None:
+        found = _macro(text, match.end(), match.group(1), match.group(2))
+        if found is None:  # a form this reader does not know, so it stays as written
+            parts.append(text[index : match.end()])
+            index = match.end()
+            continue
+        name, macro, end = found
+        if match.group(1) != "providecommand" or name not in macros:
+            macros[name] = macro
+        parts.append(text[index : match.start()])
+        index = end
+    parts.append(text[index:])
+    return "".join(parts), macros
+
+
+def _substitute(body: str, values: list[str]) -> str:
+    """The body with #1, #2, and so on replaced by the argument values."""
+
+    def value(number: re.Match[str]) -> str:
+        position = int(number.group(1))
+        return values[position - 1] if 0 < position <= len(values) else ""
+
+    return re.sub(r"#(\d)", value, body)
+
+
+def _expand_once(text: str, use: re.Pattern[str], macros: dict[str, Macro]) -> str:
+    parts: list[str] = []
+    index = 0
+    while (match := use.search(text, index)) is not None:
+        macro, at = macros[match.group(1)], match.end()
+        values: list[str] = []
+        if macro.default is not None:
+            optional = _optional(text, at)
+            value, at = optional if optional is not None else (macro.default, at)
+            values.append(value)
+        while len(values) < macro.arguments and (argument := _argument(text, at)):
+            value, at = argument
+            values.append(value)
+        if len(values) < macro.arguments:  # too few arguments, so it stays as written
+            parts.append(text[index : match.end()])
+            index = match.end()
+            continue
+        parts.append(text[index : match.start()] + _substitute(macro.body, values))
+        index = at
+    parts.append(text[index:])
+    return "".join(parts)
+
+
+def expand(text: str, macros: dict[str, Macro]) -> str:
+    """Replace each use of the document's macros with its body, round after round."""
+    if not macros:
+        return text
+    names = "|".join(sorted(map(re.escape, macros), key=len, reverse=True))
+    use = re.compile(rf"\\({names})(?![A-Za-z@])")
+    limit = 4 * len(text) + 100_000
+    for _ in range(PASSES):
+        expanded = _expand_once(text, use, macros)
+        if expanded == text:
+            return text
+        if len(expanded) > limit:
+            break
+        text = expanded
+    raise ValueError("the document's macros expand without end")
+
+
 def _fence(environment: str, body: str) -> str:
     """A verbatim block as fenced code, with its language when the block names one."""
     language = ""
@@ -294,8 +430,10 @@ def latex_markdown(text: str) -> str:
         lambda m: "\n\n" + keep(_fence(m.group(1), m.group(2))) + "\n\n", text
     )
     text = VERB.sub(lambda m: keep(f"`{m.group(2)}`"), text)
-    text = _body(SKIPPED.sub("", COMMENT.sub(r"\1", text)))
+    text, macros = definitions(SKIPPED.sub("", COMMENT.sub(r"\1", text)))
+    text = expand(_body(text), macros)
     text = MATH.sub(lambda m: _formula(m, keep), text)
+    text = _replace(text, "ensuremath", 1, lambda v: keep(f"${v[0]}$"))
     text = LINEBREAK.sub("\n", text)
     text = ESCAPED.sub(lambda m: keep(PLAIN.get(m.group(1), "\\" + m.group(1))), text)
     text = ENVIRONMENT.sub("\n\n", _commands(_style(text)))
