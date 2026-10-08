@@ -12,6 +12,7 @@ from pathlib import Path
 
 import yaml
 
+from unfold.episodes.subtitles import vtt_text
 from unfold.evals import CHECKS, count_flags, evaluate
 from unfold.script import load_script
 from unfold.sources import load
@@ -25,6 +26,8 @@ a { color: #5fb3e4; } img, video { max-width: 100%; }
 
 
 PLAIN = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*")
+# Each subtitle file beside an episode, with its language code and menu label.
+TRACKS = (("episode.srt", "en", "English"), ("episode.zh.srt", "zh-Hans", "中文"))
 
 
 def plain(name: object) -> bool:
@@ -46,6 +49,23 @@ def _episodes(folder: Path) -> list[dict[str, str]]:
         for e in listed
         if isinstance(e, dict) and plain(e.get("id")) and (folder / e["id"]).is_dir()
     ]
+
+
+def _tracks(folder: Path, base: str) -> str:
+    """Write each subtitle file as WebVTT, which browsers play, and link it to a player."""
+    tracks = []
+    for name, language, label in TRACKS:
+        srt = folder / name
+        if not srt.is_file():
+            continue
+        vtt = srt.with_suffix(".vtt")
+        vtt.write_text(vtt_text(srt.read_text(encoding="utf-8")), encoding="utf-8")
+        default = "" if tracks else " default"
+        tracks.append(
+            f'<track kind="subtitles" srclang="{language}" label="{label}" '
+            f'src="{base}/{vtt.name}"{default}>'
+        )
+    return "".join(tracks)
 
 
 def _page(title: str, body: list[str]) -> str:
@@ -92,7 +112,8 @@ def _episode_html(folder: Path, episode: dict[str, str]) -> list[str]:
     name = episode["id"]
     part = [f"<h2>{escape(name)}: {escape(episode.get('title', ''))}</h2>"]
     if (folder / name / "episode.mp4").is_file():
-        part.append(f'<video controls src="{name}/episode.mp4"></video>')
+        tracks = _tracks(folder / name, name)
+        part.append(f'<video controls src="{name}/episode.mp4">{tracks}</video>')
     outline = _yaml(folder / name / "outline.yaml")
     segments = outline.get("segments")
     for segment in segments if isinstance(segments, list) else []:
@@ -159,13 +180,13 @@ def gallery(folders: list[Path], out: Path) -> list[str]:
             target = out / name / episode["id"]
             target.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(video, target / "episode.mp4")
-            for name in ("episode.srt", "episode.zh.srt"):
-                if (srt := video.with_name(name)).is_file():
-                    shutil.copyfile(srt, target / name)
+            for subtitles, _, _ in TRACKS:
+                if (srt := video.with_name(subtitles)).is_file():
+                    shutil.copyfile(srt, target / subtitles)
             section.append(f"<h3>{escape(episode.get('title', episode['id']))}</h3>")
-            section.append(
-                f'<video controls src="{name}/{episode["id"]}/episode.mp4"></video>'
-            )
+            base = f"{name}/{episode['id']}"
+            tracks = _tracks(target, base)
+            section.append(f'<video controls src="{base}/episode.mp4">{tracks}</video>')
         sections += section
         lines.append(f"included {name}")
     out.mkdir(parents=True, exist_ok=True)

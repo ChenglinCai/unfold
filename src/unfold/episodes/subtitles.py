@@ -4,6 +4,7 @@ A cue holds at most two lines of 42 characters. A long beat splits into
 several cues, each timed by its share of the beat's words.
 """
 
+import re
 import textwrap
 from dataclasses import dataclass
 
@@ -47,3 +48,8 @@ def srt_text(cues: list[Cue]) -> str:
         for number, cue in enumerate(cues, start=1)
     ]
     return "\n".join(blocks)
+
+
+def vtt_text(srt: str) -> str:
+    """WebVTT, which browsers play, from SubRip: a header, and a dot in each time."""
+    return "WEBVTT\n\n" + re.sub(r"(\d{2}:\d{2}:\d{2}),(\d{3})", r"\1.\2", srt)
