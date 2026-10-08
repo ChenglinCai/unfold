@@ -99,3 +99,31 @@ def test_checks_use_a_private_manim_cache() -> None:
     check_scene(scene(), CUES)
 
     assert Path(config.media_dir).name.startswith("unfold-manim-")
+
+
+def test_tex_in_any_component_label_fails() -> None:
+    point = {"label": "e^{2πi} = 1", "radius": 1, "angle": 0}
+    visual = {"component": "complex-plane", "points": [point]}
+    entries = [{"cue": "turn", "region": "plot", "visual": visual}]
+
+    [error] = check_scene(scene(entries=entries), ["turn"])
+
+    assert error.startswith("turn: a complex-plane label shows TeX as plain text")
+    assert "e^(iθ)" in error
+
+
+def test_tex_stays_allowed_in_equations_and_custom_notes() -> None:
+    entries = [
+        {
+            "cue": "eq",
+            "region": "full",
+            "visual": {"component": "equation", "tex": "e^{i\\pi}"},
+        },
+        {
+            "cue": "note",
+            "region": "full",
+            "visual": {"component": "custom", "description": "e^{iθ} spins"},
+        },
+    ]
+
+    assert check_scene(scene(entries=entries), ["eq", "note"]) == []

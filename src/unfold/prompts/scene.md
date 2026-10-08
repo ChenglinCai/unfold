@@ -35,6 +35,7 @@ One entry for each beat, in the script's order. Each entry has these fields:
 - A text card holds words for the viewer to read. Never put stage directions on a card, such as "a plane appears".
 - When the storyboard describes motion, show the picture that the motion ends on, if a component can draw it. For example, boxes that slide into place become a flow diagram. Use `custom` only when the motion itself carries the idea.
 - Write math in an `equation`, never in a text card, because a text card prints TeX literally.
+- Every label outside an `equation` is plain text. Write symbols plainly, such as e^(iθ), never with braces or backslashes.
 - Never present invented numbers as facts, such as made-up poll results. Use numbers from the narration or the storyboard, or numbers you compute from them. When a chart shows example data, say so in its title, such as "Example rolls".
 - Keep text short. Long text shrinks below a readable size, and the check fails. In `full` or `plot`, a text card holds a title and about 4 lines of 40 characters. In `left`, `right`, `top`, or `bottom`, it holds a title and 2 short lines.
 - Keep chart and timeline labels to one or two words. Crowded labels fail the check.

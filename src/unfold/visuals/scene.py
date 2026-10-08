@@ -52,6 +52,23 @@ def private_media() -> str:
     return folder
 
 
+def labels(data: object) -> list[str]:
+    """Every string a component prints as plain text.
+
+    An equation's TeX compiles, and a custom note is for a person, so both stay out.
+    """
+    if isinstance(data, str):
+        return [data]
+    if isinstance(data, dict):
+        skip = {"tex", "description"}
+        return [
+            s for key, value in data.items() if key not in skip for s in labels(value)
+        ]
+    if isinstance(data, list):
+        return [s for value in data for s in labels(value)]
+    return []
+
+
 def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
     """Every layout failure in a scene, each named by its cue."""
     private_media()
@@ -66,6 +83,13 @@ def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
         ):
             errors.append(
                 f"{entry.cue}: a text card shows TeX as plain text. Use an equation, or words"
+            )
+            continue
+        if any(TEX.search(text) for text in labels(visual.model_dump())):
+            name = getattr(visual, "component", "visual")
+            errors.append(
+                f"{entry.cue}: a {name} label shows TeX as plain text. "
+                "Write plain symbols instead, such as e^(iθ)"
             )
             continue
         try:
