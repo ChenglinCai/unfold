@@ -20,7 +20,7 @@
 ## Phase 2: Foundational
 
 - [X] T002 Write tests for the custom share in `tests/evals/test_eval_checks.py`. Then add `custom_share()` to `src/unfold/evals/__init__.py`, and print it from `src/unfold/evals/command.py` in text and JSON. Check: the tests pass.
-- [ ] T003 Record the numbers before the change: run `unfold eval` on the six golden series into `../content/series/before-packs.json`, and run `unfold render` on each. Check: the file shows 27 custom beats of 96, and each render reuses its videos with 0 layout failures.
+- [X] T003 Record the numbers before the change: run `unfold eval` on the six golden series into `../content/series/before-packs.json`, and run `unfold render` on each. Check: the file shows 27 custom beats of 96, and each render reuses its videos with 0 layout failures.
 
 ## Phase 3: User Story 1, present value (Priority: P1) 🎯 MVP
 

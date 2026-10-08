@@ -26,7 +26,7 @@ Four new components replace the custom visuals that recur most in the golden set
 
 **Constraints**: no LaTeX in the new components, no model call in any test, and commits near 300 changed lines.
 
-**Scale/Scope**: six golden series, 12 segments, and 96 beats.
+**Scale/Scope**: six golden series, 7 episodes, 14 segments, and 96 beats.
 
 ## Constitution Check
 

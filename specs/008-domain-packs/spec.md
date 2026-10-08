@@ -146,8 +146,8 @@ The scene step learns the four components. The maintainer rebuilds the golden sc
 - Angles count in degrees, counterclockwise from the positive real axis, because storyboards name angles that way.
 - The discount rate compounds once per period, and times count in periods, such as years.
 - The bell curve is the normal curve with the given mean and spread, scaled to the histogram's area.
-- The golden set stays the six M2 sources, with 12 segments and 96 beats.
-- The rebuild makes about 12 model calls on the maintainer's own access, plus any retries.
+- The golden set stays the six M2 sources, with 7 episodes, 14 segments, and 96 beats.
+- The rebuild makes about 14 model calls on the maintainer's own access, plus any retries.
 - The machine-learning pack waits, because its visuals recur only twice.
 - Custom visuals still render as cards for review. Model-written manim code for them stays out of scope.
 - The maintainer is away and asked Claude to keep going. So Claude makes the design calls that principle VIII leaves to the maintainer, and records them for the gate.

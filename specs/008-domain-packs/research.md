@@ -57,7 +57,7 @@ Each entry records a decision, why we chose it, and what else we weighed. The ma
 ## D10. The component version rises from 3 to 4
 
 - **Decision**: raise `params.VERSION` once, with the first new component.
-- **Effect**: every scene key and render key changes. The rebuild makes 12 scene calls, then 12 renders and 6 episode stitches. Earlier steps keep their saved results, because their keys leave the version out.
+- **Effect**: every scene key and render key changes. The rebuild makes 14 scene calls, then 14 renders and 7 episode stitches. Earlier steps keep their saved results, because their keys leave the version out.
 
 ## D11. New components use plain text, not LaTeX
 
