@@ -73,7 +73,7 @@
 
 ## Phase 8: Polish
 
-- [ ] T018 Converge, then update `docs/progress.md` and `docs/journal.md`, open the pull request, and merge after CI passes. Check: the converge pass appends no task, and every CI job passes.
+- [X] T018 Converge, then update `docs/progress.md` and `docs/journal.md`, open the pull request, and merge after CI passes. Check: the converge pass appends no task, and every CI job passes.
 
 ## Dependencies and execution order
 
@@ -101,4 +101,4 @@ Task: "T014 grounded numbers in src/unfold/evals/__init__.py"
 - [X] T019 Record the 13.5 percent custom share, and the components that would close the gap, as a decision in `docs/progress.md`, per SC-001 (partial)
 - [X] T020 [P] Add a test in `tests/visuals/test_packs.py` that the present-value total nets money paid out against money received, per US1/AC2 (partial)
 - [X] T021 [P] Add a test in `tests/visuals/test_packs.py` that angles of 420 and -300 degrees land where 60 degrees does, per the edge cases (partial)
-- [ ] T022 Name the iCloud conflict-copy hook in the pull request as a change outside this spec (unrequested)
+- [X] T022 Name the iCloud conflict-copy hook in the pull request as a change outside this spec (unrequested)
