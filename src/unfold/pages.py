@@ -159,8 +159,9 @@ def gallery(folders: list[Path], out: Path) -> list[str]:
             target = out / name / episode["id"]
             target.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(video, target / "episode.mp4")
-            if (srt := video.with_name("episode.srt")).is_file():
-                shutil.copyfile(srt, target / "episode.srt")
+            for name in ("episode.srt", "episode.zh.srt"):
+                if (srt := video.with_name(name)).is_file():
+                    shutil.copyfile(srt, target / name)
             section.append(f"<h3>{escape(episode.get('title', episode['id']))}</h3>")
             section.append(
                 f'<video controls src="{name}/{episode["id"]}/episode.mp4"></video>'

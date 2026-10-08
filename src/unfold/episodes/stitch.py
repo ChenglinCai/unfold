@@ -8,7 +8,8 @@ import json
 import shutil
 import subprocess
 import wave
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from unfold.episodes.subtitles import Cue, beat_cues, srt_text
@@ -20,11 +21,26 @@ SUBTITLES = "episode.srt"
 
 @dataclass(frozen=True)
 class Part:
-    """One segment in an episode: its card's length, its length, and its beats."""
+    """One segment in an episode: its card's length, its length, and its beats.
+
+    Each beat is its text, then its spoken start and end inside the segment. A
+    beat's name joins its segment and its cue, such as s1-growth/title.
+    """
 
     card: float
     segment: float
     beats: list[tuple[str, float, float]]
+    names: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class Beat:
+    """One beat in episode time."""
+
+    id: str
+    text: str
+    start: float
+    end: float
 
 
 def seconds_of(video: Path) -> float:
@@ -62,16 +78,52 @@ def concat(videos: list[Path], out: Path) -> Path:
     return out
 
 
-def episode_cues(parts: list[Part]) -> list[Cue]:
-    """Every beat's cues, shifted by the cards and segments that came before."""
-    cues: list[Cue] = []
+def episode_beats(parts: list[Part]) -> list[Beat]:
+    """Every beat, shifted by the cards and segments that came before it."""
+    beats: list[Beat] = []
     clock = 0.0
     for part in parts:
         clock += part.card
-        for text, start, end in part.beats:
-            cues += beat_cues(text, round(clock + start, 3), round(clock + end, 3))
+        names = part.names or [""] * len(part.beats)
+        for name, (text, start, end) in zip(names, part.beats, strict=True):
+            beats.append(
+                Beat(name, text, round(clock + start, 3), round(clock + end, 3))
+            )
         clock += part.segment
-    return cues
+    return beats
+
+
+def episode_cues(
+    parts: list[Part], split: Callable[[str, float, float], list[Cue]] = beat_cues
+) -> list[Cue]:
+    """Every beat's cues in episode time. Another language passes its own splitter."""
+    return [cue for b in episode_beats(parts) for cue in split(b.text, b.start, b.end)]
+
+
+def read_parts(folder: Path) -> list[Part]:
+    """Each rendered segment's card, length, and beats, read from its files."""
+    from unfold.formats import read_data
+    from unfold.formats.episode import OutlineV0
+    from unfold.script import load_script
+    from unfold.visuals.render import TIMING, VIDEO
+    from unfold.visuals.scene import PAUSE
+
+    outline = OutlineV0.model_validate(read_data(folder / "outline.yaml"))
+    parts: list[Part] = []
+    for segment in outline.segments:
+        video = folder / segment.id / VIDEO
+        card = folder / "titles" / f"{segment.id}.mp4"
+        if not (video.is_file() and card.is_file()):
+            continue
+        timing = json.loads((folder / segment.id / TIMING).read_text(encoding="utf-8"))
+        script = load_script(folder / segment.id / "script.md")
+        beats = [
+            (beat.text, t["start"], max(t["start"], t["end"] - PAUSE))
+            for beat, t in zip(script.beats, timing["beats"], strict=True)
+        ]
+        names = [f"{segment.id}/{beat.cue}" for beat in script.beats]
+        parts.append(Part(seconds_of(card), seconds_of(video), beats, names))
+    return parts
 
 
 def silence(path: Path, seconds: float, rate: int = 22050) -> Path:
@@ -122,13 +174,10 @@ def stitch_episode(folder: Path, quality: str = "low") -> Path:
     """Join an episode's rendered segments, each after its title card."""
     from unfold.formats import read_data
     from unfold.formats.episode import OutlineV0
-    from unfold.script import load_script
-    from unfold.visuals.render import TIMING, VIDEO
-    from unfold.visuals.scene import PAUSE
+    from unfold.visuals.render import VIDEO
 
     outline = OutlineV0.model_validate(read_data(folder / "outline.yaml"))
     videos: list[Path] = []
-    parts: list[Part] = []
     for segment in outline.segments:
         video = folder / segment.id / VIDEO
         if not video.is_file():
@@ -136,18 +185,10 @@ def stitch_episode(folder: Path, quality: str = "low") -> Path:
         card = title_card(
             segment.title, folder / "titles" / f"{segment.id}.mp4", quality
         )
-        timing = json.loads((folder / segment.id / TIMING).read_text(encoding="utf-8"))
-        texts = [
-            beat.text for beat in load_script(folder / segment.id / "script.md").beats
-        ]
-        beats = [
-            (text, t["start"], max(t["start"], t["end"] - PAUSE))
-            for text, t in zip(texts, timing["beats"], strict=True)
-        ]
-        parts.append(Part(seconds_of(card), seconds_of(video), beats))
         videos += [card, video]
     if not videos:
         raise ValueError(f"{folder} has no rendered segments")
     concat(videos, folder / EPISODE)
-    (folder / SUBTITLES).write_text(srt_text(episode_cues(parts)), encoding="utf-8")
+    cues = episode_cues(read_parts(folder))
+    (folder / SUBTITLES).write_text(srt_text(cues), encoding="utf-8")
     return folder / EPISODE

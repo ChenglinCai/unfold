@@ -88,6 +88,16 @@ def render(series: str, check_audio: bool = False) -> str:
 
 
 @server.tool()
+def translate(series: str) -> str:
+    """Write Simplified Chinese subtitles beside each rendered episode.
+
+    It runs one model job per episode on the user's own Claude subscription, and
+    reuses every saved translation whose episode has not changed.
+    """
+    return unfold("translate", "--to", "zh", "--", series)
+
+
+@server.tool()
 def review(series: str) -> str:
     """Write review.html for a series, and return its path."""
     return unfold("review", "--", series)

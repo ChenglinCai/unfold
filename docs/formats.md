@@ -172,6 +172,8 @@ The regions are `full`, `top`, `bottom`, `plot`, `left`, and `right`. The compon
 
 `unfold render` turns each scene into `segment.mp4`, `contact-sheet.png`, and `segment.srt`. `timing.json` records when each beat starts and ends, and `render.json` records the render's key. The render then stitches each episode into `episode.mp4` and `episode.srt`, with a title card before each segment.
 
+`unfold translate SERIES --to zh` then writes `episode.zh.srt` beside each rendered episode. A model translates each beat whole, and code splits the Chinese into cues of at most two lines of 16 characters. The cues follow Netflix's Simplified Chinese style guide, and share each beat's time with the English cues.
+
 ## Scene code
 
 M1 writes scenes by hand. One Python file holds every segment of an episode, with one manim `Scene` class per segment. Each scene reads its narration from the script, and wraps each beat in `unfold.voice.voiced()`, so the animation lasts as long as the speech. Checks at the top of the file fail the render when the data stops matching the narration. M5 replaces hand-written scenes with tested components.
