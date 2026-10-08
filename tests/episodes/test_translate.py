@@ -1,14 +1,19 @@
 """Chinese subtitles: whole beats, translated, then split into cues by code."""
 
+import json
 from itertools import pairwise
+from pathlib import Path
 
 import pytest
+import yaml
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from unfold import jobs
+from unfold.episodes import stitch
 from unfold.episodes.stitch import Beat
 from unfold.episodes.subtitles import Cue
-from unfold.episodes.translate import budget, check_translation, zh_cues
+from unfold.episodes.translate import budget, check_translation, translate, zh_cues
 
 # Thirty and ten Chinese characters, for beats of known length.
 THIRTY = "复利就是利息再生利息" * 3
@@ -132,3 +137,102 @@ def test_a_beat_over_its_budget_states_the_budget() -> None:
     errors = check_translation(BEATS, [("s1-a/one", THIRTY + TEN), GOOD[1]])
 
     assert errors == ["s1-a/one: 40 characters, but its time allows 36"]
+
+
+SCRIPT = """---
+format: script/v1
+episode: E01-a
+segment: s1-x
+voice: default
+anchors:
+  hello: []
+  bye: []
+---
+
+[[hello]] Hello there.
+
+[[bye]] Goodbye now.
+"""
+GOOD_REPLY: dict[str, object] = {
+    "beats": [{"id": "s1-x/hello", "text": "你好"}, {"id": "s1-x/bye", "text": "再见"}]
+}
+
+
+class FakeTranslator:
+    """Answers the canary, then hands out the replies it was given, in order."""
+
+    def __init__(self, replies: list[dict[str, object]]) -> None:
+        self.replies, self.calls, self.prompts = replies, [], []
+
+    def __call__(
+        self, prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
+        step = (
+            str(schema.get("title", "canary")) if isinstance(schema, dict) else "text"
+        )
+        self.calls.append(step)
+        self.prompts.append(prompt)
+        data: dict[str, object] = (
+            {"answer": 5} if step == "canary" else self.replies.pop(0)
+        )
+        return jobs.Reply(json.dumps(data), 10, 5, 0.1, data)
+
+
+@pytest.fixture
+def series(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """A series with one rendered episode of one segment and two beats."""
+    folder = tmp_path / "demo"
+    episode = folder / "E01-a"
+    segment = episode / "s1-x"
+    segment.mkdir(parents=True)
+    head = {"format": "series/v0", "id": "demo", "audience": "Adults."}
+    (folder / "series.yaml").write_text(yaml.safe_dump({**head, "sources": ["x"]}))
+    outline: dict[str, object] = {"format": "outline/v0", "series": "demo"}
+    outline["episode"] = "E01-a"
+    outline |= {"title": "A", "core_question": "Why?", "audience": "Adults."}
+    outline["segments"] = [{"id": "s1-x", "title": "X", "target_seconds": 30}]
+    (episode / "outline.yaml").write_text(yaml.safe_dump(outline))
+    (segment / "script.md").write_text(SCRIPT)
+    beats = [{"cue": "hello", "start": 0.0, "end": 2.3}]
+    beats.append({"cue": "bye", "start": 2.3, "end": 4.6})
+    (segment / "timing.json").write_text(json.dumps({"voice": None, "beats": beats}))
+    (episode / "titles").mkdir()
+    for empty in (segment / "segment.mp4", episode / "titles" / "s1-x.mp4"):
+        empty.write_bytes(b"")
+    (episode / "episode.mp4").write_bytes(b"")
+    lengths = {"segment.mp4": 4.6, "s1-x.mp4": 2.0}
+    monkeypatch.setattr(stitch, "seconds_of", lambda path: lengths[path.name])
+    return folder
+
+
+def test_translation_writes_chinese_subtitles_beside_the_episode(series: Path) -> None:
+    fake = FakeTranslator([GOOD_REPLY])
+
+    lines = translate(series, fake, retries=0)
+
+    output = series / "E01-a" / "episode.zh.srt"
+    assert lines == [("written", output)]
+    assert fake.calls == ["canary", "TranslationReply"]
+    assert "[s1-x/hello] (at most 18 characters) Hello there." in fake.prompts[1]
+    assert output.read_text() == (
+        "1\n00:00:02,000 --> 00:00:04,000\n你好\n\n"
+        "2\n00:00:04,300 --> 00:00:06,300\n再见\n"
+    )
+
+
+def test_a_second_run_reuses_the_translation_and_calls_no_model(series: Path) -> None:
+    translate(series, FakeTranslator([GOOD_REPLY]), retries=0)
+    fake = FakeTranslator([])
+
+    lines = translate(series, fake, retries=0)
+
+    assert lines == [("reused", series / "E01-a" / "episode.zh.srt")]
+    assert fake.calls == []
+
+
+def test_an_unrendered_episode_is_skipped(series: Path) -> None:
+    (series / "E01-a" / "episode.mp4").unlink()
+    fake = FakeTranslator([])
+
+    assert translate(series, fake, retries=0) == [("skipped", series / "E01-a")]
+    assert fake.calls == []

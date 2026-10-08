@@ -28,7 +28,7 @@ The feature adds no dependency, so it needs no setup phase.
 
 **Independent test**: translate a small rendered episode with a fake runner, then read the subtitle file.
 
-- [ ] T005 [US1] Write tests with a fake runner. The job writes `episode.zh.srt`, a second run calls no runner, and an unrendered episode gets a note. Then add the reply model, the job, and `src/unfold/prompts/translate-zh.md`. Check: the tests pass.
+- [X] T005 [US1] Write tests with a fake runner. The job writes `episode.zh.srt`, a second run calls no runner, and an unrendered episode gets a note. Then add the reply model, the job, and `src/unfold/prompts/translate-zh.md`. Check: the tests pass.
 - [ ] T006 [US1] Write tests for `unfold translate` and the exit codes in `contracts/cli.md`. Then implement the command with a RUNNER global, and register it in `src/unfold/cli.py`. Check: the tests pass.
 
 ## Phase 3: User Story 2, follow the style guide (Priority: P1)

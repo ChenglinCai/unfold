@@ -7,9 +7,18 @@ takes the place of each comma and period.
 
 import math
 import re
+from pathlib import Path
+from typing import Annotated
 
-from unfold.episodes.stitch import Beat
-from unfold.episodes.subtitles import Cue
+from pydantic import BaseModel, Field, StringConstraints
+
+from unfold import jobs
+from unfold.build import RETRIES, Job, run_job
+from unfold.build.graph import Guarded, read_series
+from unfold.build.steps import prompt
+from unfold.episodes.stitch import EPISODE, Beat, episode_beats, read_parts
+from unfold.episodes.subtitles import Cue, srt_text
+from unfold.fields import Model, Text
 
 LINE = 16
 LINES = 2
@@ -23,6 +32,19 @@ FULL_WIDTH_DIGIT = re.compile("[\uff10-\uff19]")
 CHINESE = re.compile(r"[\u4e00-\u9fff]")
 # Untranslated English: capital acronyms and short variables pass.
 ENGLISH = re.compile(r"[a-z]{4,}")
+OUTPUT = "episode.zh.srt"
+BeatId = Annotated[
+    str, StringConstraints(pattern=r"^s\d+-[a-z0-9-]+/[a-z0-9][a-z0-9-]*$")
+]
+
+
+class TranslatedBeat(Model):
+    id: BeatId
+    text: Text
+
+
+class TranslationReply(Model):
+    beats: Annotated[list[TranslatedBeat], Field(min_length=1)]
 
 
 def _pieces(token: str) -> list[str]:
@@ -126,3 +148,67 @@ def check_translation(beats: list[Beat], reply: list[tuple[str, str]]) -> list[s
         if beat.id in texts:
             errors += _rules(beat, texts[beat.id])
     return errors
+
+
+def request_text(beats: list[Beat]) -> str:
+    lines = [
+        f"[{beat.id}] (at most {budget(beat)} characters) {beat.text}" for beat in beats
+    ]
+    body = "\n".join(lines)
+    return f"Translate each beat into Simplified Chinese.\n\n<beats>\n{body}\n</beats>"
+
+
+def translate_job(series: Path, episode: Path, model: str) -> Job | None:
+    """The job that translates one rendered episode, or None when it has no beats."""
+    beats = episode_beats(read_parts(episode))
+    if not beats:
+        return None
+    output = episode / OUTPUT
+
+    def pairs(reply: BaseModel) -> list[tuple[str, str]]:
+        assert isinstance(reply, TranslationReply)
+        return [(beat.id, beat.text) for beat in reply.beats]
+
+    def check(reply: BaseModel) -> list[str]:
+        return check_translation(beats, pairs(reply))
+
+    def render(reply: BaseModel) -> str:
+        texts = dict(pairs(reply))
+        cues = [c for b in beats for c in zh_cues(texts[b.id], b.start, b.end)]
+        return srt_text(cues)
+
+    record = series / "records" / f"{output.relative_to(series)}.json"
+    system = prompt("translate-zh")
+    request = request_text(beats)
+    return Job(
+        "translate",
+        output,
+        record,
+        system,
+        request,
+        TranslationReply,
+        model,
+        check,
+        render,
+    )
+
+
+def translate(
+    folder: Path, runner: jobs.Runner, model: str | None = None, retries: int = RETRIES
+) -> list[tuple[str, Path]]:
+    """Translate every rendered episode of a series, and report each one's status."""
+    spec = read_series(folder)
+    log = folder / "calls.jsonl"
+    guarded = Guarded(runner, log)
+    lines: list[tuple[str, Path]] = []
+    for episode in sorted(path.parent for path in folder.glob("E*/outline.yaml")):
+        job = translate_job(folder, episode, model or spec.model)
+        if job is None or not (episode / EPISODE).is_file():
+            lines.append(("skipped", episode))
+            continue
+        outcome = run_job(job, guarded, retries, log)
+        ok = outcome.record.outcome == "ok"
+        lines.append(
+            ("reused" if outcome.reused else "written" if ok else "failed", job.output)
+        )
+    return lines
