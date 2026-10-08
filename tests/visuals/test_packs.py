@@ -425,3 +425,13 @@ def test_an_angle_past_a_full_turn_lands_like_its_remainder(angle: float) -> Non
 
     [first], [second] = parts(plain, "point"), parts(turned, "point")
     assert np.allclose(first.get_center(), second.get_center(), atol=1e-6)
+
+
+def test_a_box_label_never_splits_a_word() -> None:
+    labels = ["Training data", "Distance function", "Majority vote", "k-NN Classifier"]
+    boxes = [{"id": f"b{n}", "label": label} for n, label in enumerate(labels)]
+    boxes.append({"id": "b4", "label": "No training step"})
+    drawing, _ = build(parse({**CYCLE, "boxes": boxes, "links": []}), "plot")
+
+    words = " ".join(texts(drawing, "box-label")).split()
+    assert sorted(words) == sorted(" ".join([*labels, "No training step"]).split())

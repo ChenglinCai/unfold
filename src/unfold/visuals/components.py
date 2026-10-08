@@ -404,7 +404,8 @@ def _complex_plane(plane: ComplexPlane, width: float, height: float) -> VGroup:
 
 
 def _box_label(words: str, width: float) -> VGroup:
-    lines = textwrap.wrap(words, max(6, int((width - 0.3) / 0.16))) or [words]
+    chars = max(6, int((width - 0.3) / 0.16))
+    lines = textwrap.wrap(words, chars, break_long_words=False) or [words]
     texts = [_named(_text(line, theme.LABEL_SIZE), "box-label") for line in lines]
     return VGroup(*texts).arrange(DOWN, buff=0.08)
 
@@ -429,6 +430,9 @@ def _flow_diagram(chart: FlowDiagram, width: float, height: float) -> VGroup:
     row = min((width - gap * (count - 1)) / count, 3.2)
     box_w = row if across else min(width * 0.5, 4.0)
     words = [_box_label(box.label, box_w) for box in chart.boxes]
+    # A word never splits, so a box grows to its widest line. The layout check then
+    # fails a row that no longer fits, and the retry asks for shorter labels.
+    box_w = max(box_w, *(text.width + 0.3 for text in words))
     nominal = 1.0 if across else min((height - gap * (count - 1)) / count, 1.0)
     box_h = max(nominal, *(text.height + 0.3 for text in words))
     frames: dict[str, RoundedRectangle] = {}
