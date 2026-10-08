@@ -60,7 +60,7 @@ The feature adds no dependency, so it needs no setup phase.
 
 ## Phase 6: Polish
 
-- [ ] T013 [P] Add `episode.zh.srt` to `docs/formats.md`. Check: the written-profile lint passes.
+- [X] T013 [P] Add `episode.zh.srt` to `docs/formats.md`. Check: the written-profile lint passes.
 - [ ] T014 Converge, update `docs/progress.md` and `docs/journal.md`, mark the pull request ready, and merge after CI passes. Check: the converge pass appends no task, and every CI job passes.
 
 ## Dependencies and execution order
