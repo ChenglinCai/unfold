@@ -5,8 +5,11 @@ of 16 characters in a cue, and at most 9 characters per second. A single space
 takes the place of each comma and period.
 """
 
+import argparse
 import math
 import re
+import sys
+from collections import Counter
 from pathlib import Path
 from typing import Annotated
 
@@ -14,7 +17,7 @@ from pydantic import BaseModel, Field, StringConstraints
 
 from unfold import jobs
 from unfold.build import RETRIES, Job, run_job
-from unfold.build.graph import Guarded, read_series
+from unfold.build.graph import Guarded, SeriesError, read_series
 from unfold.build.steps import prompt
 from unfold.episodes.stitch import EPISODE, Beat, episode_beats, read_parts
 from unfold.episodes.subtitles import Cue, srt_text
@@ -33,6 +36,8 @@ CHINESE = re.compile(r"[\u4e00-\u9fff]")
 # Untranslated English: capital acronyms and short variables pass.
 ENGLISH = re.compile(r"[a-z]{4,}")
 OUTPUT = "episode.zh.srt"
+# Tests replace the runner, so that no test calls a model.
+RUNNER: jobs.Runner | None = None
 BeatId = Annotated[
     str, StringConstraints(pattern=r"^s\d+-[a-z0-9-]+/[a-z0-9][a-z0-9-]*$")
 ]
@@ -212,3 +217,43 @@ def translate(
             ("reused" if outcome.reused else "written" if ok else "failed", job.output)
         )
     return lines
+
+
+def add_translate_command(
+    commands: "argparse._SubParsersAction[argparse.ArgumentParser]",
+) -> None:
+    command = commands.add_parser(
+        "translate", help="Write Chinese subtitles for each rendered episode."
+    )
+    command.add_argument("series", metavar="SERIES", help="A folder with series.yaml.")
+    command.add_argument(
+        "--to", required=True, choices=["zh"], help="zh writes Simplified Chinese."
+    )
+    command.add_argument("--model", help="Override the series file's model.")
+    command.add_argument("--retries", type=int, default=RETRIES)
+    command.set_defaults(run=run_translate)
+
+
+def run_translate(args: argparse.Namespace) -> int:
+    if args.retries < 0:
+        return fail("--retries must be 0 or more", 2)
+    runner = RUNNER or jobs.run_claude
+    try:
+        lines = translate(Path(args.series), runner, args.model, args.retries)
+    except SeriesError as error:
+        return fail(str(error), 2)
+    except jobs.CanaryError as error:
+        return fail(f"{error}. No translation ran.", 3)
+    for status, path in lines:
+        print(f"{status:8} {path}")
+    counts = Counter(status for status, _ in lines)
+    print(
+        f"{counts['written']} written, {counts['reused']} reused, "
+        f"{counts['failed']} failed, {counts['skipped']} skipped"
+    )
+    return 1 if counts["failed"] else 0
+
+
+def fail(message: str, code: int) -> int:
+    print(f"unfold translate: {message}", file=sys.stderr)
+    return code

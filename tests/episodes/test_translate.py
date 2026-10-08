@@ -10,7 +10,9 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from unfold import jobs
+from unfold.cli import main
 from unfold.episodes import stitch
+from unfold.episodes import translate as translate_module
 from unfold.episodes.stitch import Beat
 from unfold.episodes.subtitles import Cue
 from unfold.episodes.translate import budget, check_translation, translate, zh_cues
@@ -236,3 +238,44 @@ def test_an_unrendered_episode_is_skipped(series: Path) -> None:
 
     assert translate(series, fake, retries=0) == [("skipped", series / "E01-a")]
     assert fake.calls == []
+
+
+def test_the_command_prints_each_episode_and_a_count(
+    series: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(translate_module, "RUNNER", FakeTranslator([GOOD_REPLY]))
+
+    assert main(["translate", str(series), "--to", "zh"]) == 0
+
+    out = capsys.readouterr().out
+    assert f"written  {series / 'E01-a' / 'episode.zh.srt'}" in out
+    assert "1 written, 0 reused, 0 failed, 0 skipped" in out
+
+
+def test_a_reply_that_never_passes_exits_1(
+    series: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bad: dict[str, object] = {"beats": [{"id": "s1-x/hello", "text": "hello"}]}
+    monkeypatch.setattr(translate_module, "RUNNER", FakeTranslator([bad]))
+
+    assert main(["translate", str(series), "--to", "zh", "--retries", "0"]) == 1
+
+
+def test_a_folder_that_is_not_a_series_exits_2(tmp_path: Path) -> None:
+    assert main(["translate", str(tmp_path / "missing"), "--to", "zh"]) == 2
+
+
+def test_a_failed_canary_exits_3(series: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def wrong(
+        prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
+        return jobs.Reply("{}", 1, 1, 0.1, {"answer": 4})
+
+    monkeypatch.setattr(translate_module, "RUNNER", wrong)
+
+    assert main(["translate", str(series), "--to", "zh"]) == 3
+
+
+def test_only_simplified_chinese_is_offered() -> None:
+    with pytest.raises(SystemExit):
+        main(["translate", "anywhere", "--to", "fr"])

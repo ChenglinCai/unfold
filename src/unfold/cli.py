@@ -14,6 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
     from unfold.build.command import add_build_command
     from unfold.check import add_check_command
     from unfold.doctor import add_doctor_command
+    from unfold.episodes.translate import add_translate_command
     from unfold.evals.command import add_eval_command
     from unfold.lint.command import add_lint_command
     from unfold.pages import add_page_commands
@@ -30,6 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_render_command(commands)
     add_ingest_command(commands)
     add_understand_command(commands)
+    add_translate_command(commands)
     serve = commands.add_parser(
         "mcp", help="Serve unfold's tools to Claude Code over MCP."
     )
