@@ -68,8 +68,8 @@
 - [X] T013 [P] [US5] Write `tests/visuals/test_pack_props.py`, with a Hypothesis strategy for each new component. Each random drawing must fit its region, and `crowded()` must find no overlapping labels. Use `deadline=None` and about 25 examples each. Check: the tests pass, and the suite grows by at most about 20 seconds.
 - [X] T014 [P] [US5] Write tests in `tests/evals/test_eval_checks.py`, then extend `chart-numbers-grounded` in `src/unfold/evals/__init__.py`, as research.md D7 describes. Check: the tests pass, and the golden before-numbers stay the same.
 - [X] T015 [US5] Describe the four components in `src/unfold/prompts/scene.md`, and when each beats a custom visual. List them in `docs/formats.md`, and regenerate `schemas/scene.v0.json`. Check: a new test finds every component name in the prompt, and the schema test passes.
-- [ ] T016 [US5] Run `unfold build SERIES --until scene`, then `unfold render SERIES`, for each of the six golden series. Check: only scene jobs call a model, and every render reports 0 layout failures.
-- [ ] T017 [US5] Record the after numbers in `../content/series/after-packs.json`. Read every contact sheet that holds a new component, then write `docs/evals/M8-packs-report.md`. Check: the custom share is at most 10 percent, and no scene check passes less often than before.
+- [X] T016 [US5] Run `unfold build SERIES --until scene`, then `unfold render SERIES`, for each of the six golden series. Check: only scene jobs call a model, and every render reports 0 layout failures.
+- [X] T017 [US5] Record the after numbers in `../content/series/after-packs.json`. Read every contact sheet that holds a new component, then write `docs/evals/M8-packs-report.md`. Check: the custom share is at most 10 percent, and no scene check passes less often than before.
 
 ## Phase 8: Polish
 
