@@ -157,3 +157,11 @@ def test_the_scene_prompt_names_every_component() -> None:
     text = prompt.read_text()
 
     assert [name for name in NAMES if f"`{name}`" not in text] == []
+
+
+def test_the_storyboard_prompt_names_only_real_components() -> None:
+    prompt = Path(__file__).parents[2] / "src" / "unfold" / "prompts" / "storyboard.md"
+    text = prompt.read_text()
+
+    assert [name for name in NAMES if f"`{name}`" not in text] == []
+    assert "`axes`" not in text and "`number-line`" not in text
