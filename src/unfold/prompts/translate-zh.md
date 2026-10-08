@@ -19,6 +19,7 @@ These rules follow Netflix's style guide for Simplified Chinese subtitles.
 
 - Keep each beat within its budget. The budget counts every character except spaces. Shorten the wording when you must, but keep the meaning.
 - Never use commas or periods. Put a single space where a pause belongs.
+- Put a space at a natural pause at least every 16 characters. Code breaks lines only at spaces, so a longer run splits in the middle of a word.
 - Use full-width question marks and exclamation marks when the sentence needs them.
 - Write large numbers without commas, such as 10000 or 1万. Use half-width digits, never full-width ones.
 - Write one to ten in Chinese numerals when space allows, such as 三. Never mix digits and Chinese numerals in one number.

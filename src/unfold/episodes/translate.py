@@ -25,7 +25,6 @@ from unfold.fields import Model, Text
 
 LINE = 16
 LINES = 2
-CUE = LINE * LINES
 # Characters per second, the guide's limit for adult programs.
 RATE = 9
 # A full-width or plain comma, a full-width period, or a period that is not a
@@ -52,59 +51,55 @@ class TranslationReply(Model):
     beats: Annotated[list[TranslatedBeat], Field(min_length=1)]
 
 
-def _pieces(token: str) -> list[str]:
-    """Split a run with no spaces into even pieces that each fit one cue."""
-    count = math.ceil(len(token) / CUE)
-    size = math.ceil(len(token) / count)
-    return [token[i : i + size] for i in range(0, len(token), size)]
-
-
-def _chunks(text: str) -> list[str]:
-    """Pack the beat's phrases into cues, breaking at spaces when it can."""
-    chunks: list[str] = []
-    current = ""
+def _phrases(text: str) -> list[str]:
+    """The phrases between spaces. A phrase longer than a line splits evenly, as a
+    last resort, because the checks ask for a space at least every 16 characters."""
+    phrases: list[str] = []
     for token in text.split():
-        joined = f"{current} {token}" if current else token
-        if len(joined) <= CUE:
-            current = joined
-            continue
-        if current:
-            chunks.append(current)
-        *whole, current = _pieces(token)
-        chunks += whole
-    return [*chunks, current] if current else chunks
+        count = math.ceil(len(token) / LINE)
+        size = math.ceil(len(token) / count)
+        phrases += [token[i : i + size] for i in range(0, len(token), size)]
+    return phrases
 
 
-def _lines(chunk: str) -> list[str]:
-    """One line, or two with the shorter on top, broken at a space if one fits."""
-    if len(chunk) <= LINE:
-        return [chunk]
-    fits = [
-        i
-        for i, char in enumerate(chunk)
-        if char == " " and i <= LINE and len(chunk) - i - 1 <= LINE
+def _groups(phrases: list[str]) -> list[list[str]]:
+    """Pack whole phrases into lines, then every two lines into one cue."""
+    lines: list[list[str]] = []
+    for phrase in phrases:
+        if lines and len(" ".join([*lines[-1], phrase])) <= LINE:
+            lines[-1].append(phrase)
+        else:
+            lines.append([phrase])
+    pairs = [lines[i : i + LINES] for i in range(0, len(lines), LINES)]
+    return [[phrase for line in pair for phrase in line] for pair in pairs]
+
+
+def _lines(phrases: list[str]) -> list[str]:
+    """One line, or two split between phrases, with the shorter line on top."""
+    whole = " ".join(phrases)
+    if len(whole) <= LINE:
+        return [whole]
+    splits = [
+        (" ".join(phrases[:k]), " ".join(phrases[k:])) for k in range(1, len(phrases))
     ]
-    if fits:
-        # The most even break, with ties going to a shorter top line.
-        best = min(
-            fits, key=lambda i: (abs(len(chunk) - 2 * i - 1), i > len(chunk) - i - 1)
-        )
-        return [chunk[:best], chunk[best + 1 :]]
-    half = len(chunk) // 2
-    return [chunk[:half], chunk[half:]]
+    fits = [(top, end) for top, end in splits if len(top) <= LINE and len(end) <= LINE]
+    # The most even split, with ties going to a shorter top line.
+    top, bottom = min(
+        fits, key=lambda s: (abs(len(s[1]) - len(s[0])), len(s[0]) > len(s[1]))
+    )
+    return [top, bottom]
 
 
 def zh_cues(text: str, start: float, end: float) -> list[Cue]:
     """Split one translated beat into cues, timed by each one's share of characters."""
-    chunks = _chunks(" ".join(text.split()))
-    counts = [len(chunk.replace(" ", "")) for chunk in chunks]
+    groups = _groups(_phrases(text))
+    counts = [len("".join(group)) for group in groups]
     total = sum(counts) or 1
     cues, clock = [], start
-    for chunk, count in zip(chunks, counts, strict=True):
+    for group, count in zip(groups, counts, strict=True):
         span = (end - start) * count / total
-        cues.append(
-            Cue(round(clock, 3), round(clock + span, 3), "\n".join(_lines(chunk)))
-        )
+        text_of = "\n".join(_lines(group))
+        cues.append(Cue(round(clock, 3), round(clock + span, 3), text_of))
         clock += span
     if cues:
         cues[-1] = Cue(cues[-1].start, end, cues[-1].text)
@@ -128,6 +123,11 @@ def _rules(beat: Beat, text: str) -> list[str]:
         errors.append(f"{beat.id}: holds no Chinese")
     if word := ENGLISH.search(text):
         errors.append(f"{beat.id}: keeps the English word {word.group()}")
+    if long := next((run for run in text.split() if len(run) > LINE), None):
+        errors.append(
+            f"{beat.id}: runs {len(long)} characters without a space. "
+            "Put a space at a pause, at least every 16 characters"
+        )
     size, allowed = len(text.replace(" ", "")), budget(beat)
     if size > allowed:
         errors.append(f"{beat.id}: {size} characters, but its time allows {allowed}")

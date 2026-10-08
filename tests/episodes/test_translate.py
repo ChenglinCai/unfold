@@ -59,10 +59,26 @@ def test_time_follows_each_cues_share_of_characters() -> None:
     assert (second.start, second.end) == (3.0, 4.0)
 
 
-def test_a_long_run_without_spaces_splits_into_even_pieces() -> None:
+def test_whole_phrases_fill_each_line_so_no_word_splits() -> None:
+    phrases = [
+        "当这些新增的钱",
+        "都去争夺同样多的商品时",
+        "会发生什么\uff1f",
+        "要回答这个问题",
+    ]
+
+    cues = zh_cues(" ".join(phrases), 0.0, 6.0)
+
+    for lines in lines_of(cues):
+        for line in lines:
+            assert all(part in phrases for part in line.split(" "))
+
+
+def test_a_run_longer_than_a_line_still_splits_as_a_last_resort() -> None:
     cues = zh_cues(THIRTY + TEN, 1.0, 5.0)
 
-    assert [len(cue.text.replace("\n", "")) for cue in cues] == [20, 20]
+    assert all(len(line) <= 16 for lines in lines_of(cues) for line in lines)
+    assert "".join(cue.text.replace(chr(10), "") for cue in cues) == THIRTY + TEN
     assert cues[-1].end == pytest.approx(5.0)
 
 
@@ -110,6 +126,11 @@ def test_a_clean_translation_passes() -> None:
         ),
         ("one hundred", "s1-a/one: holds no Chinese"),
         ("一百 dollars", "s1-a/one: keeps the English word dollars"),
+        (
+            "一百美元存进银行一年后得到一百零五",
+            "s1-a/one: runs 17 characters without a space. "
+            "Put a space at a pause, at least every 16 characters",
+        ),
     ],
 )
 def test_each_rule_fails_and_names_the_beat(text: str, error: str) -> None:
@@ -136,7 +157,8 @@ def test_missing_extra_and_repeated_beats_are_named() -> None:
 def test_a_beat_over_its_budget_states_the_budget() -> None:
     assert budget(BEATS[0]) == 36 and budget(BEATS[1]) == 18
 
-    errors = check_translation(BEATS, [("s1-a/one", THIRTY + TEN), GOOD[1]])
+    paused = " ".join([THIRTY[:10], THIRTY[10:20], THIRTY[20:], TEN])
+    errors = check_translation(BEATS, [("s1-a/one", paused), GOOD[1]])
 
     assert errors == ["s1-a/one: 40 characters, but its time allows 36"]
 
