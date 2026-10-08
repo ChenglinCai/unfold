@@ -2,6 +2,44 @@
 
 Each entry names a mistake, its cause, and the guardrail we added. A guardrail is a test, hook, rule, or checklist item that makes the mistake harder to repeat. People and Claude both add entries, newest first.
 
+## 2026-10-07 and 2026-10-08, during M2 to M7
+
+### A hook failure looked like a quiet commit
+
+- What happened: a commit stopped on a task line of 27 words, but Claude read only the last two lines of the gate's output. Those lines showed skipped hooks, so the failure looked like success.
+- Cause: the gate stopped without a message of its own, and Claude trimmed its output. This is the third failure that a pipe or filter hid.
+- Guardrail: the gate now prints "COMMIT FAILED" when a hook fails. After each gate run, look for "pushed" on its last line.
+
+### The commit gate said pushed when the push failed
+
+- What happened: GitHub returned server errors, and two commits and a tag stayed local. The commit script still printed "pushed".
+- Cause: the script piped the push through a filter and ignored its exit code.
+- Guardrail: the script now stops with "PUSH FAILED" when a push fails. Check `git status -sb` before opening a pull request.
+
+### A loop ran one build instead of three, for the second time
+
+- What happened: a loop over a variable that held three series names ran one build, with all three names as one path. It failed at once.
+- Cause: zsh, unlike bash, does not split an unquoted variable into words. Claude hit the same trap on the first night, and did not record it then.
+- Guardrail: in zsh, write each list out in full, or use an array. Check that a batch started as many jobs as it should.
+
+### The build tests never ran in the full suite
+
+- What happened: pytest skips folders named build by default, so the 28 tests in `tests/build` ran only when named. The full suite, CI, and the commit gate all missed them.
+- Cause: Claude trusted the passing count without checking that it grew.
+- Guardrail: after adding a test folder, compare the full suite's count with the new folder's count. `pyproject.toml` now lists the folders that pytest skips.
+
+### CI stayed red for about 40 minutes
+
+- What happened: the recording reader imports faster-whisper, an optional extra. CI skips the extra, so CI's pyright failed, and nobody looked.
+- Cause: Claude trusted local checks, and the local environment has every extra. Claude also stopped checking CI after each push.
+- Guardrail: check the CI run after any push that changes dependencies or imports. Type-check once without the extras before such a push.
+
+### A partial commit failed, and the failure stayed hidden
+
+- What happened: Claude committed some files while new, untracked files needed edits that were not staged. Pre-commit set the unstaged edits aside, so pyright saw the new files without them and failed.
+- Cause: Claude piped the commit gate into `tail`, which hid the failure. The command chain also kept going, because the shell had no `pipefail`.
+- Guardrail: before a partial commit, move aside the untracked files that depend on unstaged edits. Never pipe a gate's output where its exit code matters.
+
 ## 2026-10-06, during M0
 
 ### Claude proposed settings without stating their safety costs
@@ -79,33 +117,3 @@ These came from earlier drafts of the project plan.
 
 - Cause: Claude relied on what it already knew.
 - Guardrail: each milestone and each feature starts with a short research step.
-
-### A partial commit failed, and the failure stayed hidden
-
-- What happened: Claude committed some files while new, untracked files needed edits that were not staged. Pre-commit set the unstaged edits aside, so pyright saw the new files without them and failed.
-- Cause: Claude piped the commit gate into `tail`, which hid the failure. The command chain also kept going, because the shell had no `pipefail`.
-- Guardrail: before a partial commit, move aside the untracked files that depend on unstaged edits. Never pipe a gate's output where its exit code matters.
-
-### CI stayed red for about 40 minutes
-
-- What happened: the recording reader imports faster-whisper, an optional extra. CI skips the extra, so CI's pyright failed, and nobody looked.
-- Cause: Claude trusted local checks, and the local environment has every extra. Claude also stopped checking CI after each push.
-- Guardrail: check the CI run after any push that changes dependencies or imports. Type-check once without the extras before such a push.
-
-### The build tests never ran in the full suite
-
-- What happened: pytest skips folders named build by default, so the 28 tests in `tests/build` ran only when named. The full suite, CI, and the commit gate all missed them.
-- Cause: Claude trusted the passing count without checking that it grew.
-- Guardrail: after adding a test folder, compare the full suite's count with the new folder's count. `pyproject.toml` now lists the folders that pytest skips.
-
-### A loop ran one build instead of three, for the second time
-
-- What happened: a loop over a variable that held three series names ran one build, with all three names as one path. It failed at once.
-- Cause: zsh, unlike bash, does not split an unquoted variable into words. Claude hit the same trap on the first night, and did not record it then.
-- Guardrail: in zsh, write each list out in full, or use an array. Check that a batch started as many jobs as it should.
-
-### The commit gate said pushed when the push failed
-
-- What happened: GitHub returned server errors, and two commits and a tag stayed local. The commit script still printed "pushed".
-- Cause: the script piped the push through a filter and ignored its exit code.
-- Guardrail: the script now stops with "PUSH FAILED" when a push fails. Check `git status -sb` before opening a pull request.

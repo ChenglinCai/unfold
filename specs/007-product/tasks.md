@@ -25,7 +25,7 @@
 
 ## Phase 5: Polish
 
-- [ ] T008 Converge, record the M7 gates, write `docs/retros/M7.md`, tag `m7-done`, and merge. Check: every M7 gate has evidence.
+- [X] T008 Converge, record the M7 gates, write `docs/retros/M7.md`, tag `m7-done`, and merge. Check: every M7 gate has evidence.
 
 ## Phase 6: Convergence
 

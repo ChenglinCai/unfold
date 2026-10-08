@@ -2,6 +2,10 @@
 
 One line for each finished task, newest first.
 
+## 2026-10-08
+
+- Finished M7: `unfold doctor`, the review page, the gallery, an MCP server with seven tools, a Claude Code plugin, and a quickstart. A CI job renders the quickstart on a clean Mac, and a security review fixed two gaps. Tagged `m7-done`.
+
 ## 2026-10-07
 
 - Finished M6: voiced segments, a Whisper audio check, subtitles, stitched episodes, a ledger, and the idea-link check. Three episodes play, and every segment passes the audio check. Tagged `m6-done`.

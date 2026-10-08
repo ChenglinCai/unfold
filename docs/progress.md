@@ -6,8 +6,8 @@ This file holds the current state of the work, so that a new session can resume 
 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
-- Done: M1 through M6, each tagged, such as `m6-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: M7, product and release: the MCP server, the plugin, `unfold doctor`, the review page, the gallery, and the quickstart.
+- Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
+- Next: your review of M7 and of items 19 to 22. Then M8, growth: more domain packs, Chinese subtitles, more source formats, and outside contributors.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -59,6 +59,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `src/unfold/episodes/stitch.py`, which shows how cards, segments, and subtitles line up.
 - Not done, by design: Kokoro, which waits for item 18. The voice is macOS `say`.
 
+### M7, product and release
+
+- What to try: follow `docs/quickstart.md` on your Mac. Then run `uv run unfold review ../content/series/net-present-value`, and open its `review.html`.
+- What to read: `docs/retros/M7.md`, then `plugin/README.md`, which says what the plugin installs and runs.
+- Evidence: every M7 gate in `docs/milestones.json`, and the macOS quickstart job on each pull request.
+- Walkthrough to ask for: `src/unfold/mcp_server.py`, which shows how each tool runs one unfold command.
+- Not done, by design: Cowork support, a release tag, and a package on PyPI. Items 19 and 22 wait for you.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
@@ -79,3 +87,7 @@ This file holds the current state of the work, so that a new session can resume 
 16. New dependencies overnight: PyAV, NumPy, lxml, and pydantic. Each uses a permissive license, and `docs/dependencies.md` logs each one.
 17. Five golden charts show numbers that the narration never states. Some are correct computations, and one is an invented poll. Please review them, and decide whether charts may show computed numbers.
 18. M6 needs a voice. Kokoro, the plan's default, depends on espeak-ng and phonemizer for some words, and both use the GPL. Until you decide, M6 keeps the macOS voice behind an interface that Kokoro can fill later.
+19. The plugin says version 0.1.0, but it installs unfold from the main branch. A release would tag `v0.1.0`, and the plugin would pin that tag. Decision record 0004 also asks for a package name first, because another project already holds `unfold` on PyPI.
+20. `unfold doctor` now treats LaTeX as optional, because only equations need it. The quickstart and its CI job install no LaTeX.
+21. The plugin installs the audio extra, so a user's first audio check downloads a Whisper model from Hugging Face. `plugin/README.md` says so.
+22. The plan's M7 gate names Cowork as well as Claude Code. The spec moved Cowork to a later release, so that half of the gate is still open.

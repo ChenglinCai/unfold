@@ -194,12 +194,14 @@
         {
           "id": "M7.quickstart",
           "check": "On a clean machine, the quickstart produces a rendered segment",
-          "passes": false
+          "passes": true,
+          "evidence": "On a clean macOS 26 runner, the quickstart job installed ffmpeg and ran unfold doctor, which warned only about optional parts. It rendered the bundled example: one segment, a contact sheet, and a stitched episode with subtitles, in 53 seconds in all (CI run 37739630600). An MCP client started the plugin's own server command, as Claude Code does, and its render tool rendered the same example. Cowork waits for a later release, as the spec's assumptions say."
         },
         {
           "id": "M7.surfaces",
           "check": "The MCP server, plugin, unfold doctor, review page, and gallery exist",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold doctor, unfold review, unfold gallery, an MCP server with 7 tools, and a plugin with a skill all exist. Tests cover each one in tests/test_doctor.py, test_pages.py, test_mcp_server.py, test_plugin.py, and test_quickstart.py. claude plugin validate passes for the plugin and the marketplace. On the six golden series, review wrote six pages, and the gallery kept four public series and skipped two private ones."
         }
       ]
     }
