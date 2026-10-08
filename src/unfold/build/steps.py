@@ -130,17 +130,29 @@ def plan_job(ctx: Context) -> Job:
     )
 
 
-def outline_job(ctx: Context, episode: PlannedEpisode) -> Job:
+def outline_job(
+    ctx: Context,
+    episode: PlannedEpisode,
+    previously: str = "",
+    earlier: frozenset[str] = frozenset(),
+) -> Job:
     output = ctx.folder / episode.id / "outline.yaml"
     listing = "\n".join(f"- {ref}: {title}" for ref, (title, _) in ctx.anchors.items())
     request = (
         f"Audience: {ctx.spec.audience}\n\n<episode>\n{as_yaml(episode)}</episode>\n\n"
         f"{materials(ctx)}\n\nAnchors you may cite:\n{listing or '- none'}"
     )
+    if previously:
+        request += (
+            f"\n\n<previously>\n{previously}</previously>\n\n"
+            "The episodes in <previously> come before this one. Build on what they "
+            "establish, and call back to their visuals. A callback may name one of "
+            "their segments."
+        )
 
     def check(reply: BaseModel) -> list[str]:
         assert isinstance(reply, OutlineReply)
-        return check_outline(reply, set(ctx.anchors))
+        return check_outline(reply, set(ctx.anchors), earlier)
 
     def render(reply: BaseModel) -> str:
         assert isinstance(reply, OutlineReply)

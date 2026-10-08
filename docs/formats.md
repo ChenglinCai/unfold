@@ -99,6 +99,12 @@ The user writes this file to ask for a series.
 | `episodes`, `segments` | How many episodes, and segments of each, to write. The defaults are 1 and 2 |
 | `model` | The model for generation. The default is `sonnet` |
 
+`knows` lists what the audience knows already, as items such as `term:interest`. The idea-link check accepts these items without a segment that teaches them.
+
+## Ledger: `ledger.yaml`, format `ledger/v0`
+
+The build writes the ledger after each episode. For each built episode, it lists the segment ids and every item the segments establish. A later episode's outline step sees the ledger, so it can build on earlier ideas and call back to earlier segments.
+
 ## Series plan: `plan.yaml`, format `series-plan/v0`
 
 The series-plan step writes this file. Each episode has an `id` such as `E01-equation-of-exchange`, a `title`, a `core_question`, the knowledge-map `concepts` it teaches, and its `anchors`.
@@ -164,7 +170,7 @@ entries:
 
 The regions are `full`, `top`, `bottom`, `plot`, `left`, and `right`. The components are `text-card`, `equation`, `bar-chart`, `scatter-plot`, `timeline`, and `custom`. A `custom` entry draws as a labeled card, which a person reviews. `src/unfold/visuals/params.py` defines each component's parameters.
 
-`unfold render` turns each scene into `segment.mp4` and `contact-sheet.png`, and records its key in `render.json`.
+`unfold render` turns each scene into `segment.mp4`, `contact-sheet.png`, and `segment.srt`. `timing.json` records when each beat starts and ends, and `render.json` records the render's key. The render then stitches each episode into `episode.mp4` and `episode.srt`, with a title card before each segment.
 
 ## Scene code
 

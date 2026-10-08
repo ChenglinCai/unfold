@@ -1,5 +1,7 @@
 """Renders turn scenes into videos, and each video gets a contact sheet."""
 
+import json
+import shutil
 from pathlib import Path
 
 import av
@@ -10,6 +12,8 @@ from PIL import Image
 
 from unfold.cli import main
 from unfold.visuals.render import beat_ends, contact_sheet, sample_times, segments
+from unfold.visuals.scene import durations
+from unfold.voice import Clip
 
 SCRIPT = """---
 format: script/v1
@@ -64,7 +68,17 @@ def test_segments_are_the_folders_with_scenes(tmp_path: Path) -> None:
 
 
 def test_each_beat_ends_after_its_narration() -> None:
-    assert beat_ends(["Three short words.", " ".join(["word"] * 11)]) == [2.0, 6.0]
+    assert beat_ends([2.0, 4.0]) == [2.0, 6.0]
+
+
+def test_a_voiced_beat_lasts_its_clip_and_a_pause(tmp_path: Path) -> None:
+    from unfold.script import parse_script
+
+    script = parse_script(SCRIPT)
+    clips = [Clip(tmp_path / "a.wav", 2.5), Clip(tmp_path / "b.wav", 3.0)]
+
+    assert durations(script, clips) == [2.8, 3.3]
+    assert durations(script, None) == [2.18, 3.64]
 
 
 def test_a_contact_sheet_holds_one_frame_per_time(tmp_path: Path) -> None:
@@ -118,4 +132,46 @@ def test_a_segment_renders_with_a_contact_sheet_and_then_reuses_it(
 
 
 def test_contact_sheets_sample_the_middle_of_each_hold() -> None:
-    assert sample_times(["Three short words.", " ".join(["word"] * 11)]) == [1.4, 4.4]
+    assert sample_times([2.0, 4.0]) == [1.4, 4.4]
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(shutil.which("say") is None, reason="the voice needs macOS say")
+def test_a_voiced_segment_carries_its_narration(tmp_path: Path) -> None:
+    folder = segment_folder(tmp_path)
+    (tmp_path / "plan.yaml").write_text("format: series-plan/v0\n")
+
+    assert main(["render", str(tmp_path)]) == 0
+
+    timing = json.loads((folder / "timing.json").read_text())
+    with av.open(str(folder / "segment.mp4")) as container:
+        assert container.streams.audio
+        seconds = float(container.duration or 0) / av.time_base
+    assert timing["voice"].startswith("say:")
+    assert abs(seconds - timing["beats"][-1]["end"]) < 0.5
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(shutil.which("say") is None, reason="the voice needs macOS say")
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="stitching needs ffmpeg")
+def test_render_stitches_the_episode_and_checks_the_audio(tmp_path: Path) -> None:
+    import importlib.util
+
+    folder = segment_folder(tmp_path)
+    outline = {
+        "format": "outline/v0",
+        "series": "growth",
+        "episode": "E01-growth",
+        "title": "Growth",
+        "core_question": "Why does money grow?",
+        "audience": "Adults.",
+        "segments": [{"id": "s1-interest", "title": "Interest", "target_seconds": 30}],
+    }
+    (folder.parent / "outline.yaml").write_text(yaml.safe_dump(outline))
+    check = importlib.util.find_spec("faster_whisper") is not None
+
+    assert main(["render", str(tmp_path), *(["--check-audio"] if check else [])]) == 0
+
+    assert (folder / "segment.srt").read_text().startswith("1\n00:00:00,000")
+    assert (folder.parent / "episode.mp4").stat().st_size > 0
+    assert "Money grows" in (folder.parent / "episode.srt").read_text()

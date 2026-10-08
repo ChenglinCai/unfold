@@ -16,11 +16,14 @@ from unfold.script import Script
 from unfold.visuals.components import ComponentError, build, crowded
 from unfold.visuals.layout import REGIONS, Placed, box_of, check_layout
 from unfold.visuals.params import TextCard
+from unfold.voice import Clip
 
 # A voice speaks about 165 words a minute, and no beat is shorter than 2 seconds.
 WORDS_PER_SECOND = 2.75
 MIN_SECONDS = 2.0
 FADE_SECONDS = 0.8
+# Silence after each spoken beat, like a breath.
+PAUSE = 0.3
 # TeX commands, superscripts, or subscripts, which a text card would print literally.
 TEX = re.compile(r"\\[a-zA-Z]+|\^\{|_\{")
 
@@ -80,17 +83,33 @@ def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
     return errors
 
 
+def durations(script: Script, clips: list[Clip] | None) -> list[float]:
+    """Each beat's length: its clip and a pause, or an estimate when no voice exists."""
+    if clips is None:
+        return [beat_seconds(beat.text) for beat in script.beats]
+    return [round(clip.seconds + PAUSE, 2) for clip in clips]
+
+
 class SegmentScene(Scene):
     """Plays a scene's visuals, one beat at a time, as long as the narration lasts."""
 
-    def __init__(self, spec: SceneV0, script: Script, **kwargs: Any) -> None:
-        self.spec, self.script = spec, script
+    def __init__(
+        self,
+        spec: SceneV0,
+        script: Script,
+        clips: list[Clip] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        self.spec, self.script, self.clips = spec, script, clips
         super().__init__(**kwargs)
 
     def construct(self) -> None:
         shown: dict[str, tuple[SceneEntry, VGroup]] = {}
-        for entry, beat in zip(self.spec.entries, self.script.beats, strict=True):
-            seconds = beat_seconds(beat.text)
+        lengths = durations(self.script, self.clips)
+        for index, entry in enumerate(self.spec.entries):
+            seconds = lengths[index]
+            if self.clips is not None:
+                self.add_sound(str(self.clips[index].path))
             region = REGIONS[entry.region]
             leaving = [
                 cue

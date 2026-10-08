@@ -9,6 +9,7 @@ from unfold.evals import (
     episode_stays_in_plan,
     first_episode_reaches_title,
     flagged_beats,
+    links_by_episode,
     narration_fits_target,
     no_source_framing,
     numbers_in,
@@ -94,3 +95,22 @@ def test_chart_numbers_must_come_from_the_narration_or_storyboard() -> None:
 def test_a_scene_mostly_uses_components() -> None:
     assert scene_uses_components(["custom", "bar-chart"])
     assert not scene_uses_components(["custom", "custom", "text-card"])
+
+
+def test_ideas_link_by_episode() -> None:
+    from unfold.formats.episode import OutlineV0
+
+    def outline(episode: str, requires: list[str], establishes: list[str]) -> OutlineV0:
+        segment = {"id": "s1-a", "title": "A", "target_seconds": 60}
+        segment |= {"requires": requires, "establishes": establishes}
+        head = {"format": "outline/v0", "series": "x", "episode": episode, "title": "T"}
+        head |= {"core_question": "Q?", "audience": "A."}
+        return OutlineV0.model_validate({**head, "segments": [segment]})
+
+    first = outline("E01-a", ["term:money"], ["idea:value"])
+    second = outline("E02-b", ["idea:value", "idea:rate"], [])
+
+    assert links_by_episode([first, second], {"term:money"}) == {
+        "E01-a": True,
+        "E02-b": False,
+    }

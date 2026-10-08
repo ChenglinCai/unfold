@@ -36,7 +36,11 @@ def check_plan(reply: PlanReply, concepts: set[str], anchors: set[str]) -> list[
     return errors
 
 
-def check_outline(reply: OutlineReply, anchors: set[str]) -> list[str]:
+def check_outline(
+    reply: OutlineReply,
+    anchors: set[str],
+    earlier: frozenset[str] | set[str] = frozenset(),
+) -> list[str]:
     ids = [segment.id for segment in reply.segments]
     errors = [f"segment {id_} appears twice" for id_ in repeated(ids)]
     low, high = SECONDS
@@ -53,7 +57,7 @@ def check_outline(reply: OutlineReply, anchors: set[str]) -> list[str]:
         errors += [
             f"{segment.id}: a callback names {callback.to}, which the outline lacks"
             for callback in segment.callbacks
-            if callback.to not in ids
+            if callback.to not in ids and callback.to not in earlier
         ]
     for transition in reply.transitions:
         errors += [

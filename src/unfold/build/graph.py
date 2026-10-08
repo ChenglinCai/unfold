@@ -25,6 +25,7 @@ from unfold.build.steps import (
     script_job,
     storyboard_job,
 )
+from unfold.episodes.ledger import build_ledger, ledger_text, write_ledger
 from unfold.formats import describe, read_data
 from unfold.formats.episode import OutlineV0
 from unfold.formats.series import SeriesPlanV0, SeriesV0
@@ -195,13 +196,18 @@ def build(
     if len(plan.episodes) > spec.episodes:
         count = f"{spec.episodes} of {len(plan.episodes)}"
         result.notes.append(f"plan.yaml: building {count} episodes")
+    built: list[OutlineV0] = []
     for episode in plan.episodes[: spec.episodes]:
-        job = outline_job(ctx, episode)
+        earlier = frozenset(s.id for o in built for s in o.segments)
+        previously = ledger_text(build_ledger(spec.id, built)) if built else ""
+        job = outline_job(ctx, episode, previously, earlier)
         if not run(job):
             return result
+        outline = OutlineV0.model_validate(read_data(job.output))
+        built.append(outline)
+        write_ledger(folder, build_ledger(spec.id, built))
         if until == "outline":
             continue
-        outline = OutlineV0.model_validate(read_data(job.output))
         if len(outline.segments) > spec.segments:
             place = job.output.relative_to(folder)
             count = f"{spec.segments} of {len(outline.segments)}"

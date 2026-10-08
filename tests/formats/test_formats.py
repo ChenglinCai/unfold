@@ -60,6 +60,7 @@ def test_every_format_has_a_versioned_schema() -> None:
         "script/v1",
         "storyboard/v0",
         "scene/v0",
+        "ledger/v0",
     }
 
 

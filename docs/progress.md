@@ -6,8 +6,8 @@ This file holds the current state of the work, so that a new session can resume 
 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
-- Done: M1 through M5, each tagged, such as `m5-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: M6, episodes: voice, audio check, stitching, subtitles, and the idea-link check.
+- Done: M1 through M6, each tagged, such as `m6-done`. M0 lacks only the settings file that the maintainer writes.
+- Next: M7, product and release: the MCP server, the plugin, `unfold doctor`, the review page, the gallery, and the quickstart.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -50,6 +50,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Evidence: every M5 gate in `docs/milestones.json`.
 - Walkthrough to ask for: `src/unfold/visuals/components.py`, which shows how a component fits its region.
 - Not done, by design: model-written manim code for custom visuals, and its sandbox. Custom entries render as cards to review.
+
+### M6, episodes
+
+- What to watch: `content/series/net-present-value/E01-time-value-of-money/episode.mp4`, then its episode 2, then `content/series/velocity-of-money/E01-equation-of-exchange/episode.mp4`.
+- What to read: `docs/retros/M6.md`, and the `ledger.yaml` of net-present-value.
+- Evidence: every M6 gate in `docs/milestones.json`.
+- Walkthrough to ask for: `src/unfold/episodes/stitch.py`, which shows how cards, segments, and subtitles line up.
+- Not done, by design: Kokoro, which waits for item 18. The voice is macOS `say`.
 
 ## Decisions for the maintainer to confirm
 

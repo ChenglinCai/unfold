@@ -112,3 +112,13 @@ def test_a_storyboard_follows_the_script_cues_in_order() -> None:
     assert check_storyboard(board, ["start", "spread"]) == [
         "entries must follow the script's cues in order: start, spread"
     ]
+
+
+def test_a_callback_may_name_a_segment_of_an_earlier_episode() -> None:
+    callback = {"to": "s1-old", "visual": "timeline", "how": "It returns."}
+    later = outline([segment(1), segment(2, callbacks=[callback])], [])
+
+    assert check_outline(later, ANCHORS) == [
+        "s2-part: a callback names s1-old, which the outline lacks"
+    ]
+    assert check_outline(later, ANCHORS, earlier={"s1-old"}) == []

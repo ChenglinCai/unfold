@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-07
 
+- Finished M6: voiced segments, a Whisper audio check, subtitles, stitched episodes, a ledger, and the idea-link check. Three episodes play, and every segment passes the audio check. Tagged `m6-done`.
 - Finished M5: a theme, a layout grid and check, five components, a scene step, and `unfold render` with contact sheets. All 12 golden segments render with no layout failures. Tagged `m5-done`.
 - Finished M4: schemas for every format, `unfold check`, and a build graph with saved results. It adds four generation steps, a canary, a call log, and the first eval report. Six golden series built with 42 calls, and a second build made none. Tagged `m4-done`.
 - Finished M2: readers for every family, `unfold ingest`, a job runner with no tools, output checks, and `unfold understand`. Six golden sources passed with 8 model calls, and every anchor resolves. Tagged `m2-done`.

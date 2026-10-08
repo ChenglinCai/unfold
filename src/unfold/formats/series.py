@@ -7,6 +7,11 @@ from pydantic import Field, StringConstraints
 from unfold.formats.sources import Model, Ref, Slug, Text
 
 EpisodeId = Annotated[str, StringConstraints(pattern=r"^E\d{2}-[a-z0-9][a-z0-9-]*$")]
+SegmentId = Annotated[str, StringConstraints(pattern=r"^s\d+-[a-z0-9][a-z0-9-]*$")]
+# What a segment needs or teaches, such as term:demand or visual:demand-curve.
+Item = Annotated[
+    str, StringConstraints(pattern=r"^(term|idea|visual):[a-z0-9][a-z0-9-]*$")
+]
 
 
 class SeriesV0(Model):
@@ -20,6 +25,8 @@ class SeriesV0(Model):
     episodes: Annotated[int, Field(ge=1)] = 1
     segments: Annotated[int, Field(ge=1)] = 2
     model: Text = "sonnet"
+    # What the audience knows already, so a segment may require it untaught.
+    knows: list[Item] = Field(default_factory=list)
 
 
 class PlannedEpisode(Model):
@@ -37,3 +44,18 @@ class SeriesPlanV0(Model):
     series: Slug
     written_by: str | None = None
     episodes: Annotated[list[PlannedEpisode], Field(min_length=1)]
+
+
+class LedgerEntry(Model):
+    episode: EpisodeId
+    title: Text
+    segments: list[SegmentId]
+    establishes: list[Item]
+
+
+class LedgerV0(Model):
+    """What each built episode of a series teaches, for later episodes to build on."""
+
+    format: Literal["ledger/v0"]
+    series: Slug
+    episodes: list[LedgerEntry]
