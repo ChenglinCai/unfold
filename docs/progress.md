@@ -73,7 +73,7 @@ This file holds the current state of the work, so that a new session can resume 
 2. The economics source is OpenStax Principles of Economics 2e, which is CC BY 4.0. The 3rd edition is CC BY-NC-SA, which forbids commercial use.
 3. The stand-in voice is the macOS `say` command at rate 140, which is about 165 words per minute. M6 replaces it with Kokoro.
 4. New dependency: PyYAML, under the MIT license.
-5. iCloud syncs your Desktop, so it hid `.venv` and broke imports. The environment now lives in `.venv.nosync`, with a `.venv` link. Moving the project out of iCloud would be cleaner.
+5. iCloud syncs your Desktop, so it hid `.venv` and broke imports. The environment now lives in `.venv.nosync`, with a `.venv` link. Moving the project out of iCloud would be cleaner. On 2026-10-08, iCloud also made 90 conflict copies after a pull. A pre-commit hook now rejects them, but moving the project would end the problem.
 6. The spoken breath-group limit is 31 words, from the study. The strict profile keeps 20.
 7. The linter treats every numbered list item as a procedure step, which allows 20 words. Bullet lists allow 25.
 8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.

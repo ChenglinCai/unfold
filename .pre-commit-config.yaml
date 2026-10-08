@@ -45,6 +45,11 @@ repos:
         entry: These files belong in the private content folder.
         language: fail
         files: (?i)\.(pdf|mp4|mov|webm|wav|mp3|m4a)$
+      - id: no-icloud-copies
+        name: keep iCloud conflict copies, such as "pages 2.py", out of commits
+        entry: iCloud copied a file or folder. Compare the copy with its original, then delete it.
+        language: fail
+        files: (^|/)[^/]* \d+(\.[^/]*)?(/|$)
       - id: lint-docs
         name: lint docs with the written profile
         entry: uv run unfold lint --profile written
