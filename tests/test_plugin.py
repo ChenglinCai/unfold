@@ -31,3 +31,14 @@ def test_the_marketplace_points_at_the_plugin() -> None:
 
     [entry] = market["plugins"]
     assert (ROOT / entry["source"] / ".claude-plugin" / "plugin.json").is_file()
+
+
+def test_the_server_installs_the_extras_that_the_skill_uses() -> None:
+    manifest = json.loads(
+        (ROOT / "plugin" / ".claude-plugin" / "plugin.json").read_text()
+    )
+    args = manifest["mcpServers"]["unfold"]["args"]
+
+    package = args[args.index("--from") + 1]
+
+    assert package.startswith("unfold[audio,mcp] @ git+https://")
