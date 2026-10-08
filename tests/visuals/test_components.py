@@ -48,6 +48,16 @@ SAMPLES: dict[str, dict[str, object]] = {
         ],
         "turn": {"start": 0, "end": 60, "label": "x"},
     },
+    "histogram": {
+        "component": "histogram",
+        "edges": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
+        "counts": [1, 1, 1, 1, 1, 1],
+        "labels": ["1", "2", "3", "4", "5", "6"],
+        "mean": 3.5,
+        "spread": 1.71,
+        "curve": True,
+        "title": "One fair die",
+    },
     "present-value": {
         "component": "present-value",
         "rate": 8,

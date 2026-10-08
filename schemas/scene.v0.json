@@ -200,6 +200,100 @@
       "title": "Flow",
       "type": "object"
     },
+    "Histogram": {
+      "additionalProperties": false,
+      "description": "Counts in touching bins, with an optional mean, spread, and bell curve.",
+      "properties": {
+        "component": {
+          "const": "histogram",
+          "title": "Component",
+          "type": "string"
+        },
+        "edges": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 41,
+          "minItems": 2,
+          "title": "Edges",
+          "type": "array"
+        },
+        "counts": {
+          "items": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "title": "Counts",
+          "type": "array"
+        },
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean"
+        },
+        "spread": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spread"
+        },
+        "curve": {
+          "default": false,
+          "title": "Curve",
+          "type": "boolean"
+        },
+        "highlight": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "x_label": {
+          "default": "",
+          "title": "X Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "edges",
+        "counts"
+      ],
+      "title": "Histogram",
+      "type": "object"
+    },
     "PlanePoint": {
       "additionalProperties": false,
       "properties": {
@@ -383,6 +477,7 @@
               "complex-plane": "#/$defs/ComplexPlane",
               "custom": "#/$defs/Custom",
               "equation": "#/$defs/Equation",
+              "histogram": "#/$defs/Histogram",
               "present-value": "#/$defs/PresentValue",
               "scatter-plot": "#/$defs/ScatterPlot",
               "text-card": "#/$defs/TextCard",
@@ -408,6 +503,9 @@
             },
             {
               "$ref": "#/$defs/ComplexPlane"
+            },
+            {
+              "$ref": "#/$defs/Histogram"
             },
             {
               "$ref": "#/$defs/PresentValue"

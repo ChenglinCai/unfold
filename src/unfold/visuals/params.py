@@ -4,6 +4,7 @@ These schemas never import manim, so `unfold check` and the build graph can
 validate scenes without loading it. `components.py` draws them.
 """
 
+from itertools import pairwise
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
@@ -109,6 +110,37 @@ class ComplexPlane(Model):
     turn: Turn | None = None
 
 
+class Histogram(Model):
+    """Counts in touching bins, with an optional mean, spread, and bell curve."""
+
+    component: Literal["histogram"]
+    edges: Annotated[list[float], Field(min_length=2, max_length=41)]
+    counts: list[Annotated[float, Field(ge=0)]]
+    labels: list[str] = Field(default_factory=list)
+    mean: float | None = None
+    # The standard deviation.
+    spread: Annotated[float, Field(gt=0)] | None = None
+    curve: bool = False
+    highlight: int | None = None
+    title: str = ""
+    x_label: str = ""
+
+    @model_validator(mode="after")
+    def bins_agree(self) -> Self:
+        bins = len(self.edges) - 1
+        if any(right <= left for left, right in pairwise(self.edges)):
+            raise ValueError("a histogram's edges must increase")
+        if len(self.counts) != bins:
+            raise ValueError("a histogram needs one count for each bin")
+        if self.labels and len(self.labels) != bins:
+            raise ValueError("a histogram needs one label for each bin, or none")
+        if self.curve and (self.mean is None or self.spread is None):
+            raise ValueError("a bell curve needs a mean and a spread")
+        if self.highlight is not None and not 0 <= self.highlight < bins:
+            raise ValueError("highlight must name a bin, counting from 0")
+        return self
+
+
 class Flow(Model):
     at: Annotated[float, Field(ge=0, le=100)]
     amount: float
@@ -154,6 +186,7 @@ Visual = Annotated[
     | ScatterPlot
     | Timeline
     | ComplexPlane
+    | Histogram
     | PresentValue
     | Custom,
     Field(discriminator="component"),
@@ -165,6 +198,7 @@ NAMES = (
     "scatter-plot",
     "timeline",
     "complex-plane",
+    "histogram",
     "present-value",
     "custom",
 )

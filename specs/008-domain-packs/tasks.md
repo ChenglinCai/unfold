@@ -47,8 +47,8 @@
 
 **Independent test**: draw six dice bins with a mean of 3.5, and check the bars, the line, and the curve.
 
-- [ ] T009 [US3] Write tests for `histogram` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `edges` holds "2 to 41, each greater than the one before", and `counts` has "one fewer than the edges, none below zero". `labels` is "empty, or one per bin", `spread` is "above zero", and `curve` "needs both `mean` and `spread`". Assert that six dice bins with a mean of 3.5 put the mean line at 3.5. Add a slow render test. Check: the new tests fail.
-- [ ] T010 [US3] Add `Histogram` to `src/unfold/visuals/params.py`, and `_histogram` to `src/unfold/visuals/components.py`, as research.md D5 describes. Check: the T009 tests pass.
+- [X] T009 [US3] Write tests for `histogram` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `edges` holds "2 to 41, each greater than the one before", and `counts` has "one fewer than the edges, none below zero". `labels` is "empty, or one per bin", `spread` is "above zero", and `curve` "needs both `mean` and `spread`". Assert that six dice bins with a mean of 3.5 put the mean line at 3.5. Add a slow render test. Check: the new tests fail.
+- [X] T010 [US3] Add `Histogram` to `src/unfold/visuals/params.py`, and `_histogram` to `src/unfold/visuals/components.py`, as research.md D5 describes. Check: the T009 tests pass.
 
 ## Phase 6: User Story 4, flow diagram (Priority: P2)
 

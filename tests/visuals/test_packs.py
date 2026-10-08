@@ -1,5 +1,6 @@
 """The domain packs: components that the golden set asked for at least three times."""
 
+import itertools
 import math
 from pathlib import Path
 
@@ -234,3 +235,78 @@ def test_an_inner_point_labels_beside_its_ray() -> None:
     offset = inner.get_center() - origin
     gap = abs(ray[0] * offset[1] - ray[1] * offset[0]) / float(np.linalg.norm(ray))
     assert gap > 0.25
+
+
+DIE: dict[str, object] = {
+    "component": "histogram",
+    "edges": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
+    "counts": [1, 1, 1, 1, 1, 1],
+    "labels": ["1", "2", "3", "4", "5", "6"],
+    "mean": 3.5,
+    "spread": 1.708,
+    "curve": True,
+}
+
+
+@pytest.mark.parametrize(
+    ("change", "field"),
+    [
+        ({"edges": [0.5], "counts": []}, r"histogram\.edges"),
+        ({"edges": list(range(42)), "counts": [1] * 41}, r"histogram\.edges"),
+        ({"edges": [0, 2, 1], "counts": [1, 1], "labels": []}, "must increase"),
+        ({"counts": [1, 1]}, "one count for each bin"),
+        ({"counts": [1, 1, 1, 1, 1, -1]}, r"histogram\.counts\.5"),
+        ({"labels": ["1", "2"]}, "one label for each bin"),
+        ({"spread": 0}, r"histogram\.spread"),
+        ({"spread": None}, "bell curve"),
+        ({"highlight": 6}, "name a bin"),
+    ],
+)
+def test_histogram_rejects_bad_parameters(
+    change: dict[str, object], field: str
+) -> None:
+    with pytest.raises(ValidationError, match=field):
+        parse({**DIE, **change})
+
+
+def test_bins_touch_and_the_mean_line_sits_at_the_mean() -> None:
+    drawing, _ = build(parse(DIE), "plot")
+
+    bars, [mean] = parts(drawing, "bar"), parts(drawing, "mean")
+    assert len(bars) == 6
+    for left, right in itertools.pairwise(bars):
+        assert left.get_right()[0] == pytest.approx(right.get_left()[0], abs=1e-6)
+    assert mean.get_center()[0] == pytest.approx(bars[2].get_right()[0], abs=1e-6)
+    assert texts(drawing, "bin-label") == ["1", "2", "3", "4", "5", "6"]
+
+
+def test_the_bell_curve_matches_the_histograms_area() -> None:
+    drawing, _ = build(parse(DIE), "plot")
+
+    [curve], [axis] = parts(drawing, "curve"), parts(drawing, "axis")
+    bars = parts(drawing, "bar")
+    peak = 6 / (1.708 * math.sqrt(2 * math.pi))
+    rise = curve.get_top()[1] - axis.get_center()[1]
+    assert rise / bars[0].height == pytest.approx(peak, rel=0.03)
+
+
+def test_many_bins_keep_their_edge_labels_apart() -> None:
+    visual = {"component": "histogram", "edges": list(range(41)), "counts": [3] * 40}
+    drawing, _ = build(parse(visual), "left")
+
+    assert texts(drawing, "edge-label")
+    assert crowded(drawing) == 0
+
+
+@pytest.mark.slow
+def test_a_histogram_renders(tmp_path: Path) -> None:
+    render_one(tmp_path, {**DIE, "highlight": 2, "title": "One fair die"})
+
+
+def test_the_spread_label_sits_beside_the_mean_label_above_the_bars() -> None:
+    drawing, _ = build(parse(DIE), "plot")
+
+    [mean], [spread] = parts(drawing, "mean-label"), parts(drawing, "spread-label")
+    tallest = max(bar.get_top()[1] for bar in parts(drawing, "bar"))
+    assert spread.get_bottom()[1] > tallest
+    assert spread.get_center()[1] == pytest.approx(mean.get_center()[1], abs=0.05)

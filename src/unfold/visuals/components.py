@@ -22,6 +22,7 @@ from manim import (
     DashedLine,
     DashedVMobject,
     Dot,
+    DoubleArrow,
     Line,
     MathTex,
     Mobject,
@@ -33,6 +34,7 @@ from manim import (
     Square,
     Text,
     VGroup,
+    VMobject,
 )
 from pydantic import BaseModel
 
@@ -46,6 +48,7 @@ from unfold.visuals.params import (
     ComponentError,
     Custom,
     Equation,
+    Histogram,
     PlanePoint,
     PresentValue,
     ScatterPlot,
@@ -393,6 +396,92 @@ def _complex_plane(plane: ComplexPlane, width: float, height: float) -> VGroup:
     return group.add(_keep_apart(labels))
 
 
+def _histogram(chart: Histogram, width: float, height: float) -> VGroup:
+    """Touching bars, with an optional mean line, spread arrow, and bell curve."""
+    low, high = chart.edges[0], chart.edges[-1]
+    usable = width - 0.6
+
+    def x_of(value: float) -> float:
+        return -usable / 2 + usable * (value - low) / (high - low)
+
+    bins = list(pairwise(chart.edges))
+    area = sum(c * (b - a) for c, (a, b) in zip(chart.counts, bins, strict=True))
+    mean, spread = chart.mean, chart.spread
+    peak = area / (spread * math.sqrt(2 * math.pi)) if chart.curve and spread else 0.0
+    top = max(*chart.counts, peak, 1e-9)
+    head = VGroup(*([_text(chart.title, theme.BODY_SIZE)] if chart.title else []))
+    below = 0.45 + (0.45 if chart.x_label else 0)
+    scale = max(height - head.height - 0.3 - 0.5 - below, 0.8) / top
+    axis = _named(
+        Line((-width / 2, 0, 0), (width / 2, 0, 0), color=theme.MUTED), "axis"
+    )
+    body, row = VGroup(axis), Row()
+    for index, (count, (left, right)) in enumerate(
+        zip(chart.counts, bins, strict=True)
+    ):
+        bar = Rectangle(
+            width=x_of(right) - x_of(left),
+            height=max(count * scale, 0.001),
+            fill_color=theme.YELLOW if index == chart.highlight else theme.BLUE,
+            fill_opacity=0.85,
+            stroke_color=theme.BACKGROUND,
+            stroke_width=2,
+        )
+        middle = (x_of(left) + x_of(right)) / 2
+        body.add(_named(bar.move_to((middle, 0, 0), aligned_edge=DOWN), "bar"))
+        if chart.labels:
+            text = _text(chart.labels[index], theme.LABEL_SIZE, theme.MUTED)
+            if row.fits(_named(text, "bin-label").move_to((middle, -0.3, 0))):
+                body.add(text)
+    for edge in [] if chart.labels else chart.edges:
+        text = _text(f"{edge:g}", theme.LABEL_SIZE, theme.MUTED)
+        if row.fits(_named(text, "edge-label").move_to((x_of(edge), -0.3, 0))):
+            body.add(text)
+    if chart.x_label:
+        body.add(
+            _text(chart.x_label, theme.LABEL_SIZE, theme.MUTED).move_to((0, -0.75, 0))
+        )
+    labels = []
+    if peak and mean is not None and spread:
+
+        def density(value: float) -> float:
+            return peak * math.exp(-0.5 * ((value - mean) / spread) ** 2)
+
+        dots = [
+            np.array([x_of(v), density(v) * scale, 0.0])
+            for v in np.linspace(low, high, 81)
+        ]
+        curve = VMobject(color=theme.PURPLE, stroke_width=4).set_points_smoothly(dots)
+        body.add(_named(curve, "curve"))
+    if mean is not None:
+        x = x_of(mean)
+        line = DashedLine(
+            (x, 0, 0), (x, top * scale + 0.15, 0), dash_length=0.1, color=theme.TEXT
+        )
+        body.add(_named(line, "mean"))
+        text = _named(_text(f"mean {mean:g}", theme.LABEL_SIZE), "mean-label")
+        labels.append(text.next_to(line, UP, buff=0.1))
+        if spread:
+            # At one spread from the mean, a bell curve stands at e^(-1/2) of its peak.
+            level = (peak * math.exp(-0.5) if peak else 0.6 * max(chart.counts)) * scale
+            ends = (x_of(max(low, mean - spread)), x_of(min(high, mean + spread)))
+            arrow = DoubleArrow(
+                (ends[0], level, 0),
+                (ends[1], level, 0),
+                buff=0,
+                color=theme.GREEN,
+                tip_length=0.15,
+            )
+            body.add(_named(arrow, "spread"))
+            text = _text(f"spread {spread:g}", theme.LABEL_SIZE, theme.GREEN)
+            # The label joins the mean's, above the bars, where nothing crosses it.
+            labels.append(
+                _named(text, "spread-label").next_to(labels[0], RIGHT, buff=0.4)
+            )
+    body.add(_keep_apart(labels))
+    return VGroup(head.next_to(body, UP, buff=0.3), body) if chart.title else body
+
+
 def _legend(rate: float) -> VGroup:
     paid = Square(0.3, stroke_color=theme.MUTED, stroke_width=2)
     today = Square(0.3, fill_color=theme.GREEN, fill_opacity=0.85, stroke_width=0)
@@ -490,6 +579,7 @@ _DRAW = {
     ScatterPlot: _scatter_plot,
     Timeline: _timeline,
     ComplexPlane: _complex_plane,
+    Histogram: _histogram,
     PresentValue: _present_value,
     Custom: _custom,
 }
