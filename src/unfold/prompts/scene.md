@@ -32,7 +32,8 @@ One entry for each beat, in the script's order. Each entry has these fields:
 ## Rules
 
 - Prefer a component to `custom`. A storyboard's `custom` often fits a text card, a chart, a timeline, a complex plane, a histogram, a present-value chart, or a flow diagram.
-- A text card holds words for the viewer to read. Never put stage directions on a card, such as "a plane appears". Use `custom` for a visual that needs motion.
+- A text card holds words for the viewer to read. Never put stage directions on a card, such as "a plane appears".
+- When the storyboard describes motion, show the picture that the motion ends on, if a component can draw it. For example, boxes that slide into place become a flow diagram. Use `custom` only when the motion itself carries the idea.
 - Write math in an `equation`, never in a text card, because a text card prints TeX literally.
 - Never present invented numbers as facts, such as made-up poll results. Use numbers from the narration or the storyboard, or numbers you compute from them. When a chart shows example data, say so in its title, such as "Example rolls".
 - Keep text short. Long text shrinks below a readable size, and the check fails. In `full` or `plot`, a text card holds a title and about 4 lines of 40 characters. In `left`, `right`, `top`, or `bottom`, it holds a title and 2 short lines.

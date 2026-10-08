@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 22. Then M8, growth: more domain packs, Chinese subtitles, more source formats, and outside contributors.
+- Next: your review of M7 and of items 19 to 26. M8, growth, has begun with the domain packs on branch `m8-packs`.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -91,3 +91,7 @@ This file holds the current state of the work, so that a new session can resume 
 20. `unfold doctor` now treats LaTeX as optional, because only equations need it. The quickstart and its CI job install no LaTeX.
 21. The plugin installs the audio extra, so a user's first audio check downloads a Whisper model from Hugging Face. `plugin/README.md` says so.
 22. The plan's M7 gate names Cowork as well as Claude Code. The spec moved Cowork to a later release, so that half of the gate is still open.
+23. M8 began with the four components that the golden set asked for most. They draw a complex plane, a histogram, a present-value chart, and a flow diagram. Claude made the design calls that principle VIII leaves to you. `specs/008-domain-packs/research.md` lists them.
+24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
+25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
+26. Importing `unfold.visuals.components` first, in a fresh process, fails with a circular import through `unfold.formats`. The command line and the tests load `unfold.formats` first, so nothing breaks today. Moving the shared field types out of `unfold.formats` would end the cycle.
