@@ -31,6 +31,7 @@ def test_the_server_offers_the_unfold_tools() -> None:
         "render",
         "review",
         "evaluate",
+        "translate",
     } <= names
 
 

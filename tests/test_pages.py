@@ -144,3 +144,17 @@ def test_ids_that_are_not_plain_names_stay_out_of_the_pages(
     assert "onload" not in (folder / "review.html").read_text()
     assert "skipped ../outside: its id is not a plain name" in capsys.readouterr().out
     assert not (tmp_path / "outside").exists()
+
+
+def test_the_gallery_copies_chinese_subtitles(tmp_path: Path) -> None:
+    public = make_series(tmp_path, "open", public=True)
+    (public / "E01-growth" / "episode.zh.srt").write_text(
+        "1\n00:00:00,000 --> 00:00:01,000\n你好\n"
+    )
+    out = tmp_path / "site"
+
+    assert main(["gallery", str(public), "--out", str(out)]) == 0
+
+    assert (
+        (out / "open" / "E01-growth" / "episode.zh.srt").read_text().endswith("你好\n")
+    )

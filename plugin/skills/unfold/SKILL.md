@@ -15,6 +15,7 @@ unfold turns learning material into a series of short explainer videos. Its tool
 4. Run the `build` tool. It runs model jobs on the user's own Claude subscription, so say so before you start.
 5. Run the `render` tool with `check_audio` set to true.
 6. Run the `evaluate` tool, then the `review` tool, and show the user the review page.
+7. For Chinese viewers, run the `translate` tool. It writes `episode.zh.srt` beside each episode.
 
 ## Rules
 

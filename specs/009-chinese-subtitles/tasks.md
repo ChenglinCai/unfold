@@ -45,8 +45,8 @@ The feature adds no dependency, so it needs no setup phase.
 
 **Independent test**: build a gallery from a public series with Chinese subtitles, and list the server's tools.
 
-- [ ] T008 [P] [US3] Write a test in `tests/test_pages.py` that the gallery copies `episode.zh.srt` for a public series, then implement it in `src/unfold/pages.py`. Check: the test passes.
-- [ ] T009 [P] [US3] Write a test in `tests/test_mcp_server.py` that the server offers a translate tool. Then add the tool to `src/unfold/mcp_server.py` and the plugin's skill. Check: the test passes.
+- [X] T008 [P] [US3] Write a test in `tests/test_pages.py` that the gallery copies `episode.zh.srt` for a public series, then implement it in `src/unfold/pages.py`. Check: the test passes.
+- [X] T009 [P] [US3] Write a test in `tests/test_mcp_server.py` that the server offers a translate tool. Then add the tool to `src/unfold/mcp_server.py` and the plugin's skill. Check: the test passes.
 
 ## Phase 5: User Story 4, translate the golden set (Priority: P1)
 
