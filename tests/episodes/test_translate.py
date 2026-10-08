@@ -279,3 +279,30 @@ def test_a_failed_canary_exits_3(series: Path, monkeypatch: pytest.MonkeyPatch) 
 def test_only_simplified_chinese_is_offered() -> None:
     with pytest.raises(SystemExit):
         main(["translate", "anywhere", "--to", "fr"])
+
+
+def test_a_broken_rule_comes_back_as_feedback(series: Path) -> None:
+    comma: dict[str, object] = {
+        "beats": [
+            {"id": "s1-x/hello", "text": "你好\uff0c朋友"},
+            {"id": "s1-x/bye", "text": "再见"},
+        ]
+    }
+    fake = FakeTranslator([comma, GOOD_REPLY])
+
+    lines = translate(series, fake)
+
+    assert lines == [("written", series / "E01-a" / "episode.zh.srt")]
+    assert fake.calls == ["canary", "TranslationReply", "TranslationReply"]
+    assert "s1-x/hello: uses a comma or a period" in fake.prompts[2]
+
+
+def test_a_reply_that_never_passes_fails_after_three_retries(series: Path) -> None:
+    bad: dict[str, object] = {"beats": [{"id": "s1-x/hello", "text": "你好"}]}
+    fake = FakeTranslator([bad] * 4)
+
+    lines = translate(series, fake)
+
+    assert lines == [("failed", series / "E01-a" / "episode.zh.srt")]
+    assert fake.calls.count("TranslationReply") == 4
+    assert not (series / "E01-a" / "episode.zh.srt").exists()

@@ -37,7 +37,7 @@ The feature adds no dependency, so it needs no setup phase.
 
 **Independent test**: a fake runner first returns a reply with a comma, then a clean one.
 
-- [ ] T007 [US2] Write a test where the fake runner first breaks a rule, and check that the second request carries the error. Add a test that a reply that never passes fails after 3 retries. Check: the tests pass.
+- [X] T007 [US2] Write a test where the fake runner first breaks a rule, and check that the second request carries the error. Add a test that a reply that never passes fails after 3 retries. Check: the tests pass.
 
 ## Phase 4: User Story 3, share the subtitles (Priority: P2)
 
