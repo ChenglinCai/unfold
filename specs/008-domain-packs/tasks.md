@@ -15,7 +15,7 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Add Hypothesis with `uv add --dev hypothesis`, put `.hypothesis/` in `.gitignore`, and add its row and safety note to `docs/dependencies.md`. Check: `uv run python -c "import hypothesis"` works, and `uv lock --check` passes.
+- [X] T001 Add Hypothesis with `uv add --dev hypothesis`, put `.hypothesis/` in `.gitignore`, and add its row and safety note to `docs/dependencies.md`. Check: `uv run python -c "import hypothesis"` works, and `uv lock --check` passes.
 
 ## Phase 2: Foundational
 
