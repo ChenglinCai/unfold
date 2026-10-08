@@ -4,6 +4,21 @@ unfold turns learning material into a series of explainer videos. Each video has
 
 The project is in early development. To see it work, follow the [quickstart](docs/quickstart.md). It renders a bundled example in about five minutes, with no model call.
 
+## How it works
+
+Each command does one step, and only two steps call a model. Model jobs run on your own Claude subscription, through the `claude` command.
+
+| Step | Command | What it makes | Calls a model |
+|---|---|---|---|
+| 1 | `unfold ingest SOURCE --out DIR` | A source document with anchors, from a PDF, slides, a web page, Markdown, a notebook, a recording, or a bare topic | No |
+| 2 | `unfold build SERIES` | The knowledge map, the series plan, and each segment's outline, script, storyboard, and scene | Yes |
+| 3 | `unfold render SERIES` | Voiced segments, contact sheets, stitched episodes, and English subtitles | No |
+| 4 | `unfold translate SERIES --to zh` | Simplified Chinese subtitles | Yes |
+| 5 | `unfold eval SERIES` and `unfold review SERIES` | Check results, and a review page with every video and contact sheet | No |
+| 6 | `unfold gallery SERIES --out DIR` | A static site, with only the series whose sources allow public outputs | No |
+
+`unfold doctor` checks your machine, and `unfold check PATH` checks any file against its format. Code checks every model reply, retries with feedback, and reuses saved results, so a second run costs nothing.
+
 ## Set up a development machine
 
 You need macOS or Linux, [uv](https://docs.astral.sh/uv/), and LaTeX.

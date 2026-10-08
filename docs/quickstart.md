@@ -73,6 +73,7 @@ Try a change. Edit a value in `scene.yaml`, then render again. The render checks
 
 - Run `uv run unfold check PATH` to check any unfold file against its format.
 - To make a series from your own material, install the `claude` command and sign in. Then `unfold ingest`, `unfold understand`, and `unfold build` turn a source into scripts and scenes.
+- Run `unfold review SERIES` for a review page, and `unfold translate SERIES --to zh` for Chinese subtitles.
 - To use unfold from Claude Code, read [the plugin's README](../plugin/README.md), which says what the plugin installs and runs. Then add it:
 
   ```sh

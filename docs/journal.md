@@ -4,6 +4,9 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Added an episode contact sheet, with one frame per beat, to each stitched episode and to the review page. The review page also shows the custom share.
+- Added a Jupyter notebook reader to `unfold ingest`, and made the Markdown section parser skip code fences.
+- Added English and Chinese subtitle tracks to the gallery and review players, and fixed a gallery link that PR 11 broke.
 - Added Chinese subtitles: `unfold translate SERIES --to zh` writes `episode.zh.srt` for each rendered episode, checked against Netflix's style guide. All seven golden episodes passed, with 242 cues.
 - Changed the translation prompt and checks once, after reading the golden output. A space at least every 16 characters keeps words whole across lines. Every check still passed, so the change stays.
 - Added four domain-pack components with schema, drawing, layout, property, and render tests. The golden custom share fell from 28 to 13.5 percent, short of the 10 percent goal. `docs/evals/M8-packs-report.md` gives the numbers.
