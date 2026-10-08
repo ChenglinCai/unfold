@@ -38,8 +38,8 @@
 
 **Independent test**: draw points at known angles, and check where each lands.
 
-- [ ] T007 [US2] Write tests for `complex-plane` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `points` holds "1 to 6", and each `radius` runs "from 0 to 100", with angles in degrees. Assert that a point at radius 1 and 60 degrees lands on the unit circle, and that radius 3 grows the plane. Assert that guides draw dashed lines with their labels, and that a turn past 360 degrees draws a loop. Add a slow render test. Check: the new tests fail.
-- [ ] T008 [US2] Add `ComplexPlane`, `PlanePoint`, and `Turn` to `src/unfold/visuals/params.py`, and `_complex_plane` to `src/unfold/visuals/components.py`, as research.md D2 describes. Check: the T007 tests pass.
+- [X] T007 [US2] Write tests for `complex-plane` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `points` holds "1 to 6", and each `radius` runs "from 0 to 100", with angles in degrees. Assert that a point at radius 1 and 60 degrees lands on the unit circle, and that radius 3 grows the plane. Assert that guides draw dashed lines with their labels, and that a turn past 360 degrees draws a loop. Add a slow render test. Check: the new tests fail.
+- [X] T008 [US2] Add `ComplexPlane`, `PlanePoint`, and `Turn` to `src/unfold/visuals/params.py`, and `_complex_plane` to `src/unfold/visuals/components.py`, as research.md D2 describes. Check: the T007 tests pass.
 
 ## Phase 5: User Story 3, histogram (Priority: P1)
 

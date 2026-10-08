@@ -1,7 +1,9 @@
 """The domain packs: components that the golden set asked for at least three times."""
 
+import math
 from pathlib import Path
 
+import numpy as np
 import pytest
 import yaml
 from manim import Mobject, Text, VGroup
@@ -10,6 +12,7 @@ from pydantic import ValidationError
 from unfold.cli import main
 from unfold.visuals.components import build, crowded, parse
 from unfold.visuals.finance import present_value, shown
+from unfold.visuals.layout import Placed, box_of, check_layout
 
 SCRIPT = """---
 format: script/v1
@@ -122,3 +125,112 @@ def test_money_paid_out_sits_below_the_axis() -> None:
 @pytest.mark.slow
 def test_a_present_value_renders(tmp_path: Path) -> None:
     render_one(tmp_path, YEARLY)
+
+
+ROTATION: dict[str, object] = {
+    "component": "complex-plane",
+    "points": [{"label": "z", "radius": 1, "angle": 60}],
+}
+
+
+@pytest.mark.parametrize(
+    ("change", "field"),
+    [
+        ({"points": []}, r"complex-plane\.points"),
+        (
+            {"points": [{"radius": 1, "angle": n} for n in range(7)]},
+            r"complex-plane\.points",
+        ),
+        ({"points": [{"radius": -1, "angle": 0}]}, r"points\.0\.radius"),
+        ({"points": [{"radius": 101, "angle": 0}]}, r"points\.0\.radius"),
+        ({"turn": {"start": 30, "end": 30}}, "sweep"),
+    ],
+)
+def test_complex_plane_rejects_bad_parameters(
+    change: dict[str, object], field: str
+) -> None:
+    with pytest.raises(ValidationError, match=field):
+        parse({**ROTATION, **change})
+
+
+def polar(point: Mobject, center: Mobject) -> tuple[float, float]:
+    dx, dy = (point.get_center() - center.get_center())[:2]
+    return math.hypot(dx, dy), math.degrees(math.atan2(dy, dx))
+
+
+def test_a_point_at_radius_one_sits_on_the_unit_circle() -> None:
+    drawing, _ = build(parse(ROTATION), "plot")
+
+    [circle], [point] = parts(drawing, "unit-circle"), parts(drawing, "point")
+    distance, angle = polar(point, circle)
+    assert distance == pytest.approx(circle.width / 2, rel=0.02)
+    assert angle == pytest.approx(60, abs=1)
+
+
+def test_a_far_point_grows_the_plane_and_still_fits() -> None:
+    visual = {**ROTATION, "points": [{"label": "3z", "radius": 3, "angle": 200}]}
+    drawing, min_font = build(parse(visual), "plot")
+
+    [plane], [point] = parts(drawing, "plane"), parts(drawing, "point")
+    assert plane.get_left()[0] < point.get_center()[0] < plane.get_right()[0]
+    assert plane.get_bottom()[1] < point.get_center()[1] < plane.get_top()[1]
+    placed = Placed("plane", "plot", box_of(drawing), min_font, crowded(drawing))
+    assert check_layout([placed]) == []
+
+
+def test_guides_drop_dashed_lines_to_both_axes() -> None:
+    point = {"radius": 1, "angle": 40, "guides": True}
+    point |= {"real_label": "cos x", "imag_label": "sin x"}
+    drawing, _ = build(parse({**ROTATION, "points": [point]}), "plot")
+
+    assert len(parts(drawing, "guide")) == 2
+    assert sorted(texts(drawing, "guide-label")) == ["cos x", "sin x"]
+
+
+@pytest.mark.parametrize("end", [359, 360, 400, -360])
+def test_a_full_turn_draws_a_loop_that_fits(end: float) -> None:
+    turn = {"start": 0, "end": end, "label": "one turn"}
+    drawing, min_font = build(parse({**ROTATION, "turn": turn}), "plot")
+
+    [arc] = parts(drawing, "turn")
+    assert arc.angle == pytest.approx(math.radians(end))
+    assert texts(drawing, "turn-label") == ["one turn"]
+    placed = Placed("plane", "plot", box_of(drawing), min_font, crowded(drawing))
+    assert check_layout([placed]) == []
+
+
+def test_crowded_points_keep_their_labels_apart() -> None:
+    points = [{"label": f"z{n}", "radius": 1, "angle": 40 + n} for n in range(6)]
+    drawing, _ = build(parse({**ROTATION, "points": points}), "left")
+
+    assert crowded(drawing) == 0
+
+
+@pytest.mark.slow
+def test_a_complex_plane_renders(tmp_path: Path) -> None:
+    point = {"label": "z", "radius": 1, "angle": 60, "guides": True}
+    render_one(
+        tmp_path, {**ROTATION, "points": [point], "turn": {"start": 0, "end": 60}}
+    )
+
+
+def test_a_full_turn_puts_its_label_below_the_plane() -> None:
+    turn = {"start": 0, "end": 360, "label": "one full turn"}
+    drawing, _ = build(parse({**ROTATION, "turn": turn}), "plot")
+
+    [plane], [label] = parts(drawing, "plane"), parts(drawing, "turn-label")
+    assert label.get_top()[1] <= plane.get_bottom()[1]
+
+
+def test_an_inner_point_labels_beside_its_ray() -> None:
+    points = [{"label": "z", "radius": 1, "angle": 200}]
+    points.append({"label": "3z", "radius": 3, "angle": 200})
+    drawing, _ = build(parse({**ROTATION, "points": points}), "plot")
+
+    inner = next(m for m in parts(drawing, "point-label") if m.original_text == "z")
+    [_, outer_dot] = sorted(parts(drawing, "point"), key=lambda m: -m.get_center()[0])
+    origin = parts(drawing, "plane")[0].get_center()
+    ray = outer_dot.get_center() - origin
+    offset = inner.get_center() - origin
+    gap = abs(ray[0] * offset[1] - ray[1] * offset[0]) / float(np.linalg.norm(ray))
+    assert gap > 0.25

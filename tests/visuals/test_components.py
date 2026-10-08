@@ -40,6 +40,14 @@ SAMPLES: dict[str, dict[str, object]] = {
             {"at": 3, "label": "Payoff", "amount": 120},
         ],
     },
+    "complex-plane": {
+        "component": "complex-plane",
+        "points": [
+            {"label": "z", "radius": 1, "angle": 60, "guides": True}
+            | {"real_label": "cos x", "imag_label": "sin x"}
+        ],
+        "turn": {"start": 0, "end": 60, "label": "x"},
+    },
     "present-value": {
         "component": "present-value",
         "rate": 8,

@@ -77,6 +77,38 @@ class Timeline(Model):
         return self
 
 
+class PlanePoint(Model):
+    label: str = ""
+    radius: Annotated[float, Field(ge=0, le=100)]
+    # Degrees, counterclockwise from the positive real axis.
+    angle: float
+    guides: bool = False
+    real_label: str = ""
+    imag_label: str = ""
+
+
+class Turn(Model):
+    """An arc with an arrow tip, from one angle to another, in degrees."""
+
+    start: float
+    end: float
+    label: str = ""
+
+    @model_validator(mode="after")
+    def sweeps(self) -> Self:
+        if self.end == self.start:
+            raise ValueError("a turn must sweep some angle")
+        return self
+
+
+class ComplexPlane(Model):
+    component: Literal["complex-plane"]
+    points: Annotated[list[PlanePoint], Field(min_length=1, max_length=6)]
+    unit_circle: bool = True
+    rays: bool = True
+    turn: Turn | None = None
+
+
 class Flow(Model):
     at: Annotated[float, Field(ge=0, le=100)]
     amount: float
@@ -116,7 +148,14 @@ class Custom(Model):
 
 
 Visual = Annotated[
-    TextCard | Equation | BarChart | ScatterPlot | Timeline | PresentValue | Custom,
+    TextCard
+    | Equation
+    | BarChart
+    | ScatterPlot
+    | Timeline
+    | ComplexPlane
+    | PresentValue
+    | Custom,
     Field(discriminator="component"),
 ]
 NAMES = (
@@ -125,6 +164,7 @@ NAMES = (
     "bar-chart",
     "scatter-plot",
     "timeline",
+    "complex-plane",
     "present-value",
     "custom",
 )

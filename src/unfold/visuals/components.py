@@ -9,18 +9,24 @@ import math
 import textwrap
 from itertools import combinations, pairwise
 
+import numpy as np
 from manim import (
     DOWN,
     LEFT,
     RIGHT,
     UP,
+    Arc,
     Arrow,
     Axes,
+    Circle,
+    DashedLine,
     DashedVMobject,
     Dot,
     Line,
     MathTex,
+    Mobject,
     NumberLine,
+    NumberPlane,
     Rectangle,
     RoundedRectangle,
     SingleStringMathTex,
@@ -36,9 +42,11 @@ from unfold.visuals.layout import REGIONS, box_of
 from unfold.visuals.params import (
     NAMES,
     BarChart,
+    ComplexPlane,
     ComponentError,
     Custom,
     Equation,
+    PlanePoint,
     PresentValue,
     ScatterPlot,
     TextCard,
@@ -261,6 +269,130 @@ class Row:
         return True
 
 
+def _keep_apart(labels: list[Text]) -> VGroup:
+    """Labels in priority order, leaving out any that would overlap a kept one."""
+    kept: list[Text] = []
+    for label in labels:
+        if not any(box_of(label).overlaps(box_of(other)) for other in kept):
+            kept.append(label)
+    return VGroup(*kept)
+
+
+def _named[M: Mobject](mobject: M, name: str) -> M:
+    mobject.name = name
+    return mobject
+
+
+def _turn_tip(arc: Arc, sweep: float) -> Arrow:
+    """A short arrow at an arc's end, along its tangent.
+
+    manim's own `Arc.add_tip` rescales the arc to fit the tip, and that blows up
+    when the arc's ends meet, as in a full turn.
+    """
+    end = arc.get_end()
+    radial = (end - arc.arc_center) / max(np.linalg.norm(end - arc.arc_center), 1e-9)
+    tangent = np.array([-radial[1], radial[0], 0.0]) * (1 if sweep > 0 else -1)
+    return Arrow(
+        end - tangent * 0.2,
+        end,
+        buff=0,
+        color=theme.GREEN,
+        max_tip_length_to_length_ratio=0.75,
+    )
+
+
+def _same_ray(point: PlanePoint, other: PlanePoint) -> bool:
+    """Whether another point sits farther out at nearly the same angle."""
+    turn = (other.angle - point.angle) % 360
+    return other.radius > point.radius and min(turn, 360 - turn) < 5
+
+
+def _complex_plane(plane: ComplexPlane, width: float, height: float) -> VGroup:
+    """Points by radius and angle, with an optional unit circle, guides, and turn."""
+    need = 1.2 * max(1.0, *(point.radius for point in plane.points))
+    step = 0.5 if need <= 2 else 1.0 if need <= 6 else _step(need)
+    reach = step * math.ceil(need / step)
+    side = min(width, height) - 0.9  # room for the labels around the plane
+    grid = NumberPlane(
+        x_range=[-reach, reach, step],
+        y_range=[-reach, reach, step],
+        x_length=side,
+        y_length=side,
+        background_line_style={
+            "stroke_color": theme.MUTED,
+            "stroke_width": 1,
+            "stroke_opacity": 0.3,
+        },
+        axis_config={"stroke_color": theme.MUTED},
+    )
+    grid.name = "plane"
+    origin, unit = grid.c2p(0, 0), side / (2 * reach)
+    group, labels = VGroup(grid), []
+    if plane.unit_circle:
+        circle = Circle(radius=unit, color=theme.BLUE, stroke_width=3).move_to(origin)
+        circle.name = "unit-circle"
+        group.add(circle)
+    for point in plane.points:
+        theta = math.radians(point.angle)
+        direction = np.array([math.cos(theta), math.sin(theta), 0.0])
+        spot = origin + direction * point.radius * unit
+        if plane.rays and point.radius > 0:
+            group.add(_named(Line(origin, spot, color=theme.YELLOW), "ray"))
+        group.add(_named(Dot(spot, radius=0.08, color=theme.YELLOW), "point"))
+        if point.label:
+            # A point with another farther out on its ray labels beside the ray.
+            shaded = any(_same_ray(point, other) for other in plane.points)
+            side = np.array([-direction[1], direction[0], 0.0]) if shaded else direction
+            text = _named(_text(point.label, theme.LABEL_SIZE), "point-label")
+            labels.append(text.next_to(spot, side, buff=0.15))
+        if not point.guides:
+            continue
+        feet = (
+            np.array([spot[0], origin[1], 0.0]),
+            np.array([origin[0], spot[1], 0.0]),
+        )
+        for foot in feet:
+            if np.linalg.norm(foot - spot) > 1e-6:
+                guide = DashedLine(spot, foot, dash_length=0.1, color=theme.MUTED)
+                group.add(_named(guide, "guide"))
+        sides = (
+            DOWN if spot[1] >= origin[1] else UP,
+            LEFT if spot[0] >= origin[0] else RIGHT,
+        )
+        for words, foot, side_of in zip(
+            (point.real_label, point.imag_label), feet, sides, strict=True
+        ):
+            if words:
+                text = _named(
+                    _text(words, theme.LABEL_SIZE, theme.MUTED), "guide-label"
+                )
+                labels.append(text.next_to(foot, side_of, buff=0.12))
+    if plane.turn is not None:
+        turn, radius = plane.turn, 0.45 * unit
+        arc = Arc(
+            radius=radius,
+            start_angle=math.radians(turn.start),
+            angle=math.radians(turn.end - turn.start),
+            arc_center=origin,
+            color=theme.GREEN,
+        )
+        sweep = turn.end - turn.start
+        group.add(_named(arc, "turn"), _named(_turn_tip(arc, sweep), "turn-tip"))
+        if turn.label:
+            words = _text(turn.label, theme.LABEL_SIZE, theme.GREEN)
+            text = _named(words, "turn-label")
+            if abs(sweep) >= 300:  # a loop leaves no gap, so the label goes below
+                labels.append(text.next_to(grid, DOWN, buff=0.15))
+            else:
+                middle = math.radians((turn.start + turn.end) / 2)
+                out = np.array([math.cos(middle), math.sin(middle), 0.0])
+                labels.append(text.move_to(origin + out * (radius + 0.3)))
+    for words, end, side_of in (("Re", (reach, 0), RIGHT), ("Im", (0, reach), UP)):
+        text = _text(words, theme.LABEL_SIZE, theme.MUTED)
+        labels.append(text.next_to(grid.c2p(*end), side_of, buff=0.1))
+    return group.add(_keep_apart(labels))
+
+
 def _legend(rate: float) -> VGroup:
     paid = Square(0.3, stroke_color=theme.MUTED, stroke_width=2)
     today = Square(0.3, fill_color=theme.GREEN, fill_opacity=0.85, stroke_width=0)
@@ -357,6 +489,7 @@ _DRAW = {
     BarChart: _bar_chart,
     ScatterPlot: _scatter_plot,
     Timeline: _timeline,
+    ComplexPlane: _complex_plane,
     PresentValue: _present_value,
     Custom: _custom,
 }

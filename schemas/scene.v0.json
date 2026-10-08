@@ -54,6 +54,52 @@
       "title": "BarChart",
       "type": "object"
     },
+    "ComplexPlane": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "complex-plane",
+          "title": "Component",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/PlanePoint"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Points",
+          "type": "array"
+        },
+        "unit_circle": {
+          "default": true,
+          "title": "Unit Circle",
+          "type": "boolean"
+        },
+        "rays": {
+          "default": true,
+          "title": "Rays",
+          "type": "boolean"
+        },
+        "turn": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Turn"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "component",
+        "points"
+      ],
+      "title": "ComplexPlane",
+      "type": "object"
+    },
     "Custom": {
       "additionalProperties": false,
       "description": "A visual that no component draws yet. It renders as a labeled card.",
@@ -152,6 +198,47 @@
         "amount"
       ],
       "title": "Flow",
+      "type": "object"
+    },
+    "PlanePoint": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "radius": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Radius",
+          "type": "number"
+        },
+        "angle": {
+          "title": "Angle",
+          "type": "number"
+        },
+        "guides": {
+          "default": false,
+          "title": "Guides",
+          "type": "boolean"
+        },
+        "real_label": {
+          "default": "",
+          "title": "Real Label",
+          "type": "string"
+        },
+        "imag_label": {
+          "default": "",
+          "title": "Imag Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "radius",
+        "angle"
+      ],
+      "title": "PlanePoint",
       "type": "object"
     },
     "PresentValue": {
@@ -293,6 +380,7 @@
           "discriminator": {
             "mapping": {
               "bar-chart": "#/$defs/BarChart",
+              "complex-plane": "#/$defs/ComplexPlane",
               "custom": "#/$defs/Custom",
               "equation": "#/$defs/Equation",
               "present-value": "#/$defs/PresentValue",
@@ -317,6 +405,9 @@
             },
             {
               "$ref": "#/$defs/Timeline"
+            },
+            {
+              "$ref": "#/$defs/ComplexPlane"
             },
             {
               "$ref": "#/$defs/PresentValue"
@@ -398,6 +489,31 @@
         "events"
       ],
       "title": "Timeline",
+      "type": "object"
+    },
+    "Turn": {
+      "additionalProperties": false,
+      "description": "An arc with an arrow tip, from one angle to another, in degrees.",
+      "properties": {
+        "start": {
+          "title": "Start",
+          "type": "number"
+        },
+        "end": {
+          "title": "End",
+          "type": "number"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Turn",
       "type": "object"
     }
   },
