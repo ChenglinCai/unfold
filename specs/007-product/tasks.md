@@ -6,7 +6,7 @@
 
 ## Phase 1: User Story 1, the doctor (Priority: P1)
 
-- [ ] T001 [US1] Write `tests/test_doctor.py`, then implement `src/unfold/doctor.py` and `unfold doctor`. Check: the tests pass.
+- [X] T001 [US1] Write `tests/test_doctor.py`, then implement `src/unfold/doctor.py` and `unfold doctor`. Check: the tests pass.
 
 ## Phase 2: User Stories 2 and 3, review and gallery
 

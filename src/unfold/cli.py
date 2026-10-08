@@ -13,6 +13,7 @@ def build_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(dest="command", required=True)
     from unfold.build.command import add_build_command
     from unfold.check import add_check_command
+    from unfold.doctor import add_doctor_command
     from unfold.evals.command import add_eval_command
     from unfold.lint.command import add_lint_command
     from unfold.sources.command import add_ingest_command
@@ -21,6 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_build_command(commands)
     add_check_command(commands)
+    add_doctor_command(commands)
     add_eval_command(commands)
     add_lint_command(commands)
     add_render_command(commands)
