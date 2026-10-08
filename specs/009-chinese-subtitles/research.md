@@ -39,3 +39,9 @@ Each entry records a decision, why we chose it, and what else we weighed. The ma
 
 - **Decision**: `episode.zh.srt` sits beside `episode.srt`. The gallery copies it for public series, and the MCP server gains a translate tool.
 - **Rationale**: video players find a sidecar file by its name, and the language code before `.srt` is the common convention.
+
+## D8. A space at least every 16 characters
+
+- **Decision**: added after the first golden round. A reply fails when a run of more than 16 characters has no space, and code packs whole phrases into lines.
+- **Rationale**: Chinese has no spaces between words, so a long run had to break inside a word, such as 商品. Spaces already mark the guide's pauses, so they make the line breaks too.
+- **Alternatives**: a word-segmentation library, which would add a dependency for one rule.

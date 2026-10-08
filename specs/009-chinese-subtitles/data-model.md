@@ -33,6 +33,7 @@ Each failure names its beat, so a retry can fix it:
 - "s1-growth/title: holds no Chinese"
 - "s1-growth/title: keeps the English word interest"
 - "s1-growth/title: 45 characters, but its time allows 42"
+- "s1-growth/title: runs 17 characters without a space. Put a space at a pause, at least every 16 characters"
 
 ## The output
 

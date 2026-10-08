@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 27. M8, growth, began with the domain packs, and other M8 features follow.
+- Next: your review of M7 and of items 19 to 29. M8, growth, now has the domain packs and Chinese subtitles, and other M8 features follow.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -105,3 +105,4 @@ This file holds the current state of the work, so that a new session can resume 
 26. Fixed: importing `unfold.visuals.components` first used to fail with a circular import. `unfold/fields.py` now holds the shared field types, and a test imports each affected module first.
 27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.
 28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
+29. Claude read the Chinese subtitles of one public episode, and the spec asks for your reading too. Please read `episode.zh.srt` of velocity-of-money beside its video.

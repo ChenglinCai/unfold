@@ -61,7 +61,7 @@ The feature adds no dependency, so it needs no setup phase.
 ## Phase 6: Polish
 
 - [X] T013 [P] Add `episode.zh.srt` to `docs/formats.md`. Check: the written-profile lint passes.
-- [ ] T014 Converge, update `docs/progress.md` and `docs/journal.md`, mark the pull request ready, and merge after CI passes. Check: the converge pass appends no task, and every CI job passes.
+- [X] T014 Converge, update `docs/progress.md` and `docs/journal.md`, mark the pull request ready, and merge after CI passes. Check: the converge pass appends no task, and every CI job passes.
 
 ## Dependencies and execution order
 
@@ -82,3 +82,8 @@ Task: "T009 the MCP server's translate tool, in src/unfold/mcp_server.py"
 1. MVP: the foundation and user story 1. One command then translates an episode with every check in place.
 2. Add the retry tests, the gallery, and the MCP tool, each test first.
 3. Run the golden set last, so it costs about 8 model calls once.
+
+## Phase 7: Convergence
+
+- [X] T015 Record the space-every-16-characters check, which came from the reading, in `data-model.md` and `research.md`, per FR-004 and FR-005 (unrequested)
+- [X] T016 Ask the maintainer to read one episode's Chinese subtitles, as progress item 29 in `docs/progress.md`, per SC-004 (partial)
