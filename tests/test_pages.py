@@ -158,3 +158,32 @@ def test_the_gallery_copies_chinese_subtitles(tmp_path: Path) -> None:
     assert (
         (out / "open" / "E01-growth" / "episode.zh.srt").read_text().endswith("你好\n")
     )
+
+
+SRT = "1\n00:00:00,000 --> 00:00:01,000\nHello\n"
+
+
+def test_the_players_offer_english_and_chinese_subtitles(tmp_path: Path) -> None:
+    folder = make_series(tmp_path, "open", public=True)
+    episode = folder / "E01-growth"
+    (episode / "episode.srt").write_text(SRT)
+    (episode / "episode.zh.srt").write_text(SRT.replace("Hello", "你好"))
+    out = tmp_path / "site"
+
+    assert main(["gallery", str(folder), "--out", str(out)]) == 0
+    assert main(["review", str(folder)]) == 0
+
+    index = (out / "index.html").read_text()
+    assert '<video controls src="open/E01-growth/episode.mp4">' in index
+    assert '<track kind="subtitles" srclang="en" label="English"' in index
+    assert (
+        'srclang="zh-Hans" label="中文" src="open/E01-growth/episode.zh.vtt"' in index
+    )
+    assert (
+        (out / "open" / "E01-growth" / "episode.zh.vtt")
+        .read_text()
+        .startswith("WEBVTT")
+    )
+    review = (folder / "review.html").read_text()
+    assert 'src="E01-growth/episode.vtt" default' in review
+    assert (episode / "episode.vtt").is_file()

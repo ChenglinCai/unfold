@@ -1,6 +1,6 @@
 """Subtitles give each beat cues that start when its narration starts."""
 
-from unfold.episodes.subtitles import Cue, beat_cues, srt_text, srt_time
+from unfold.episodes.subtitles import Cue, beat_cues, srt_text, srt_time, vtt_text
 
 
 def test_times_use_the_srt_format() -> None:
@@ -31,3 +31,9 @@ def test_srt_text_numbers_each_cue() -> None:
         text
         == "1\n00:00:00,000 --> 00:00:01,500\nOne.\n\n2\n00:00:01,500 --> 00:00:03,000\nTwo.\n"
     )
+
+
+def test_webvtt_adds_a_header_and_puts_a_dot_in_each_time() -> None:
+    srt = "1\n00:00:02,000 --> 00:00:04,500\nHello, world\n"
+
+    assert vtt_text(srt) == "WEBVTT\n\n1\n00:00:02.000 --> 00:00:04.500\nHello, world\n"

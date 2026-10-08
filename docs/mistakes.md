@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### A loop variable broke every gallery video
+
+- What happened: PR 11 copied subtitles in a loop over `name`, inside a function that already used `name` for the series. Every gallery video then linked to a wrong path. The next feature's test caught it.
+- Cause: Claude reused a short, common name in a long function. The PR 11 test checked that the file was copied, not the link that the page renders.
+- Guardrail: a page test now asserts the video link itself. A loop variable gets a name that says what it holds, such as `subtitles`.
+
 ### A Linux font failure waited until the pull request
 
 - What happened: twenty commits of the domain packs ran no Linux check, because CI runs only on pull requests. When the pull request opened, Linux's wider font shrank a flow diagram below 18 points.
