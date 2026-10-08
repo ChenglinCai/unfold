@@ -79,4 +79,6 @@ def storyboard_text(
 
 def scene_text(reply: SceneReply, episode: str, segment: str, model: str) -> str:
     head = {"format": "scene/v0", "episode": episode, "segment": segment}
-    return yaml_text({**head, "written_by": by(model), **reply.model_dump(mode="json")})
+    # By alias, so a link writes "from", the name its schema reads.
+    data = reply.model_dump(mode="json", by_alias=True)
+    return yaml_text({**head, "written_by": by(model), **data})

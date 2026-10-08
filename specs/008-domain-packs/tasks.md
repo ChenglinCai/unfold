@@ -56,8 +56,8 @@
 
 **Independent test**: draw a cycle of three boxes, and check that every arrow joins the right boxes.
 
-- [ ] T011 [US4] Write tests for `flow-diagram` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `boxes` holds "2 to 6, with unique ids", and `links` holds "0 to 10". A link's ends must name two different boxes, and `highlight` "must name a box". Assert that a link from the last box to the first curves past the middle, and that opposite links curve apart. Add a slow render test. Check: the new tests fail.
-- [ ] T012 [US4] Add `FlowDiagram`, `Box`, and `Link` to `src/unfold/visuals/params.py`, and `_flow_diagram` to `src/unfold/visuals/components.py`, as research.md D6 describes. Check: the T011 tests pass.
+- [X] T011 [US4] Write tests for `flow-diagram` in `tests/visuals/test_packs.py`, with its sample in `tests/visuals/test_components.py`. Cover these rules: `boxes` holds "2 to 6, with unique ids", and `links` holds "0 to 10". A link's ends must name two different boxes, and `highlight` "must name a box". Assert that a link from the last box to the first curves past the middle, and that opposite links curve apart. Add a slow render test. Check: the new tests fail.
+- [X] T012 [US4] Add `FlowDiagram`, `Box`, and `Link` to `src/unfold/visuals/params.py`, and `_flow_diagram` to `src/unfold/visuals/components.py`, as research.md D6 describes. Check: the T011 tests pass.
 
 ## Phase 7: User Story 5, the golden rebuild (Priority: P1)
 

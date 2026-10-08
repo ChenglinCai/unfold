@@ -54,6 +54,27 @@
       "title": "BarChart",
       "type": "object"
     },
+    "Box": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "Box",
+      "type": "object"
+    },
     "ComplexPlane": {
       "additionalProperties": false,
       "properties": {
@@ -200,6 +221,62 @@
       "title": "Flow",
       "type": "object"
     },
+    "FlowDiagram": {
+      "additionalProperties": false,
+      "description": "A few labeled boxes in a row or a column, joined by arrows.",
+      "properties": {
+        "component": {
+          "const": "flow-diagram",
+          "title": "Component",
+          "type": "string"
+        },
+        "boxes": {
+          "items": {
+            "$ref": "#/$defs/Box"
+          },
+          "maxItems": 6,
+          "minItems": 2,
+          "title": "Boxes",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/Link"
+          },
+          "maxItems": 10,
+          "title": "Links",
+          "type": "array"
+        },
+        "direction": {
+          "default": "right",
+          "enum": [
+            "right",
+            "down"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "highlight": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight"
+        }
+      },
+      "required": [
+        "component",
+        "boxes"
+      ],
+      "title": "FlowDiagram",
+      "type": "object"
+    },
     "Histogram": {
       "additionalProperties": false,
       "description": "Counts in touching bins, with an optional mean, spread, and bell curve.",
@@ -292,6 +369,32 @@
         "counts"
       ],
       "title": "Histogram",
+      "type": "object"
+    },
+    "Link": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "To",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "title": "Link",
       "type": "object"
     },
     "PlanePoint": {
@@ -477,6 +580,7 @@
               "complex-plane": "#/$defs/ComplexPlane",
               "custom": "#/$defs/Custom",
               "equation": "#/$defs/Equation",
+              "flow-diagram": "#/$defs/FlowDiagram",
               "histogram": "#/$defs/Histogram",
               "present-value": "#/$defs/PresentValue",
               "scatter-plot": "#/$defs/ScatterPlot",
@@ -509,6 +613,9 @@
             },
             {
               "$ref": "#/$defs/PresentValue"
+            },
+            {
+              "$ref": "#/$defs/FlowDiagram"
             },
             {
               "$ref": "#/$defs/Custom"

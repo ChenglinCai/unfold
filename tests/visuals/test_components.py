@@ -58,6 +58,19 @@ SAMPLES: dict[str, dict[str, object]] = {
         "curve": True,
         "title": "One fair die",
     },
+    "flow-diagram": {
+        "component": "flow-diagram",
+        "boxes": [
+            {"id": "data", "label": "Labeled data"},
+            {"id": "method", "label": "A method"},
+            {"id": "guess", "label": "A prediction"},
+        ],
+        "links": [
+            {"from": "data", "to": "method", "label": "train"},
+            {"from": "method", "to": "guess"},
+        ],
+        "highlight": "method",
+    },
     "present-value": {
         "component": "present-value",
         "rate": 8,

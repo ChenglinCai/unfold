@@ -9,7 +9,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
 
-from unfold.formats.sources import Model
+from unfold.formats.sources import Model, Slug
 from unfold.formats.sources import Text as NonEmpty
 
 # Raise this whenever a component draws differently, so saved scenes rebuild.
@@ -110,6 +110,42 @@ class ComplexPlane(Model):
     turn: Turn | None = None
 
 
+class Box(Model):
+    id: Slug
+    label: NonEmpty
+
+
+class Link(Model):
+    from_: Slug = Field(alias="from")
+    to: Slug
+    label: str = ""
+
+
+class FlowDiagram(Model):
+    """A few labeled boxes in a row or a column, joined by arrows."""
+
+    component: Literal["flow-diagram"]
+    boxes: Annotated[list[Box], Field(min_length=2, max_length=6)]
+    links: Annotated[list[Link], Field(max_length=10)] = Field(default_factory=list)
+    direction: Literal["right", "down"] = "right"
+    highlight: Slug | None = None
+
+    @model_validator(mode="after")
+    def links_join_boxes(self) -> Self:
+        ids = [box.id for box in self.boxes]
+        if len(set(ids)) != len(ids):
+            raise ValueError("box ids must be unique")
+        for link in self.links:
+            for end in (link.from_, link.to):
+                if end not in ids:
+                    raise ValueError(f"a link names no box called {end}")
+            if link.from_ == link.to:
+                raise ValueError("a link must join two different boxes")
+        if self.highlight is not None and self.highlight not in ids:
+            raise ValueError("highlight must name a box")
+        return self
+
+
 class Histogram(Model):
     """Counts in touching bins, with an optional mean, spread, and bell curve."""
 
@@ -188,6 +224,7 @@ Visual = Annotated[
     | ComplexPlane
     | Histogram
     | PresentValue
+    | FlowDiagram
     | Custom,
     Field(discriminator="component"),
 ]
@@ -200,6 +237,7 @@ NAMES = (
     "complex-plane",
     "histogram",
     "present-value",
+    "flow-diagram",
     "custom",
 )
 _ADAPTER: TypeAdapter[Visual] = TypeAdapter(Visual)

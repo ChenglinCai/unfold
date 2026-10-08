@@ -7,6 +7,7 @@ drawing only ever shrinks to fit, so the layout check can catch tiny text.
 
 import math
 import textwrap
+from collections.abc import Iterable
 from itertools import combinations, pairwise
 
 import numpy as np
@@ -16,6 +17,7 @@ from manim import (
     RIGHT,
     UP,
     Arc,
+    ArcBetweenPoints,
     Arrow,
     Axes,
     Circle,
@@ -48,7 +50,9 @@ from unfold.visuals.params import (
     ComponentError,
     Custom,
     Equation,
+    FlowDiagram,
     Histogram,
+    Link,
     PlanePoint,
     PresentValue,
     ScatterPlot,
@@ -272,12 +276,14 @@ class Row:
         return True
 
 
-def _keep_apart(labels: list[Text]) -> VGroup:
+def _keep_apart(labels: list[Text], taken: Iterable[Mobject] = ()) -> VGroup:
     """Labels in priority order, leaving out any that would overlap a kept one."""
+    blocked = [box_of(mobject) for mobject in taken]
     kept: list[Text] = []
     for label in labels:
-        if not any(box_of(label).overlaps(box_of(other)) for other in kept):
+        if not any(box_of(label).overlaps(other) for other in blocked):
             kept.append(label)
+            blocked.append(box_of(label))
     return VGroup(*kept)
 
 
@@ -286,20 +292,20 @@ def _named[M: Mobject](mobject: M, name: str) -> M:
     return mobject
 
 
-def _turn_tip(arc: Arc, sweep: float) -> Arrow:
-    """A short arrow at an arc's end, along its tangent.
+def _end_tip(path: VMobject, color: str) -> Arrow:
+    """A short arrow at a path's end, along its tangent.
 
-    manim's own `Arc.add_tip` rescales the arc to fit the tip, and that blows up
-    when the arc's ends meet, as in a full turn.
+    manim's own `add_tip` rescales an arc to fit the tip, and that blows up when
+    the arc's ends meet, as in a full turn.
     """
-    end = arc.get_end()
-    radial = (end - arc.arc_center) / max(np.linalg.norm(end - arc.arc_center), 1e-9)
-    tangent = np.array([-radial[1], radial[0], 0.0]) * (1 if sweep > 0 else -1)
+    end = path.get_end()
+    toward = end - path.point_from_proportion(0.97)
+    tangent = toward / max(float(np.linalg.norm(toward)), 1e-9)
     return Arrow(
         end - tangent * 0.2,
         end,
         buff=0,
-        color=theme.GREEN,
+        color=color,
         max_tip_length_to_length_ratio=0.75,
     )
 
@@ -380,7 +386,8 @@ def _complex_plane(plane: ComplexPlane, width: float, height: float) -> VGroup:
             color=theme.GREEN,
         )
         sweep = turn.end - turn.start
-        group.add(_named(arc, "turn"), _named(_turn_tip(arc, sweep), "turn-tip"))
+        tip = _end_tip(arc, theme.GREEN)
+        group.add(_named(arc, "turn"), _named(tip, "turn-tip"))
         if turn.label:
             words = _text(turn.label, theme.LABEL_SIZE, theme.GREEN)
             text = _named(words, "turn-label")
@@ -394,6 +401,82 @@ def _complex_plane(plane: ComplexPlane, width: float, height: float) -> VGroup:
         text = _text(words, theme.LABEL_SIZE, theme.MUTED)
         labels.append(text.next_to(grid.c2p(*end), side_of, buff=0.1))
     return group.add(_keep_apart(labels))
+
+
+def _box_label(words: str, width: float) -> VGroup:
+    lines = textwrap.wrap(words, max(6, int((width - 0.3) / 0.16))) or [words]
+    texts = [_named(_text(line, theme.LABEL_SIZE), "box-label") for line in lines]
+    return VGroup(*texts).arrange(DOWN, buff=0.08)
+
+
+def _flow_diagram(chart: FlowDiagram, width: float, height: float) -> VGroup:
+    """Boxes in a row or a column. Neighbors join straight, and other links curve."""
+    across, count = chart.direction == "right", len(chart.boxes)
+    order = {box.id: index for index, box in enumerate(chart.boxes)}
+    pairs = {(link.from_, link.to) for link in chart.links}
+
+    def straight(link: Link) -> bool:
+        neighbors = abs(order[link.to] - order[link.from_]) == 1
+        return neighbors and (link.to, link.from_) not in pairs
+
+    # In a row, a straight link's label sits between two boxes, so the gap fits it.
+    widest = [
+        _text(link.label, theme.LABEL_SIZE).width
+        for link in chart.links
+        if link.label and straight(link)
+    ]
+    gap = max([0.9, *(width + 0.4 for width in widest)]) if across else 0.6
+    row = min((width - gap * (count - 1)) / count, 3.2)
+    box_w = row if across else min(width * 0.5, 4.0)
+    words = [_box_label(box.label, box_w) for box in chart.boxes]
+    nominal = 1.0 if across else min((height - gap * (count - 1)) / count, 1.0)
+    box_h = max(nominal, *(text.height + 0.3 for text in words))
+    frames: dict[str, RoundedRectangle] = {}
+    group = VGroup()
+    for index, (box, text) in enumerate(zip(chart.boxes, words, strict=True)):
+        step = index - (count - 1) / 2
+        center = (
+            (step * (box_w + gap), 0, 0) if across else (0, -step * (box_h + gap), 0)
+        )
+        color = theme.YELLOW if box.id == chart.highlight else theme.BLUE
+        frame = RoundedRectangle(
+            corner_radius=0.15, width=box_w, height=box_h, stroke_color=color
+        )
+        frames[box.id] = _named(frame.move_to(center), "box")
+        group.add(frame, text.move_to(center))
+    labels = []
+    for link in chart.links:
+        start_box, end_box = frames[link.from_], frames[link.to]
+        forward = order[link.to] > order[link.from_]
+        if straight(link):
+            ends = ("get_right", "get_left") if across else ("get_bottom", "get_top")
+            first, last = ends if forward else ends[::-1]
+            start, end = getattr(start_box, first)(), getattr(end_box, last)()
+            path: VMobject = Arrow(start, end, buff=0.08, color=theme.MUTED)
+            group.add(_named(path, "link"))
+            side = UP if across else RIGHT
+        else:
+            # Forward links curve on one side and backward links on the other, so
+            # opposite links stay apart. A negative angle bends right of travel.
+            if across:
+                side, name = (UP, "get_top") if forward else (DOWN, "get_bottom")
+            else:
+                side, name = (LEFT, "get_left") if forward else (RIGHT, "get_right")
+            start, end = getattr(start_box, name)(), getattr(end_box, name)()
+            chord = float(np.linalg.norm(end - start))
+            path = ArcBetweenPoints(
+                start, end, angle=-4 * math.atan(1.4 / chord), color=theme.MUTED
+            )
+            group.add(
+                _named(path, "link"), _named(_end_tip(path, theme.MUTED), "link-tip")
+            )
+        if link.label:
+            text = _named(
+                _text(link.label, theme.LABEL_SIZE, theme.MUTED), "link-label"
+            )
+            labels.append(text.next_to(path.point_from_proportion(0.5), side, buff=0.1))
+    taken = [line for text in words for line in text]
+    return group.add(_keep_apart(labels, taken))
 
 
 def _histogram(chart: Histogram, width: float, height: float) -> VGroup:
@@ -581,5 +664,6 @@ _DRAW = {
     ComplexPlane: _complex_plane,
     Histogram: _histogram,
     PresentValue: _present_value,
+    FlowDiagram: _flow_diagram,
     Custom: _custom,
 }

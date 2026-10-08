@@ -310,3 +310,92 @@ def test_the_spread_label_sits_beside_the_mean_label_above_the_bars() -> None:
     tallest = max(bar.get_top()[1] for bar in parts(drawing, "bar"))
     assert spread.get_bottom()[1] > tallest
     assert spread.get_center()[1] == pytest.approx(mean.get_center()[1], abs=0.05)
+
+
+CYCLE: dict[str, object] = {
+    "component": "flow-diagram",
+    "boxes": [
+        {"id": "you", "label": "You"},
+        {"id": "barista", "label": "Barista"},
+        {"id": "owner", "label": "Owner"},
+    ],
+    "links": [
+        {"from": "you", "to": "barista", "label": "pays"},
+        {"from": "barista", "to": "owner"},
+        {"from": "owner", "to": "you"},
+    ],
+}
+
+
+@pytest.mark.parametrize(
+    ("change", "field"),
+    [
+        ({"boxes": [{"id": "a", "label": "A"}], "links": []}, r"flow-diagram\.boxes"),
+        (
+            {"boxes": [{"id": f"b{n}", "label": "B"} for n in range(7)], "links": []},
+            r"flow-diagram\.boxes",
+        ),
+        ({"links": [{"from": "you", "to": "owner"}] * 11}, r"flow-diagram\.links"),
+        ({"boxes": [{"id": "you", "label": "A"}] * 3, "links": []}, "unique"),
+        ({"links": [{"from": "you", "to": "ghost"}]}, "no box called ghost"),
+        ({"links": [{"from": "you", "to": "you"}]}, "two different boxes"),
+        ({"highlight": "ghost"}, "highlight must name a box"),
+        (
+            {"boxes": [{"id": "Big Box", "label": "A"}] * 2, "links": []},
+            r"boxes\.0\.id",
+        ),
+    ],
+)
+def test_flow_diagram_rejects_bad_parameters(
+    change: dict[str, object], field: str
+) -> None:
+    with pytest.raises(ValidationError, match=field):
+        parse({**CYCLE, **change})
+
+
+def test_a_link_back_to_the_start_curves_past_the_middle_box() -> None:
+    drawing, _ = build(parse(CYCLE), "plot")
+
+    boxes, links = parts(drawing, "box"), parts(drawing, "link")
+    assert texts(drawing, "box-label") == ["You", "Barista", "Owner"]
+    back = max(links, key=lambda link: link.width)
+    assert back.get_top()[1] <= boxes[1].get_bottom()[1] + 1e-6
+    assert texts(drawing, "link-label") == ["pays"]
+
+
+def test_opposite_links_curve_apart() -> None:
+    links = [{"from": "you", "to": "barista"}, {"from": "barista", "to": "you"}]
+    drawing, _ = build(parse({**CYCLE, "links": links}), "plot")
+
+    first, second = parts(drawing, "link")
+    assert not box_of(first).overlaps(box_of(second))
+
+
+def test_boxes_can_run_down_with_no_links() -> None:
+    drawing, _ = build(parse({**CYCLE, "links": [], "direction": "down"}), "plot")
+
+    boxes = sorted(parts(drawing, "box"), key=lambda box: -box.get_center()[1])
+    assert len(boxes) == 3 and not parts(drawing, "link")
+    assert max(b.get_center()[0] for b in boxes) == pytest.approx(
+        min(b.get_center()[0] for b in boxes), abs=1e-6
+    )
+
+
+@pytest.mark.slow
+def test_a_flow_diagram_renders(tmp_path: Path) -> None:
+    render_one(tmp_path, {**CYCLE, "highlight": "barista"})
+
+
+def test_labels_on_straight_links_stay_clear_of_the_boxes() -> None:
+    links = [
+        {"from": "you", "to": "barista", "label": "applies"},
+        {"from": "barista", "to": "owner", "label": "predicts"},
+    ]
+    drawing, _ = build(parse({**CYCLE, "links": links}), "plot")
+
+    frames = [box_of(frame) for frame in parts(drawing, "box")]
+    labels = parts(drawing, "link-label")
+    assert len(labels) == 2
+    assert not any(
+        box_of(label).overlaps(frame) for label in labels for frame in frames
+    )
