@@ -103,6 +103,6 @@ This file holds the current state of the work, so that a new session can resume 
 24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
 25. Fixed: the storyboard prompt now names only real components and prefers their still pictures. A test keeps the list in step with the library.
 26. Fixed: importing `unfold.visuals.components` first used to fail with a circular import. `unfold/fields.py` now holds the shared field types, and a test imports each affected module first.
-27. Resolved: the domain packs first left 13.5 percent of golden beats custom, over the 10 percent goal. After the storyboard fix, 7.3 percent stay custom. The neighborhood circle and motion inside components remain options.
+27. Resolved: the domain packs first left 13.5 percent of golden beats custom, over the 10 percent goal. After the storyboard fix and the histogram check, 9 of 96 stay custom, or 9.4 percent. The neighborhood circle and motion inside components remain options.
 28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
 29. Claude read the Chinese subtitles of one public episode, and the spec asks for your reading too. Please read `episode.zh.srt` of velocity-of-money beside its video.

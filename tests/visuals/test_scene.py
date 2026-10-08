@@ -127,3 +127,38 @@ def test_tex_stays_allowed_in_equations_and_custom_notes() -> None:
     ]
 
     assert check_scene(scene(entries=entries), ["eq", "note"]) == []
+
+
+DIE: dict[str, object] = {
+    "component": "histogram",
+    "edges": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
+    "counts": [1, 1, 1, 1, 1, 1],
+    "mean": 3.5,
+    "spread": 1.708,
+}
+
+
+def histogram_errors(visual: dict[str, object]) -> list[str]:
+    entries = [{"cue": "die", "region": "plot", "visual": visual}]
+    return check_scene(scene(entries=entries), ["die"])
+
+
+def test_a_histogram_that_matches_its_bins_passes() -> None:
+    assert histogram_errors(DIE) == []
+
+
+def test_a_histogram_spread_must_match_its_bins() -> None:
+    [error] = histogram_errors({**DIE, "spread": 2.5})
+
+    assert error.startswith(
+        "die: the histogram's spread 2.5 differs from its bins' standard deviation, "
+        "about 1.71"
+    )
+
+
+def test_a_histogram_mean_must_match_its_bins() -> None:
+    [error] = histogram_errors({**DIE, "mean": 4.5})
+
+    assert error.startswith(
+        "die: the histogram's mean 4.5 differs from its bins' mean, about 3.5"
+    )
