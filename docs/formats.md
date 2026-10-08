@@ -26,7 +26,7 @@ Examples: `examples/econ-supply-demand/source.yaml`, and `content/cis5200/manife
 
 ## Source document: format `source/v1`
 
-`unfold ingest` writes one folder per source. M1's hand-written manifests use source/v0, and every ingested source uses source/v1.
+`unfold ingest` writes one folder per source. M1's hand-written manifests use source/v0, and every ingested source uses source/v1. It reads PDF files, PowerPoint decks, images of slides, web pages, Markdown, Jupyter notebooks, and recordings. A notebook keeps its Markdown, its code as fenced blocks, and the first 20 lines of each cell's printed output.
 
 | File | What it holds |
 |---|---|

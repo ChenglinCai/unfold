@@ -20,9 +20,10 @@ from unfold.sources.scan import IMAGES
 FAMILIES = ["textbook", "slides", "web", "recording", "topic"]
 SUBJECTS = ["math", "computer-science", "statistics", "economics", "finance"]
 TEXT = {".md", ".markdown", ".txt"}
+NOTEBOOKS = {".ipynb"}
 PAGES = {".html", ".htm"}
 AUDIO = {".ogg", ".oga", ".mp3", ".wav", ".m4a", ".aiff", ".flac", ".mp4", ".webm"}
-KNOWN = {".pdf", ".pptx"} | TEXT | PAGES | AUDIO | IMAGES
+KNOWN = {".pdf", ".pptx"} | TEXT | NOTEBOOKS | PAGES | AUDIO | IMAGES
 CONTENT_TYPES = {
     "application/pdf": ".pdf",
     "text/html": ".html",
@@ -119,7 +120,7 @@ def ingest(
 
 def choose(suffix: str, family: str | None) -> tuple[str, Reader]:
     """Pick the reader for a file type, and the family that the type implies."""
-    from unfold.sources import deck, pdf, recording, scan, web
+    from unfold.sources import deck, notebook, pdf, recording, scan, web
 
     suffix = suffix.lower()
     if suffix == ".pdf":
@@ -130,6 +131,8 @@ def choose(suffix: str, family: str | None) -> tuple[str, Reader]:
         return family or "slides", scan.read
     if suffix in TEXT:
         return family or "web", web.read_markdown
+    if suffix in NOTEBOOKS:
+        return family or "web", notebook.read_notebook
     if suffix in PAGES:
         return family or "web", web.read_page
     if suffix in AUDIO:

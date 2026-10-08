@@ -10,6 +10,8 @@ from unfold.sources import Anchor, Meta, SourceDocument, build
 from unfold.sources.profile import quality
 
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
+# A line that opens or closes a fenced code block, inside which # is code.
+FENCE = re.compile(r"^\s*(```|~~~)")
 # Fewer words of main text means a menu or a stub, not an article.
 MIN_WORDS = 20
 TEX_WRAPPER = re.compile(r"^\{\\(?:display|text)style\s*(.*)\}$", re.DOTALL)
@@ -50,8 +52,11 @@ def sections(markdown: str) -> list[Anchor]:
                 seen.add("intro")
             anchors.append(Anchor(anchor_id, "section", title, text))
 
+    fenced = False
     for line in markdown.splitlines():
-        match = HEADING.match(line)
+        if FENCE.match(line):
+            fenced = not fenced
+        match = None if fenced else HEADING.match(line)
         if match:
             close()
             title = match.group(2).strip()
