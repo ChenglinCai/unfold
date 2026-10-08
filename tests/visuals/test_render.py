@@ -175,3 +175,31 @@ def test_render_stitches_the_episode_and_checks_the_audio(tmp_path: Path) -> Non
     assert (folder / "segment.srt").read_text().startswith("1\n00:00:00,000")
     assert (folder.parent / "episode.mp4").stat().st_size > 0
     assert "Money grows" in (folder.parent / "episode.srt").read_text()
+    with Image.open(folder.parent / "episode-sheet.png") as sheet:
+        assert sheet.width > 0 and sheet.height > 0
+
+
+def test_render_adds_a_missing_episode_sheet_without_stitching_again(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from unfold.episodes import stitch as episodes
+    from unfold.visuals import command
+
+    episode = tmp_path / "E01-growth"
+    segment = episode / "s1-interest"
+    segment.mkdir(parents=True)
+    (episode / "outline.yaml").write_text("format: outline/v0\n")
+    (episode / "episode.mp4").write_bytes(b"")
+    made: list[Path] = []
+
+    def stitch_again(folder: Path, quality: str) -> Path:
+        raise AssertionError("an unchanged episode must not stitch again")
+
+    monkeypatch.setattr(episodes, "stitch_episode", stitch_again)
+    monkeypatch.setattr(
+        episodes, "episode_sheet", lambda folder: made.append(folder) or folder
+    )
+
+    command.stitch([segment], [], "low")
+
+    assert made == [episode]

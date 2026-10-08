@@ -17,6 +17,7 @@ from unfold.episodes.subtitles import Cue, beat_cues, srt_text
 TITLE_SECONDS = 2.0
 EPISODE = "episode.mp4"
 SUBTITLES = "episode.srt"
+SHEET = "episode-sheet.png"
 
 
 @dataclass(frozen=True)
@@ -191,4 +192,15 @@ def stitch_episode(folder: Path, quality: str = "low") -> Path:
     concat(videos, folder / EPISODE)
     cues = episode_cues(read_parts(folder))
     (folder / SUBTITLES).write_text(srt_text(cues), encoding="utf-8")
+    episode_sheet(folder)
     return folder / EPISODE
+
+
+def episode_sheet(folder: Path) -> Path:
+    """One frame from the middle of each beat, across the whole stitched episode."""
+    from unfold.visuals.render import contact_sheet
+
+    beats = episode_beats(read_parts(folder))
+    times = [round((beat.start + beat.end) / 2, 2) for beat in beats]
+    labels = [beat.id.split("/")[-1] for beat in beats]
+    return contact_sheet(folder / EPISODE, times, labels, folder / SHEET, columns=6)

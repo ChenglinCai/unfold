@@ -61,14 +61,16 @@ def run_render(args: argparse.Namespace) -> int:
 
 def stitch(found: list[Path], todo: list[Path], quality: str) -> None:
     """Stitch each episode whose segments changed, or that has no video yet."""
-    from unfold.episodes.stitch import EPISODE, stitch_episode
+    from unfold.episodes.stitch import EPISODE, SHEET, episode_sheet, stitch_episode
 
     for episode in sorted({folder.parent for folder in found}):
+        if not (episode / "outline.yaml").is_file():
+            continue
         changed = any(folder.parent == episode for folder in todo)
-        if (episode / "outline.yaml").is_file() and (
-            changed or not (episode / EPISODE).is_file()
-        ):
+        if changed or not (episode / EPISODE).is_file():
             print(f"stitched {stitch_episode(episode, quality)}")
+        elif not (episode / SHEET).is_file():
+            print(f"sheet    {episode_sheet(episode)}")
 
 
 def check_audio(found: list[Path]) -> int:
