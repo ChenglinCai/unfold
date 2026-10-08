@@ -23,5 +23,5 @@
 
 ## Phase 4: The gate
 
-- [ ] T009 Build episode 2 of net-present-value, then render it, its episode 1, and velocity-of-money's episode 1. Check: three episodes play, every segment passes the audio check, and every outline links.
-- [ ] T010 Converge, record the M6 gates, write `docs/retros/M6.md`, tag `m6-done`, and merge. Check: every M6 gate has evidence.
+- [X] T009 Build episode 2 of net-present-value, then render it, its episode 1, and velocity-of-money's episode 1. Check: three episodes play, every segment passes the audio check, and every outline links.
+- [X] T010 Converge, record the M6 gates, write `docs/retros/M6.md`, tag `m6-done`, and merge. Check: every M6 gate has evidence.

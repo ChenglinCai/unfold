@@ -176,12 +176,14 @@
         {
           "id": "M6.three-episodes",
           "check": "Two consecutive episodes with callbacks, and one from a second family, play correctly",
-          "passes": false
+          "passes": true,
+          "evidence": "Three episodes play with voice and subtitles: net-present-value E01 (208.7 s) and E02 (175.2 s), whose outline calls back to two E01 segments, and velocity-of-money E01 (131.9 s), from a recording. All 6 segments pass the Whisper audio check, with word error rates from 0.4 to 4.0 percent."
         },
         {
           "id": "M6.idea-links",
           "check": "The idea-link check passes",
-          "passes": false
+          "passes": true,
+          "evidence": "unfold eval reports ideas-link 3 of 3 for the three episodes. The series file declares term:interest, which its audience line says they know."
         }
       ]
     },
