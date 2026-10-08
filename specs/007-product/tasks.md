@@ -16,7 +16,7 @@
 ## Phase 3: User Story 4, Claude Code
 
 - [X] T004 [US4] Add the `mcp` extra, write `tests/test_mcp_server.py`, then implement `src/unfold/mcp_server.py`. Check: the tests pass.
-- [ ] T005 [US4] Write the plugin in `plugin/`, with its manifest, skill, and server config. Check: a test reads the manifest and the skill.
+- [X] T005 [US4] Write the plugin in `plugin/`, with its manifest, skill, and server config. Check: a test reads the manifest and the skill.
 
 ## Phase 4: User Story 5, the quickstart
 
