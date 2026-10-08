@@ -61,6 +61,10 @@ Every pull request runs the same checks as the git hook, and then the tests. The
 | `uv run pytest` | All tests, including a test render |
 | `uv run unfold lint docs` | Prose against the Narration Standard. Use `--profile spoken` for narration |
 
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for how changes move through the repo, and how to add a component.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

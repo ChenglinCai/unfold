@@ -1,0 +1,33 @@
+name: Bug report
+description: Something in unfold does not work as the docs say.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The commands you ran, in order.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of uv run unfold doctor
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: private
+    attributes:
+      label: Private material
+      options:
+        - label: This report holds no course material, transcripts, or other text that I may not share.
+          required: true
