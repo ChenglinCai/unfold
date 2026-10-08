@@ -187,3 +187,22 @@ def test_the_players_offer_english_and_chinese_subtitles(tmp_path: Path) -> None
     review = (folder / "review.html").read_text()
     assert 'src="E01-growth/episode.vtt" default' in review
     assert (episode / "episode.vtt").is_file()
+
+
+def test_the_review_page_shows_the_episode_sheet_and_the_custom_share(
+    tmp_path: Path,
+) -> None:
+    folder = make_series(tmp_path, "open", public=True)
+    episode = folder / "E01-growth"
+    Image.new("RGB", (8, 8), "black").save(episode / "episode-sheet.png")
+    visuals = [{"component": "custom"}, {"component": "text-card"}]
+    entries = [{"cue": f"c{n}", "visual": visual} for n, visual in enumerate(visuals)]
+    (episode / "s1-interest" / "scene.yaml").write_text(
+        yaml.safe_dump({"entries": entries})
+    )
+
+    assert main(["review", str(folder)]) == 0
+
+    page = (folder / "review.html").read_text()
+    assert 'src="E01-growth/episode-sheet.png"' in page
+    assert "custom visuals: 1 of 2 beats (50 percent)" in page

@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 from unfold.episodes.subtitles import vtt_text
-from unfold.evals import CHECKS, count_flags, evaluate
+from unfold.evals import CHECKS, count_flags, custom_share, evaluate, share_line
 from unfold.script import load_script
 from unfold.sources import load
 
@@ -103,6 +103,9 @@ def review_html(folder: Path) -> str:
         f'<p class="flag">{flagged} of {beats} beats are flagged: they cite no anchor, '
         "so a person should check them.</p>"
     )
+    body.append(
+        f"<p>{escape(share_line(*custom_share(folder)))}, for a person to review.</p>"
+    )
     for episode in _episodes(folder):
         body += _episode_html(folder, episode)
     return _page(f"Review: {series.get('id', folder.name)}", body)
@@ -114,6 +117,8 @@ def _episode_html(folder: Path, episode: dict[str, str]) -> list[str]:
     if (folder / name / "episode.mp4").is_file():
         tracks = _tracks(folder / name, name)
         part.append(f'<video controls src="{name}/episode.mp4">{tracks}</video>')
+    if (folder / name / "episode-sheet.png").is_file():
+        part.append(f'<img src="{name}/episode-sheet.png" alt="Episode contact sheet">')
     outline = _yaml(folder / name / "outline.yaml")
     segments = outline.get("segments")
     for segment in segments if isinstance(segments, list) else []:
