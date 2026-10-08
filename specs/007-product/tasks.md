@@ -21,8 +21,15 @@
 ## Phase 4: User Story 5, the quickstart
 
 - [X] T006 [US5] Write `examples/quickstart/` and `docs/quickstart.md`, and a test that renders the example. Check: the slow test passes.
-- [ ] T007 [US5] Add `.github/workflows/quickstart.yml`, which runs the quickstart on a clean macOS runner. Check: the job passes.
+- [X] T007 [US5] Add `.github/workflows/quickstart.yml`, which runs the quickstart on a clean macOS runner. Check: the job passes.
 
 ## Phase 5: Polish
 
 - [ ] T008 Converge, record the M7 gates, write `docs/retros/M7.md`, tag `m7-done`, and merge. Check: every M7 gate has evidence.
+
+## Phase 6: Convergence
+
+- [X] T009 Make the gallery fail closed, so a series with no sources or unclear rights stays private, per FR-003 and Constitution VII (partial)
+- [ ] T010 Add an `ingest` tool to `src/unfold/mcp_server.py`, and point step 2 of `plugin/skills/unfold/SKILL.md` at it, per US4 (partial)
+- [ ] T011 Install the `audio` extra with the plugin's server, so step 5 of the skill can check audio, per US4 (partial)
+- [ ] T012 Write `plugin/README.md`: what the plugin installs and runs, what could go wrong, and how to remove it, per Constitution IX (partial)

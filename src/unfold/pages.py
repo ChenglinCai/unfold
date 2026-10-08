@@ -111,12 +111,17 @@ def _beat_html(cue: str, text: str, flagged: bool) -> str:
 
 
 def public(folder: Path) -> tuple[bool, list[str]]:
-    """Whether every source allows public outputs, with each source's attribution."""
-    series = _yaml(folder / "series.yaml")
+    """Whether every source allows public outputs, with each source's attribution.
+
+    It fails closed: a series with no sources, or a right other than true, stays private.
+    """
+    sources = _yaml(folder / "series.yaml").get("sources")
+    if not isinstance(sources, list) or not sources:
+        return False, ["the series lists no sources"]
     credits = []
-    for name in series.get("sources") or []:  # type: ignore[union-attr]
+    for name in sources:
         doc = load((folder / str(name)).resolve())
-        if not doc.rights.get("public_outputs"):
+        if doc.rights.get("public_outputs") is not True:
             return False, [f"source {doc.id} keeps its outputs private"]
         fallback = f"{doc.title}, {doc.rights.get('license')}"
         credits.append(str(doc.rights.get("attribution") or fallback))

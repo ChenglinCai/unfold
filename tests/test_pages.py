@@ -25,7 +25,7 @@ anchors:
 """
 
 
-def make_series(root: Path, name: str, public: bool) -> Path:
+def make_series(root: Path, name: str, public: bool | str) -> Path:
     doc = SourceDocument(
         f"demo-{name}",
         "Demo",
@@ -103,3 +103,21 @@ def test_the_gallery_keeps_only_public_series(
     assert (out / "open" / "E01-growth" / "episode.mp4").exists()
     assert not (out / "closed").exists()
     assert "skipped closed" in capsys.readouterr().out
+
+
+def test_the_gallery_fails_closed_on_missing_or_unclear_rights(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    empty = make_series(tmp_path, "empty", public=True)
+    series = yaml.safe_load((empty / "series.yaml").read_text())
+    series["sources"] = []
+    (empty / "series.yaml").write_text(yaml.safe_dump(series))
+    unclear = make_series(tmp_path, "unclear", public="yes")
+    out = tmp_path / "site"
+
+    assert main(["gallery", str(empty), str(unclear), "--out", str(out)]) == 0
+
+    printed = capsys.readouterr().out
+    assert "skipped empty: the series lists no sources" in printed
+    assert "skipped unclear: source demo-unclear keeps its outputs private" in printed
+    assert not (out / "empty").exists() and not (out / "unclear").exists()
