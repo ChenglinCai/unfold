@@ -1,5 +1,7 @@
 """Each component draws inside any region it fits, with readable text."""
 
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -148,3 +150,10 @@ def test_a_bar_chart_with_long_labels_keeps_them_apart() -> None:
 
     assert crowded(drawing) == 0
     assert min_font is not None and min_font >= 18
+
+
+def test_the_scene_prompt_names_every_component() -> None:
+    prompt = Path(__file__).parents[2] / "src" / "unfold" / "prompts" / "scene.md"
+    text = prompt.read_text()
+
+    assert [name for name in NAMES if f"`{name}`" not in text] == []
