@@ -2,7 +2,7 @@
 
 unfold turns learning material into a series of explainer videos. Each video has a script, a visual plan, animations made with manim, and a voice.
 
-The project is in early development. Today it renders one test scene.
+The project is in early development. To see it work, follow the [quickstart](docs/quickstart.md). It renders a bundled example in about five minutes, with no model call.
 
 ## Set up a development machine
 

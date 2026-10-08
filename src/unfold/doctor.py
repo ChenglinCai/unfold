@@ -57,8 +57,16 @@ def checks() -> list[Finding]:
             "Use Python 3.12, which uv installs: uv python install 3.12",
         ),
         program("ffmpeg", "Install ffmpeg, such as with: brew install ffmpeg"),
-        program("latex", "Install a TeX distribution, such as MacTeX or TeX Live"),
-        program("dvisvgm", "Install dvisvgm, which comes with most TeX distributions"),
+        program(
+            "latex",
+            "Install a TeX distribution, such as MacTeX or TeX Live, for equations",
+            required=False,
+        ),
+        program(
+            "dvisvgm",
+            "Install dvisvgm, which comes with most TeX distributions, for equations",
+            required=False,
+        ),
         Finding(
             "manim",
             text,

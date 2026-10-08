@@ -20,7 +20,7 @@
 
 ## Phase 4: User Story 5, the quickstart
 
-- [ ] T006 [US5] Write `examples/quickstart/` and `docs/quickstart.md`, and a test that renders the example. Check: the slow test passes.
+- [X] T006 [US5] Write `examples/quickstart/` and `docs/quickstart.md`, and a test that renders the example. Check: the slow test passes.
 - [ ] T007 [US5] Add `.github/workflows/quickstart.yml`, which runs the quickstart on a clean macOS runner. Check: the job passes.
 
 ## Phase 5: Polish

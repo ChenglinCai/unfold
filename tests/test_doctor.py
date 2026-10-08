@@ -44,3 +44,13 @@ def test_a_missing_voice_only_warns(
 
     assert main(["doctor"]) == 0
     assert "warn voice" in capsys.readouterr().out
+
+
+def test_a_missing_latex_only_warns_because_only_equations_need_it(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    hide(monkeypatch, "latex", "dvisvgm")
+
+    assert main(["doctor"]) == 0
+    out = capsys.readouterr().out
+    assert "warn latex" in out and "equations" in out
