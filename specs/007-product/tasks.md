@@ -10,8 +10,8 @@
 
 ## Phase 2: User Stories 2 and 3, review and gallery
 
-- [ ] T002 [US2] Write `tests/test_pages.py` for the review page, then implement it in `src/unfold/pages.py`. Check: the tests pass.
-- [ ] T003 [US3] Add tests for the gallery's rights rule, then implement `unfold gallery`. Check: the tests pass.
+- [X] T002 [US2] Write `tests/test_pages.py` for the review page, then implement it in `src/unfold/pages.py`. Check: the tests pass.
+- [X] T003 [US3] Add tests for the gallery's rights rule, then implement `unfold gallery`. Check: the tests pass.
 
 ## Phase 3: User Story 4, Claude Code
 

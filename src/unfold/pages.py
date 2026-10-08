@@ -1,0 +1,183 @@
+"""Pages: a review page for one series, and a gallery of public series.
+
+Both are static HTML with relative links, so they open straight from disk.
+The gallery only ever copies series whose every source allows public outputs.
+"""
+
+import argparse
+import shutil
+from html import escape
+from pathlib import Path
+
+import yaml
+
+from unfold.evals import CHECKS, count_flags, evaluate
+from unfold.script import load_script
+from unfold.sources import load
+
+STYLE = """<style>
+body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2em auto;
+       padding: 0 1em; background: #101318; color: #ece7dd; }
+a { color: #5fb3e4; } img, video { max-width: 100%; }
+.flag { color: #f2c14e; } td, th { padding: 4px 10px; text-align: left; }
+</style>"""
+
+
+def _yaml(path: Path) -> dict[str, object]:
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else None
+    return data if isinstance(data, dict) else {}
+
+
+def _episodes(folder: Path) -> list[dict[str, str]]:
+    listed = _yaml(folder / "plan.yaml").get("episodes")
+    if not isinstance(listed, list):
+        return []
+    return [
+        e for e in listed if isinstance(e, dict) and (folder / str(e["id"])).is_dir()
+    ]
+
+
+def _page(title: str, body: list[str]) -> str:
+    head = f'<meta charset="utf-8"><title>{escape(title)}</title>{STYLE}'
+    text = "\n".join(body)
+    return f"<!doctype html>\n<html><head>{head}</head><body>\n{text}\n</body></html>\n"
+
+
+def review_html(folder: Path) -> str:
+    series = _yaml(folder / "series.yaml")
+    body = [f"<h1>{escape(str(series.get('id', folder.name)))}</h1>"]
+    body.append(f"<p>Audience: {escape(str(series.get('audience', '')))}</p>")
+    try:
+        verdicts = evaluate(folder)
+    except Exception as error:  # a half-built series still gets a page
+        verdicts = []
+        body.append(f"<p>The checks could not run: {escape(str(error))}</p>")
+    rows = []
+    for check in CHECKS:
+        mine = [v for v in verdicts if v.check == check]
+        if mine:
+            passed = sum(v.passed for v in mine)
+            rows.append(f"<tr><td>{check}</td><td>{passed} of {len(mine)}</td></tr>")
+    if rows:
+        body.append("<h2>Checks</h2><table>" + "".join(rows) + "</table>")
+    failing = [v for v in verdicts if not v.passed]
+    if failing:
+        items = "".join(
+            f"<li>{v.check}: {escape(str(v.subject.relative_to(folder)))}</li>"
+            for v in failing
+        )
+        body.append(f"<ul>{items}</ul>")
+    flagged, beats = count_flags(folder)
+    body.append(
+        f'<p class="flag">{flagged} of {beats} beats are flagged: they cite no anchor, '
+        "so a person should check them.</p>"
+    )
+    for episode in _episodes(folder):
+        body += _episode_html(folder, episode)
+    return _page(f"Review: {series.get('id', folder.name)}", body)
+
+
+def _episode_html(folder: Path, episode: dict[str, str]) -> list[str]:
+    name = episode["id"]
+    part = [f"<h2>{escape(name)}: {escape(episode.get('title', ''))}</h2>"]
+    if (folder / name / "episode.mp4").is_file():
+        part.append(f'<video controls src="{name}/episode.mp4"></video>')
+    outline = _yaml(folder / name / "outline.yaml")
+    segments = outline.get("segments")
+    for segment in segments if isinstance(segments, list) else []:
+        sid = str(segment["id"])
+        here = folder / name / sid
+        if not here.is_dir():
+            continue
+        part.append(f"<h3>{escape(sid)}: {escape(str(segment.get('title', '')))}</h3>")
+        if (here / "contact-sheet.png").is_file():
+            part.append(
+                f'<img src="{name}/{sid}/contact-sheet.png" alt="Contact sheet">'
+            )
+        if (here / "script.md").is_file():
+            script = load_script(here / "script.md")
+            anchors = script.anchors()
+            items = [
+                _beat_html(b.cue, b.text, not anchors[b.cue]) for b in script.beats
+            ]
+            part.append("<ul>" + "".join(items) + "</ul>")
+    return part
+
+
+def _beat_html(cue: str, text: str, flagged: bool) -> str:
+    mark = ' class="flag"' if flagged else ""
+    note = " (flagged)" if flagged else ""
+    return f"<li{mark}><b>{escape(cue)}</b> {escape(text)}{note}</li>"
+
+
+def public(folder: Path) -> tuple[bool, list[str]]:
+    """Whether every source allows public outputs, with each source's attribution."""
+    series = _yaml(folder / "series.yaml")
+    credits = []
+    for name in series.get("sources") or []:  # type: ignore[union-attr]
+        doc = load((folder / str(name)).resolve())
+        if not doc.rights.get("public_outputs"):
+            return False, [f"source {doc.id} keeps its outputs private"]
+        fallback = f"{doc.title}, {doc.rights.get('license')}"
+        credits.append(str(doc.rights.get("attribution") or fallback))
+    return True, credits
+
+
+def gallery(folders: list[Path], out: Path) -> list[str]:
+    """Copy each public series' episodes into a static site, and report each choice."""
+    lines, sections = [], []
+    for folder in folders:
+        name = str(_yaml(folder / "series.yaml").get("id", folder.name))
+        allowed, notes = public(folder)
+        if not allowed:
+            lines.append(f"skipped {name}: {notes[0]}")
+            continue
+        section = [f"<h2>{escape(name)}</h2>"] + [f"<p>{escape(n)}</p>" for n in notes]
+        for episode in _episodes(folder):
+            video = folder / episode["id"] / "episode.mp4"
+            if not video.is_file():
+                continue
+            target = out / name / episode["id"]
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(video, target / "episode.mp4")
+            if (srt := video.with_name("episode.srt")).is_file():
+                shutil.copyfile(srt, target / "episode.srt")
+            section.append(f"<h3>{escape(episode.get('title', episode['id']))}</h3>")
+            section.append(
+                f'<video controls src="{name}/{episode["id"]}/episode.mp4"></video>'
+            )
+        sections += section
+        lines.append(f"included {name}")
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(
+        _page("unfold gallery", ["<h1>Gallery</h1>", *sections])
+    )
+    return lines
+
+
+def add_page_commands(
+    commands: "argparse._SubParsersAction[argparse.ArgumentParser]",
+) -> None:
+    review = commands.add_parser("review", help="Write a review page for a series.")
+    review.add_argument("series", metavar="SERIES")
+    review.set_defaults(run=run_review)
+    pages = commands.add_parser("gallery", help="Build a static site of public series.")
+    pages.add_argument("series", nargs="+", metavar="SERIES")
+    pages.add_argument("--out", required=True, metavar="DIR")
+    pages.set_defaults(run=run_gallery)
+
+
+def run_review(args: argparse.Namespace) -> int:
+    folder = Path(args.series)
+    if not (folder / "series.yaml").is_file():
+        print(f"unfold review: {folder} is not a series")
+        return 2
+    (folder / "review.html").write_text(review_html(folder), encoding="utf-8")
+    print(folder / "review.html")
+    return 0
+
+
+def run_gallery(args: argparse.Namespace) -> int:
+    for line in gallery([Path(s) for s in args.series], Path(args.out)):
+        print(line)
+    return 0

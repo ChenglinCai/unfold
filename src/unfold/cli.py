@@ -16,6 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     from unfold.doctor import add_doctor_command
     from unfold.evals.command import add_eval_command
     from unfold.lint.command import add_lint_command
+    from unfold.pages import add_page_commands
     from unfold.sources.command import add_ingest_command
     from unfold.understand.command import add_understand_command
     from unfold.visuals.command import add_render_command
@@ -25,6 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_doctor_command(commands)
     add_eval_command(commands)
     add_lint_command(commands)
+    add_page_commands(commands)
     add_render_command(commands)
     add_ingest_command(commands)
     add_understand_command(commands)
