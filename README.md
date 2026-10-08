@@ -10,7 +10,7 @@ Each command does one step, and only two steps call a model. Model jobs run on y
 
 | Step | Command | What it makes | Calls a model |
 |---|---|---|---|
-| 1 | `unfold ingest SOURCE --out DIR` | A source document with anchors, from a PDF, slides, a web page, Markdown, a notebook, a recording, or a bare topic | No |
+| 1 | `unfold ingest SOURCE --out DIR` | A source document with anchors, from a PDF, slides, a web page, Markdown, a notebook, a LaTeX file, a recording, or a bare topic | No |
 | 2 | `unfold build SERIES` | The knowledge map, the series plan, and each segment's outline, script, storyboard, and scene | Yes |
 | 3 | `unfold render SERIES` | Voiced segments, contact sheets, stitched episodes, and English subtitles | No |
 | 4 | `unfold translate SERIES --to zh` | Simplified Chinese subtitles | Yes |

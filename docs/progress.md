@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 29. M8, growth, now has the domain packs, Chinese subtitles, a notebook reader, subtitle tracks in the players, and episode contact sheets.
+- Next: your review of M7 and of items 19 to 30. M8, growth, now has the domain packs, Chinese subtitles, notebook and LaTeX readers, subtitle tracks in the players, and episode contact sheets.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -106,3 +106,4 @@ This file holds the current state of the work, so that a new session can resume 
 27. Resolved: the domain packs first left 13.5 percent of golden beats custom, over the 10 percent goal. After the storyboard fix and the histogram check, 9 of 96 stay custom, or 9.4 percent. The neighborhood circle and motion inside components remain options.
 28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
 29. Claude read the Chinese subtitles of one public episode, and the spec asks for your reading too. Please read `episode.zh.srt` of velocity-of-money beside its video.
+30. The LaTeX reader follows `\input`, `\include`, and `\subfile` only to `.tex` files inside the main file's folder. A path outside that folder, or inside a hidden folder, stops ingest with an error. A stranger's file could otherwise send private files to the model. Please confirm this rule.

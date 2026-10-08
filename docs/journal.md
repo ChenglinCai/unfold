@@ -4,6 +4,8 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Added a LaTeX reader to `unfold ingest`. It follows includes only inside the main file's folder, keeps formulas as TeX, and turns sections into anchors.
+- Added a scene check that compares a histogram's stated mean and spread with its bins, and regenerated the one golden scene that failed it.
 - Changed the storyboard prompt to name only real components and prefer their still pictures. Custom beats fell from 13 to 7 of 96, and grounded chart numbers rose from 7 to 10 of 14, so the change stays.
 - Added an episode contact sheet, with one frame per beat, to each stitched episode and to the review page. The review page also shows the custom share.
 - Added a Jupyter notebook reader to `unfold ingest`, and made the Markdown section parser skip code fences.
