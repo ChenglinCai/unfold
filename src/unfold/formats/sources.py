@@ -3,20 +3,11 @@
 import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import Field
 
-Slug = Annotated[str, StringConstraints(pattern=r"^[a-z0-9][a-z0-9-]*$")]
-# A pointer to one place in a source: the source id, then #, then the anchor id.
-Ref = Annotated[
-    str, StringConstraints(pattern=r"^[a-z0-9][a-z0-9-]*#[a-z0-9][a-z0-9-]*$")
-]
-Text = Annotated[str, StringConstraints(min_length=1)]
+from unfold.fields import Model, Ref, Slug, Text
 
-
-class Model(BaseModel):
-    """A part of a file format. Unknown fields fail, so typos show up."""
-
-    model_config = ConfigDict(extra="forbid")
+__all__ = ["Model", "Ref", "Slug", "Text"]  # shared types that other formats import
 
 
 class Anchor(Model):

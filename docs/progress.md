@@ -102,5 +102,5 @@ This file holds the current state of the work, so that a new session can resume 
 23. M8 began with the four components that the golden set asked for most. They draw a complex plane, a histogram, a present-value chart, and a flow diagram. Claude made the design calls that principle VIII leaves to you. `specs/008-domain-packs/research.md` lists them.
 24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
 25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
-26. Importing `unfold.visuals.components` first, in a fresh process, fails with a circular import through `unfold.formats`. The command line and the tests load `unfold.formats` first, so nothing breaks today. Moving the shared field types out of `unfold.formats` would end the cycle.
+26. Fixed: importing `unfold.visuals.components` first used to fail with a circular import. `unfold/fields.py` now holds the shared field types, and a test imports each affected module first.
 27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.
