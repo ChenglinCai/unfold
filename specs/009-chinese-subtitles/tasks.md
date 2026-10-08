@@ -54,9 +54,9 @@ The feature adds no dependency, so it needs no setup phase.
 
 **Independent test**: translate the golden set, then run it again.
 
-- [ ] T010 [US4] Run `unfold translate SERIES --to zh` on each of the six golden series. Check: seven episodes written, and none failed.
-- [ ] T011 [US4] Run the same commands again. Check: every episode reused, and no new line in any `calls.jsonl`.
-- [ ] T012 [US4] Read every cue of one public episode beside its video. Then write `docs/evals/M8-subtitles-report.md`, with the run's numbers and each fix the reading found. Check: the report quotes only sources that allow public outputs.
+- [X] T010 [US4] Run `unfold translate SERIES --to zh` on each of the six golden series. Check: seven episodes written, and none failed.
+- [X] T011 [US4] Run the same commands again. Check: every episode reused, and no new line in any `calls.jsonl`.
+- [X] T012 [US4] Read every cue of one public episode beside its video. Then write `docs/evals/M8-subtitles-report.md`, with the run's numbers and each fix the reading found. Check: the report quotes only sources that allow public outputs.
 
 ## Phase 6: Polish
 
