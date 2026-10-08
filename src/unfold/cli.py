@@ -30,7 +30,23 @@ def build_parser() -> argparse.ArgumentParser:
     add_render_command(commands)
     add_ingest_command(commands)
     add_understand_command(commands)
+    serve = commands.add_parser(
+        "mcp", help="Serve unfold's tools to Claude Code over MCP."
+    )
+    serve.set_defaults(run=run_mcp)
     return parser
+
+
+def run_mcp(args: argparse.Namespace) -> int:
+    try:
+        from unfold.mcp_server import serve
+    except ImportError:
+        print(
+            "unfold mcp: add the mcp extra first: uv sync --extra mcp", file=sys.stderr
+        )
+        return 2
+    serve()
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:

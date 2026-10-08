@@ -14,6 +14,7 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | av | runtime | BSD-3-Clause | M2 | Decodes recordings for Whisper. manim already installs it. Its wheels bundle FFmpeg with the x264 and x265 encoders, which use the GPL |
 | numpy | runtime | BSD-3-Clause, with parts under 0BSD, MIT, Zlib, and CC0 | M2 | Holds the decoded audio samples. manim already installs it |
 | faster-whisper | `audio` extra | MIT | M2 | Transcribes recordings. Its English base model, about 145 MB, downloads once from Hugging Face |
+| mcp | `mcp` extra | MIT | M7 | Serves unfold's commands as tools to Claude Code. Each tool runs its command in a subprocess |
 | pytest | dev | MIT | M0 | Runs the tests |
 | ruff | dev | MIT | M0 | Lints and formats Python |
 | pyright | dev | MIT | M0 | Checks types |
@@ -29,4 +30,5 @@ System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, an
 - Parsers: pypdfium2, python-pptx, lxml, and PyAV read files that strangers made. A crafted file could exploit a bug in one of them. Ingest only files you would open on your own computer, and let Dependabot keep these packages current.
 - Speech model: faster-whisper downloads its model from Hugging Face once, into `~/.cache/huggingface`. Delete that folder to remove it.
 - Schemas: pydantic only validates data in memory. It reads no files and opens no network connections.
+- The MCP server: `unfold mcp` exposes only unfold's own commands, and each runs in a subprocess. It never runs other programs or code.
 - Model jobs: `unfold understand` sends each source's text to Claude under your own account. The job has no tools, so text in a source can change only the job's reply. Code checks every reply before it writes a file.
