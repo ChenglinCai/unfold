@@ -69,7 +69,7 @@ The storyboard prompt still suggested `axes` and `number-line`, which no compone
 
 The other checks held, so SC-001 now passes, at 7.3 percent against a goal of 10.
 
-The contact sheets showed one new problem. A central limit theorem histogram labels a fair die's spread as 2.5, the largest distance from the mean. A die's standard deviation is about 1.71. The number appears in the narration, so `chart-numbers-grounded` passes it. A check that compares a histogram's mean and spread with its own bins comes next.
+The contact sheets showed one new problem. A central limit theorem histogram labels a fair die's spread as 2.5, the largest distance from the mean. A die's standard deviation is about 1.71. The number appears in the narration, so `chart-numbers-grounded` passes it. A check now compares each histogram's mean and spread with its own bins, and it found only that histogram. The regenerated scene draws that beat as a custom visual, with an arrow for each distance. It also redrew a bar chart of example numbers as a custom visual, so 9 of 96 beats are custom, still under the goal.
 
 ## Decisions for the maintainer
 

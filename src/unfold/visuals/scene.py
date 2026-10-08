@@ -5,8 +5,10 @@ overlaps, so a scene never stacks two drawings in one place.
 """
 
 import functools
+import math
 import re
 import tempfile
+from itertools import pairwise
 from typing import Any
 
 from manim import UP, FadeIn, FadeOut, Scene, VGroup, config
@@ -15,7 +17,7 @@ from unfold.formats.episode import SceneEntry, SceneV0
 from unfold.script import Script
 from unfold.visuals.components import ComponentError, build, crowded
 from unfold.visuals.layout import REGIONS, Placed, box_of, check_layout
-from unfold.visuals.params import TextCard
+from unfold.visuals.params import Histogram, TextCard
 from unfold.voice import Clip
 
 # A voice speaks about 165 words a minute, and no beat is shorter than 2 seconds.
@@ -69,6 +71,39 @@ def labels(data: object) -> list[str]:
     return []
 
 
+def histogram_problems(chart: Histogram) -> list[str]:
+    """A mean or spread that disagrees with the histogram's own bins.
+
+    The grounded-numbers check sees only whether a number appears in the narration,
+    so it cannot tell a spread from another distance that the narration mentions.
+    """
+    total = sum(chart.counts)
+    if total <= 0:
+        return []
+    centers = [(left + right) / 2 for left, right in pairwise(chart.edges)]
+    weighted = list(zip(chart.counts, centers, strict=True))
+    mean = sum(count * x for count, x in weighted) / total
+    spread = math.sqrt(sum(count * (x - mean) ** 2 for count, x in weighted) / total)
+    width = min(right - left for left, right in pairwise(chart.edges))
+    problems = []
+    near = max(0.5 * width, 0.05 * (chart.edges[-1] - chart.edges[0]))
+    if chart.mean is not None and abs(chart.mean - mean) > near:
+        problems.append(
+            f"the histogram's mean {chart.mean:g} differs from its bins' mean, "
+            f"about {mean:.3g}. Use the bins' own mean, or change the counts"
+        )
+    if (
+        chart.spread is not None
+        and spread > 0
+        and abs(chart.spread - spread) > 0.25 * spread
+    ):
+        problems.append(
+            f"the histogram's spread {chart.spread:g} differs from its bins' standard "
+            f"deviation, about {spread:.3g}. Use that, or change the counts"
+        )
+    return problems
+
+
 def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
     """Every layout failure in a scene, each named by its cue."""
     private_media()
@@ -91,6 +126,9 @@ def check_scene(scene: SceneV0, cues: list[str]) -> list[str]:
                 f"{entry.cue}: a {name} label shows TeX as plain text. "
                 "Write plain symbols instead, such as e^(iθ)"
             )
+            continue
+        if isinstance(visual, Histogram) and (problems := histogram_problems(visual)):
+            errors += [f"{entry.cue}: {problem}" for problem in problems]
             continue
         try:
             drawing, min_font = build(visual, entry.region)
