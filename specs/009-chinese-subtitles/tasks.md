@@ -17,8 +17,8 @@
 
 The feature adds no dependency, so it needs no setup phase.
 
-- [ ] T001 Write tests in `tests/episodes/test_stitch.py` for `episode_beats`, which lists each beat's id, text, and spoken start and end in episode time. Then add beat names to `Part`, and `episode_beats` and `read_parts` to `src/unfold/episodes/stitch.py`, and use them in `stitch_episode`. Check: the tests pass.
-- [ ] T002 Rebuild the English cues of the seven golden episodes from `read_parts`, and compare each with its saved `episode.srt`. Check: all seven match byte for byte.
+- [X] T001 Write tests in `tests/episodes/test_stitch.py` for `episode_beats`, which lists each beat's id, text, and spoken start and end in episode time. Then add beat names to `Part`, and `episode_beats` and `read_parts` to `src/unfold/episodes/stitch.py`, and use them in `stitch_episode`. Check: the tests pass.
+- [X] T002 Rebuild the English cues of the seven golden episodes from `read_parts`, and compare each with its saved `episode.srt`. Check: all seven match byte for byte.
 - [ ] T003 Write tests for `zh_cues` in `tests/episodes/test_translate.py`, then implement it in `src/unfold/episodes/translate.py`. A cue holds "at most two lines of 16 characters", with the shorter line on top. Breaks fall at spaces when they can, and time follows each cue's share of characters. Check: the tests pass.
 - [ ] T004 Write tests for `check_translation` in `tests/episodes/test_translate.py`, then implement it. It rejects each case in data-model.md. A missing or extra beat fails, and so do a comma, a period that is not a decimal point, and a full-width digit. It also rejects a beat with no Chinese, a run of four or more lowercase Latin letters, and a beat over its budget. Check: the tests pass.
 
