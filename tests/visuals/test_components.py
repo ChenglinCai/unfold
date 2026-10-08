@@ -40,6 +40,14 @@ SAMPLES: dict[str, dict[str, object]] = {
             {"at": 3, "label": "Payoff", "amount": 120},
         ],
     },
+    "present-value": {
+        "component": "present-value",
+        "rate": 8,
+        "flows": [{"at": 0, "amount": -25_000}]
+        + [{"at": year, "amount": 8_000} for year in range(1, 5)],
+        "prefix": "$",
+        "title": "An investment at 8 percent",
+    },
     "custom": {
         "component": "custom",
         "description": "Cash rains on a small town while store shelves stay full.",

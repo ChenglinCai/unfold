@@ -29,8 +29,8 @@
 **Independent test**: draw yearly flows of 10,000 at 8 percent, and compare each label with the formula.
 
 - [X] T004 [P] [US1] Write `tests/visuals/test_finance.py`, then implement `src/unfold/visuals/finance.py` with no manim import. A present value is "its amount divided by one plus the rate over 100, raised to the power of its time". Values of 1,000 or more show whole units with separators. Smaller values show at most two decimals, without trailing zeros. Check: the tests pass.
-- [ ] T005 [US1] Write tests for `present-value` in `tests/visuals/test_packs.py`, and add its sample to `tests/visuals/test_components.py`. Cover these rules: `rate` is "percent per period, from 0 to 100", and `flows` holds "1 to 24". Each flow's `at` runs "from 0 to 100" with a "nonzero `amount`", and `prefix` has "at most 3 characters". Every shown label must equal the formula's shown value, and twelve flows must show no overlapping labels. Add a slow test that renders the component. Check: the new tests fail.
-- [ ] T006 [US1] Add `PresentValue` to `src/unfold/visuals/params.py`, and `_present_value` to `src/unfold/visuals/components.py`, as research.md D4 describes. Raise `VERSION` to "4". Check: the T005 tests pass.
+- [X] T005 [US1] Write tests for `present-value` in `tests/visuals/test_packs.py`, and add its sample to `tests/visuals/test_components.py`. Cover these rules: `rate` is "percent per period, from 0 to 100", and `flows` holds "1 to 24". Each flow's `at` runs "from 0 to 100" with a "nonzero `amount`", and `prefix` has "at most 3 characters". Every shown label must equal the formula's shown value, and twelve flows must show no overlapping labels. Add a slow test that renders the component. Check: the new tests fail.
+- [X] T006 [US1] Add `PresentValue` to `src/unfold/visuals/params.py`, and `_present_value` to `src/unfold/visuals/components.py`, as research.md D4 describes. Raise `VERSION` to "4". Check: the T005 tests pass.
 
 ## Phase 4: User Story 2, complex plane (Priority: P1)
 

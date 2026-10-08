@@ -7,11 +7,12 @@ drawing only ever shrinks to fit, so the layout check can catch tiny text.
 
 import math
 import textwrap
-from itertools import combinations
+from itertools import combinations, pairwise
 
 from manim import (
     DOWN,
     LEFT,
+    RIGHT,
     UP,
     Arrow,
     Axes,
@@ -23,12 +24,14 @@ from manim import (
     Rectangle,
     RoundedRectangle,
     SingleStringMathTex,
+    Square,
     Text,
     VGroup,
 )
 from pydantic import BaseModel
 
 from unfold.visuals import theme
+from unfold.visuals.finance import present_value, shown
 from unfold.visuals.layout import REGIONS, box_of
 from unfold.visuals.params import (
     NAMES,
@@ -36,6 +39,7 @@ from unfold.visuals.params import (
     ComponentError,
     Custom,
     Equation,
+    PresentValue,
     ScatterPlot,
     TextCard,
     Timeline,
@@ -244,6 +248,95 @@ def _timeline(timeline: Timeline, width: float, height: float) -> VGroup:
     return group
 
 
+class Row:
+    """Keeps labels in one row apart: a label that would touch a kept one drops out."""
+
+    def __init__(self) -> None:
+        self.edge = -math.inf
+
+    def fits(self, text: Text) -> bool:
+        if text.get_left()[0] < self.edge + 0.15:
+            return False
+        self.edge = text.get_right()[0]
+        return True
+
+
+def _legend(rate: float) -> VGroup:
+    paid = Square(0.3, stroke_color=theme.MUTED, stroke_width=2)
+    today = Square(0.3, fill_color=theme.GREEN, fill_opacity=0.85, stroke_width=0)
+    words = (
+        _text("when paid", theme.LABEL_SIZE, theme.MUTED),
+        _text(f"worth today at {rate:g}%", theme.LABEL_SIZE, theme.MUTED),
+    )
+    return VGroup(
+        VGroup(paid, words[0]).arrange(RIGHT, buff=0.15),
+        VGroup(today, words[1]).arrange(RIGHT, buff=0.15),
+    ).arrange(RIGHT, buff=0.6)
+
+
+def _present_value(chart: PresentValue, width: float, height: float) -> VGroup:
+    """An outline bar for each amount when paid, and a filled bar for its worth today."""
+    flows = sorted(chart.flows, key=lambda flow: flow.at)
+    worth = [present_value(f.amount, chart.rate, f.at) for f in flows]
+    head = VGroup(*([_text(chart.title, theme.BODY_SIZE)] if chart.title else []))
+    if chart.total:
+        words = f"Worth today in all: {shown(sum(worth), chart.prefix)}"
+        total = _text(words, theme.BODY_SIZE, theme.YELLOW)
+        total.name = "total"
+        head.add(total)
+    head.add(_legend(chart.rate)).arrange(DOWN, buff=0.2)
+    paying = any(f.amount < 0 for f in flows)
+    # Rows of labels: worth above the bars, worth below paid-out bars, then times.
+    room = max(height - head.height - 0.35 - 0.45 * (3 if paying else 2), 0.8)
+    high = max(max(f.amount for f in flows), 0)
+    low = min(min(f.amount for f in flows), 0)
+    scale = room / (high - low)
+    end = max(flows[-1].at, 1)
+    times = [f.at for f in flows]
+    gap = min([b - a for a, b in pairwise(times)] or [end])
+    usable = width - 1.2
+    bar = min(0.6 * usable * gap / end, 0.9)
+    axis = Line((-width / 2, 0, 0), (width / 2, 0, 0), color=theme.MUTED)
+    axis.name = "axis"
+    bars, labels, whens = VGroup(), VGroup(), VGroup()
+    rows = {"up": Row(), "down": Row(), "time": Row()}
+    for flow, value in zip(flows, worth, strict=True):
+        x = -usable / 2 + usable * flow.at / end
+        up = flow.amount > 0
+        side, color = (UP, theme.GREEN) if up else (DOWN, theme.RED)
+        paid = Rectangle(
+            width=bar,
+            height=abs(flow.amount) * scale,
+            stroke_color=theme.MUTED,
+            stroke_width=2,
+        )
+        today = Rectangle(
+            width=bar,
+            height=max(abs(value) * scale, 0.02),
+            fill_color=color,
+            fill_opacity=0.85,
+            stroke_width=0,
+        )
+        for part, name in ((paid, "paid"), (today, "today")):
+            part.move_to((x, 0, 0), aligned_edge=DOWN if up else UP)
+            part.name = name
+            bars.add(part)
+        label = _text(shown(value, chart.prefix), theme.LABEL_SIZE, color)
+        label.name = "worth"
+        if rows["up" if up else "down"].fits(label.next_to(paid, side, buff=0.1)):
+            labels.add(label)
+    floor = min([low * scale, *(m.get_bottom()[1] for m in labels)]) - 0.3
+    for flow in flows:
+        x = -usable / 2 + usable * flow.at / end
+        when = _text(f"{flow.at:g}", theme.LABEL_SIZE, theme.MUTED).move_to(
+            (x, floor, 0)
+        )
+        if rows["time"].fits(when):
+            whens.add(when)
+    body = VGroup(axis, bars, labels, whens)
+    return VGroup(head.next_to(body, UP, buff=0.35), body)
+
+
 def _custom(custom: Custom, width: float, height: float) -> VGroup:
     words = VGroup(
         _text("Custom visual, to review", theme.LABEL_SIZE, theme.YELLOW),
@@ -264,5 +357,6 @@ _DRAW = {
     BarChart: _bar_chart,
     ScatterPlot: _scatter_plot,
     Timeline: _timeline,
+    PresentValue: _present_value,
     Custom: _custom,
 }

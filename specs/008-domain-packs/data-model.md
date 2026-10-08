@@ -43,7 +43,7 @@ A turn has a `start` and an `end` in degrees, and a `label`. The end may pass 36
 | Field | Type | Rule |
 |---|---|---|
 | `rate` | number | percent per period, from 0 to 100 |
-| `flows` | list of flows | 1 to 24 |
+| `flows` | list of flows | 1 to 24, each at its own time |
 | `total` | true or false | default true. Shows the sum of the present values |
 | `prefix` | text | at most 3 characters, such as "$" |
 | `title` | text | may be empty |
@@ -77,3 +77,5 @@ Each rule above fails with a message that names the field, so a retry can fix it
 - "link from X names no box"
 - "a link must join two different boxes"
 - "box ids must be unique"
+- "a flow's amount cannot be zero"
+- "each flow needs its own time"

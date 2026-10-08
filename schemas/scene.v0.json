@@ -133,6 +133,76 @@
       "title": "Event",
       "type": "object"
     },
+    "Flow": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "At",
+          "type": "number"
+        },
+        "amount": {
+          "title": "Amount",
+          "type": "number"
+        }
+      },
+      "required": [
+        "at",
+        "amount"
+      ],
+      "title": "Flow",
+      "type": "object"
+    },
+    "PresentValue": {
+      "additionalProperties": false,
+      "description": "Cash flows, and what each is worth today. Code computes every present value.",
+      "properties": {
+        "component": {
+          "const": "present-value",
+          "title": "Component",
+          "type": "string"
+        },
+        "rate": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Rate",
+          "type": "number"
+        },
+        "flows": {
+          "items": {
+            "$ref": "#/$defs/Flow"
+          },
+          "maxItems": 24,
+          "minItems": 1,
+          "title": "Flows",
+          "type": "array"
+        },
+        "total": {
+          "default": true,
+          "title": "Total",
+          "type": "boolean"
+        },
+        "prefix": {
+          "default": "",
+          "maxLength": 3,
+          "title": "Prefix",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "rate",
+        "flows"
+      ],
+      "title": "PresentValue",
+      "type": "object"
+    },
     "ScatterPlot": {
       "additionalProperties": false,
       "properties": {
@@ -225,6 +295,7 @@
               "bar-chart": "#/$defs/BarChart",
               "custom": "#/$defs/Custom",
               "equation": "#/$defs/Equation",
+              "present-value": "#/$defs/PresentValue",
               "scatter-plot": "#/$defs/ScatterPlot",
               "text-card": "#/$defs/TextCard",
               "timeline": "#/$defs/Timeline"
@@ -246,6 +317,9 @@
             },
             {
               "$ref": "#/$defs/Timeline"
+            },
+            {
+              "$ref": "#/$defs/PresentValue"
             },
             {
               "$ref": "#/$defs/Custom"

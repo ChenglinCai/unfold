@@ -6,13 +6,13 @@ validate scenes without loading it. `components.py` draws them.
 
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, Field, TypeAdapter, model_validator
+from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
 
 from unfold.formats.sources import Model
 from unfold.formats.sources import Text as NonEmpty
 
 # Raise this whenever a component draws differently, so saved scenes rebuild.
-VERSION = "3"
+VERSION = "4"
 REGION_NAMES = ("full", "plot", "top", "bottom", "left", "right")
 Region = Literal["full", "plot", "top", "bottom", "left", "right"]
 
@@ -77,6 +77,37 @@ class Timeline(Model):
         return self
 
 
+class Flow(Model):
+    at: Annotated[float, Field(ge=0, le=100)]
+    amount: float
+
+    @field_validator("amount")
+    @classmethod
+    def not_zero(cls, amount: float) -> float:
+        if amount == 0:
+            raise ValueError("a flow's amount cannot be zero")
+        return amount
+
+
+class PresentValue(Model):
+    """Cash flows, and what each is worth today. Code computes every present value."""
+
+    component: Literal["present-value"]
+    # Percent per period, compounded once per period.
+    rate: Annotated[float, Field(ge=0, le=100)]
+    flows: Annotated[list[Flow], Field(min_length=1, max_length=24)]
+    total: bool = True
+    prefix: Annotated[str, Field(max_length=3)] = ""
+    title: str = ""
+
+    @model_validator(mode="after")
+    def one_flow_per_time(self) -> Self:
+        times = [flow.at for flow in self.flows]
+        if len(set(times)) != len(times):
+            raise ValueError("each flow needs its own time")
+        return self
+
+
 class Custom(Model):
     """A visual that no component draws yet. It renders as a labeled card."""
 
@@ -85,10 +116,18 @@ class Custom(Model):
 
 
 Visual = Annotated[
-    TextCard | Equation | BarChart | ScatterPlot | Timeline | Custom,
+    TextCard | Equation | BarChart | ScatterPlot | Timeline | PresentValue | Custom,
     Field(discriminator="component"),
 ]
-NAMES = ("text-card", "equation", "bar-chart", "scatter-plot", "timeline", "custom")
+NAMES = (
+    "text-card",
+    "equation",
+    "bar-chart",
+    "scatter-plot",
+    "timeline",
+    "present-value",
+    "custom",
+)
 _ADAPTER: TypeAdapter[Visual] = TypeAdapter(Visual)
 
 
