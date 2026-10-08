@@ -52,3 +52,10 @@ def test_the_ingest_tool_writes_a_source_document(tmp_path: Path) -> None:
 
     assert "exit code 0" in str(result)
     assert (out / "interest" / "source.yaml").is_file()
+
+
+def test_a_tool_argument_never_becomes_an_option() -> None:
+    result = str(settle(mcp_server.server.call_tool("check", {"path": "--help"})))
+
+    assert "usage:" not in result
+    assert "exit code 2" in result

@@ -121,3 +121,26 @@ def test_the_gallery_fails_closed_on_missing_or_unclear_rights(
     assert "skipped empty: the series lists no sources" in printed
     assert "skipped unclear: source demo-unclear keeps its outputs private" in printed
     assert not (out / "empty").exists() and not (out / "unclear").exists()
+
+
+def test_ids_that_are_not_plain_names_stay_out_of_the_pages(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    folder = make_series(tmp_path, "open", public=True)
+    odd = 'E02-x"onload="alert(1)'
+    (folder / odd).mkdir()
+    (folder / odd / "episode.mp4").write_bytes(b"not a real video")
+    plan = yaml.safe_load((folder / "plan.yaml").read_text())
+    plan["episodes"].append({**plan["episodes"][0], "id": odd})
+    (folder / "plan.yaml").write_text(yaml.safe_dump(plan))
+    escaping = make_series(tmp_path, "escaping", public=True)
+    series = yaml.safe_load((escaping / "series.yaml").read_text())
+    series["id"] = "../outside"
+    (escaping / "series.yaml").write_text(yaml.safe_dump(series))
+
+    assert main(["review", str(folder)]) == 0
+    assert main(["gallery", str(escaping), "--out", str(tmp_path / "site")]) == 0
+
+    assert "onload" not in (folder / "review.html").read_text()
+    assert "skipped ../outside: its id is not a plain name" in capsys.readouterr().out
+    assert not (tmp_path / "outside").exists()

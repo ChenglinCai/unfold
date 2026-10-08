@@ -33,3 +33,10 @@
 - [X] T010 Add an `ingest` tool to `src/unfold/mcp_server.py`, and point step 2 of `plugin/skills/unfold/SKILL.md` at it, per US4 (partial)
 - [X] T011 Install the `audio` extra with the plugin's server, so step 5 of the skill can check audio, per US4 (partial)
 - [X] T012 Write `plugin/README.md`: what the plugin installs and runs, what could go wrong, and how to remove it, per Constitution IX (partial)
+
+## Phase 7: Security review
+
+The plan names a security review as an M7 practice. It found two gaps.
+
+- [X] T013 Pass `--` before each positional value in `src/unfold/mcp_server.py`, so a tool argument never becomes an option
+- [X] T014 Keep ids that are not plain names out of the review page and the gallery, and so out of paths and HTML

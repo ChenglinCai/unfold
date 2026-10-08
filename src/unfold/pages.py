@@ -5,6 +5,7 @@ The gallery only ever copies series whose every source allows public outputs.
 """
 
 import argparse
+import re
 import shutil
 from html import escape
 from pathlib import Path
@@ -23,6 +24,14 @@ a { color: #5fb3e4; } img, video { max-width: 100%; }
 </style>"""
 
 
+PLAIN = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*")
+
+
+def plain(name: object) -> bool:
+    """Whether an id is safe in a path and in HTML: letters, digits, and dashes."""
+    return isinstance(name, str) and PLAIN.fullmatch(name) is not None
+
+
 def _yaml(path: Path) -> dict[str, object]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else None
     return data if isinstance(data, dict) else {}
@@ -33,7 +42,9 @@ def _episodes(folder: Path) -> list[dict[str, str]]:
     if not isinstance(listed, list):
         return []
     return [
-        e for e in listed if isinstance(e, dict) and (folder / str(e["id"])).is_dir()
+        e
+        for e in listed
+        if isinstance(e, dict) and plain(e.get("id")) and (folder / e["id"]).is_dir()
     ]
 
 
@@ -85,10 +96,10 @@ def _episode_html(folder: Path, episode: dict[str, str]) -> list[str]:
     outline = _yaml(folder / name / "outline.yaml")
     segments = outline.get("segments")
     for segment in segments if isinstance(segments, list) else []:
-        sid = str(segment["id"])
-        here = folder / name / sid
-        if not here.is_dir():
+        sid = segment.get("id")
+        if not plain(sid) or not (folder / name / sid).is_dir():
             continue
+        here = folder / name / sid
         part.append(f"<h3>{escape(sid)}: {escape(str(segment.get('title', '')))}</h3>")
         if (here / "contact-sheet.png").is_file():
             part.append(
@@ -133,6 +144,9 @@ def gallery(folders: list[Path], out: Path) -> list[str]:
     lines, sections = [], []
     for folder in folders:
         name = str(_yaml(folder / "series.yaml").get("id", folder.name))
+        if not plain(name):
+            lines.append(f"skipped {name}: its id is not a plain name")
+            continue
         allowed, notes = public(folder)
         if not allowed:
             lines.append(f"skipped {name}: {notes[0]}")
