@@ -30,6 +30,52 @@ The rest is noise.
 \end{document}
 """
 
+STRUCTURE = r"""\newtheorem{thm}{Theorem}
+\begin{thm}[Central limit]
+Means of \emph{many} draws look \textbf{normal}.
+\end{thm}
+\begin{proof}
+See Billingsley~\cite[p.~5]{billingsley}, after L\'evy and G\"{o}del.\footnote{Or Lindeberg.}
+\end{proof}
+\begin{itemize}
+  \item Draws are independent.
+  \item[Shape] Any spread works.
+  \begin{enumerate}
+    \item Finite variance.
+  \end{enumerate}
+\end{itemize}
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}\draw (0,0) -- (1,1);\end{tikzpicture}
+  \caption{Means of $n$ draws}\label{fig:means}
+\end{figure}
+\begin{table}
+  \caption{Two draws}
+  \begin{tabular}{|l|r|}\hline
+    Draw & \textbf{Value} \\ \hline
+    First & $0.5$ \\
+    Second & 1\% \\ \hline
+  \end{tabular}
+\end{table}
+See \url{https://example.org/~a} or \href{https://example.org}{the site}.
+"""
+DECK = r"""\documentclass[aspectratio=169]{beamer}
+\begin{document}
+\begin{frame}{Sampling}
+\begin{itemize}
+  \item<1-> Draw $n$ values.
+  \item<2-> Average them.\pause
+\end{itemize}
+\end{frame}
+\begin{frame}<1-2>[fragile]
+\frametitle{The mean}
+\begin{block}{Key idea}
+\only<2>{The mean} settles down.
+\end{block}
+\end{frame}
+\end{document}
+"""
+
 
 def test_sections_and_formulas_survive_and_the_rest_goes() -> None:
     text = latex_markdown(DOCUMENT)
@@ -87,6 +133,42 @@ def test_code_stays_as_written() -> None:
 
     assert f"{FENCE}python\nx = 50 % 7  {{not a group}}\n{FENCE}" in text
     assert "Run `f(x) % 2` once." in text
+
+
+def test_theorems_lists_figures_and_tables_become_markdown() -> None:
+    text = latex_markdown(STRUCTURE)
+
+    assert "**Theorem (Central limit).** Means of *many* draws look **normal**." in text
+    assert (
+        "*Proof.* See Billingsley [billingsley], after Lévy and Gödel. (Or Lindeberg.)"
+        in text
+    )
+    assert "- Draws are independent.\n- **Shape** Any spread works." in text
+    assert "\n  1. Finite variance." in text
+    assert "*Figure: Means of $n$ draws*" in text
+    assert "tikzpicture" not in text and "\\draw" not in text
+    assert "*Table: Two draws*" in text
+    assert (
+        "| Draw | **Value** |\n| --- | --- |\n| First | $0.5$ |\n| Second | 1% |"
+        in text
+    )
+    assert "See https://example.org/~a or [the site](https://example.org)." in text
+
+
+def test_beamer_frames_become_anchors(tmp_path: Path) -> None:
+    path = tmp_path / "deck.tex"
+    path.write_text(DECK)
+    out = tmp_path / "sources"
+
+    assert main(["ingest", str(path), "--out", str(out)]) == 0
+
+    doc = load(out / "deck")
+    assert doc.family == "slides"
+    assert [a.id for a in doc.anchors] == ["sampling", "the-mean"]
+    text = doc.text()
+    assert "- Draw $n$ values.\n- Average them." in text
+    assert "**Key idea** The mean settles down." in text
+    assert "<1-" not in text and "<2" not in text and "fragile" not in text
 
 
 def test_includes_inside_the_folder_are_followed(tmp_path: Path) -> None:
