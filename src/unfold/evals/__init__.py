@@ -153,6 +153,21 @@ def count_flags(folder: Path) -> tuple[int, int]:
     return flagged, beats
 
 
+def custom_share(folder: Path) -> tuple[int, int]:
+    """The custom entries and all entries, across a series' scenes."""
+    custom = entries = 0
+    for path in sorted(folder.glob("E*/s*/scene.yaml")):
+        found = yaml.safe_load(path.read_text(encoding="utf-8"))["entries"]
+        custom += sum(1 for e in found if e["visual"]["component"] == "custom")
+        entries += len(found)
+    return custom, entries
+
+
+def share_line(custom: int, entries: int) -> str:
+    line = f"custom visuals: {custom} of {entries} beats"
+    return f"{line} ({round(100 * custom / entries)} percent)" if entries else line
+
+
 def no_source_framing(narration: str) -> bool:
     """The narration never speaks as if it were the source, such as "this course"."""
     return FRAMING.search(narration) is None
