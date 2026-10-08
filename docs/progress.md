@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 26. M8, growth, has begun with the domain packs on branch `m8-packs`.
+- Next: your review of M7 and of items 19 to 27. M8, growth, began with the domain packs, and other M8 features follow.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -67,6 +67,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `src/unfold/mcp_server.py`, which shows how each tool runs one unfold command.
 - Not done, by design: Cowork support, a release tag, and a package on PyPI. Items 19 and 22 wait for you.
 
+### M8, the domain packs
+
+- What to try: `uv run unfold eval ../content/series/*/`, which ends with the custom share. Then open the contact sheet of `content/series/eulers-identity/E01-five-constants/s2-numbers-that-spin`.
+- What to read: `docs/evals/M8-packs-report.md`, then `specs/008-domain-packs/research.md`.
+- Evidence: the report's tables, and `tests/visuals/test_pack_props.py`, which draws 25 random cases of each new component.
+- Walkthrough to ask for: `src/unfold/visuals/finance.py` and `_present_value`, which show how code, not the model, computes each number.
+- Not done, by design: motion inside components, and the machine-learning pack. Item 27 waits for you.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
@@ -95,3 +103,4 @@ This file holds the current state of the work, so that a new session can resume 
 24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
 25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
 26. Importing `unfold.visuals.components` first, in a fresh process, fails with a circular import through `unfold.formats`. The command line and the tests load `unfold.formats` first, so nothing breaks today. Moving the shared field types out of `unfold.formats` would end the cycle.
+27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.

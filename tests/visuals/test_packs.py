@@ -399,3 +399,29 @@ def test_labels_on_straight_links_stay_clear_of_the_boxes() -> None:
     assert not any(
         box_of(label).overlaps(frame) for label in labels for frame in frames
     )
+
+
+def test_the_total_nets_money_paid_out_against_money_received() -> None:
+    flows = [
+        {"at": 0, "amount": -100},
+        {"at": 1, "amount": 60},
+        {"at": 2, "amount": 60},
+    ]
+    visual = {"component": "present-value", "rate": 10, "flows": flows}
+    drawing, _ = build(parse(visual), "plot")
+
+    net = -100 + 60 / 1.1 + 60 / 1.1**2
+    assert texts(drawing, "total") == [f"Worth today in all: {shown(net)}"]
+
+
+@pytest.mark.parametrize("angle", [420, -300])
+def test_an_angle_past_a_full_turn_lands_like_its_remainder(angle: float) -> None:
+    plain, _ = build(
+        parse({**ROTATION, "points": [{"radius": 1, "angle": 60}]}), "plot"
+    )
+    turned, _ = build(
+        parse({**ROTATION, "points": [{"radius": 1, "angle": angle}]}), "plot"
+    )
+
+    [first], [second] = parts(plain, "point"), parts(turned, "point")
+    assert np.allclose(first.get_center(), second.get_center(), atol=1e-6)

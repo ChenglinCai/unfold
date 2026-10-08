@@ -95,3 +95,10 @@ Task: "T014 grounded numbers in src/unfold/evals/__init__.py"
 1. MVP: the setup, the foundation, and user story 1. The present-value component alone removes six custom visuals and every invented present value.
 2. Add one component per story, test first, with one commit each near 300 changed lines.
 3. Rebuild the golden set only after the prompt knows every component, so the model makes one round of calls.
+
+## Phase 9: Convergence
+
+- [X] T019 Record the 13.5 percent custom share, and the components that would close the gap, as a decision in `docs/progress.md`, per SC-001 (partial)
+- [X] T020 [P] Add a test in `tests/visuals/test_packs.py` that the present-value total nets money paid out against money received, per US1/AC2 (partial)
+- [X] T021 [P] Add a test in `tests/visuals/test_packs.py` that angles of 420 and -300 degrees land where 60 degrees does, per the edge cases (partial)
+- [ ] T022 Name the iCloud conflict-copy hook in the pull request as a change outside this spec (unrequested)
