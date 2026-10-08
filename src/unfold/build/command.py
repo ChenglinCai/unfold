@@ -20,7 +20,8 @@ def add_build_command(
     commands: "argparse._SubParsersAction[argparse.ArgumentParser]",
 ) -> None:
     command = commands.add_parser(
-        "build", help="Write a series' plan, outlines, scripts, and storyboards."
+        "build",
+        help="Write a series' plan, outlines, scripts, storyboards, and scenes.",
     )
     command.add_argument("series", metavar="SERIES", help="A folder with series.yaml.")
     command.add_argument("--until", choices=STEPS, default="scene")
