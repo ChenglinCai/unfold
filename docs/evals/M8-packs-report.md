@@ -51,7 +51,7 @@ Round 1 asked for the neighborhood circle three times, which meets the plan's ru
 
 - **TeX in labels.** In round 2, three complex-plane beats printed labels such as `e^{2πi} = 1`, braces and all. Round 3's check and rule fixed all three, so the labels now read `e^(2πi) = 1` and `z·e^(iθ)`.
 - **Flat bars beside a large outflow.** In the net-present-value verdict, an outflow of 100,000 dwarfs twelve payments of 10,000. The total stays right, at -31,863, but the shrinking is hard to see.
-- **Tight link labels.** A label on a straight link sits close to both boxes, but never touches them.
+- **Off-center link labels.** A label on a straight link sat about 0.03 units from one box, because an arrow's shaft stops where its tip starts. Each label now centers between the arrow's ends and clears both boxes by 0.2.
 - **Correct numbers.** Each present value matches the formula. The verdict's total also matches the decision card on the next beat.
 - **Inventive uses.** One flow diagram chains i, π, e, 1, and 0 with the signs that join them in Euler's identity.
 

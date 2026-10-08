@@ -454,7 +454,8 @@ def _flow_diagram(chart: FlowDiagram, width: float, height: float) -> VGroup:
             start, end = getattr(start_box, first)(), getattr(end_box, last)()
             path: VMobject = Arrow(start, end, buff=0.08, color=theme.MUTED)
             group.add(_named(path, "link"))
-            side = UP if across else RIGHT
+            # The shaft stops where the tip starts, so the true middle is between the ends.
+            side, middle = (UP if across else RIGHT), (start + end) / 2
         else:
             # Forward links curve on one side and backward links on the other, so
             # opposite links stay apart. A negative angle bends right of travel.
@@ -470,11 +471,12 @@ def _flow_diagram(chart: FlowDiagram, width: float, height: float) -> VGroup:
             group.add(
                 _named(path, "link"), _named(_end_tip(path, theme.MUTED), "link-tip")
             )
+            middle = path.point_from_proportion(0.5)
         if link.label:
             text = _named(
                 _text(link.label, theme.LABEL_SIZE, theme.MUTED), "link-label"
             )
-            labels.append(text.next_to(path.point_from_proportion(0.5), side, buff=0.1))
+            labels.append(text.next_to(middle, side, buff=0.1))
     taken = [line for text in words for line in text]
     return group.add(_keep_apart(labels, taken))
 

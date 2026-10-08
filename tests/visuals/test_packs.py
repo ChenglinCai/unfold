@@ -394,11 +394,11 @@ def test_labels_on_straight_links_stay_clear_of_the_boxes() -> None:
     drawing, _ = build(parse({**CYCLE, "links": links}), "plot")
 
     frames = [box_of(frame) for frame in parts(drawing, "box")]
-    labels = parts(drawing, "link-label")
+    labels = [box_of(label) for label in parts(drawing, "link-label")]
     assert len(labels) == 2
-    assert not any(
-        box_of(label).overlaps(frame) for label in labels for frame in frames
-    )
+    for label, (left, right) in zip(labels, itertools.pairwise(frames), strict=True):
+        assert label.left - left.right > 0.1
+        assert right.left - label.right > 0.1
 
 
 def test_the_total_nets_money_paid_out_against_money_received() -> None:
