@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 22. Then M8, growth: more domain packs, Chinese subtitles, more source formats, and outside contributors.
+- Next: your review of M7 and of items 19 to 27. M8, growth, began with the domain packs, and other M8 features follow.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -67,13 +67,21 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `src/unfold/mcp_server.py`, which shows how each tool runs one unfold command.
 - Not done, by design: Cowork support, a release tag, and a package on PyPI. Items 19 and 22 wait for you.
 
+### M8, the domain packs
+
+- What to try: `uv run unfold eval ../content/series/*/`, which ends with the custom share. Then open the contact sheet of `content/series/eulers-identity/E01-five-constants/s2-numbers-that-spin`.
+- What to read: `docs/evals/M8-packs-report.md`, then `specs/008-domain-packs/research.md`.
+- Evidence: the report's tables, and `tests/visuals/test_pack_props.py`, which draws 25 random cases of each new component.
+- Walkthrough to ask for: `src/unfold/visuals/finance.py` and `_present_value`, which show how code, not the model, computes each number.
+- Not done, by design: motion inside components, and the machine-learning pack. Item 27 waits for you.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
 2. The economics source is OpenStax Principles of Economics 2e, which is CC BY 4.0. The 3rd edition is CC BY-NC-SA, which forbids commercial use.
 3. The stand-in voice is the macOS `say` command at rate 140, which is about 165 words per minute. M6 replaces it with Kokoro.
 4. New dependency: PyYAML, under the MIT license.
-5. iCloud syncs your Desktop, so it hid `.venv` and broke imports. The environment now lives in `.venv.nosync`, with a `.venv` link. Moving the project out of iCloud would be cleaner.
+5. iCloud syncs your Desktop, so it hid `.venv` and broke imports. The environment now lives in `.venv.nosync`, with a `.venv` link. Moving the project out of iCloud would be cleaner. On 2026-10-08, iCloud also made 90 conflict copies after a pull. A pre-commit hook now rejects them, but moving the project would end the problem.
 6. The spoken breath-group limit is 31 words, from the study. The strict profile keeps 20.
 7. The linter treats every numbered list item as a procedure step, which allows 20 words. Bullet lists allow 25.
 8. Every commit now runs the linter through pre-commit. It only reads files, like the pyright hook.
@@ -91,3 +99,8 @@ This file holds the current state of the work, so that a new session can resume 
 20. `unfold doctor` now treats LaTeX as optional, because only equations need it. The quickstart and its CI job install no LaTeX.
 21. The plugin installs the audio extra, so a user's first audio check downloads a Whisper model from Hugging Face. `plugin/README.md` says so.
 22. The plan's M7 gate names Cowork as well as Claude Code. The spec moved Cowork to a later release, so that half of the gate is still open.
+23. M8 began with the four components that the golden set asked for most. They draw a complex plane, a histogram, a present-value chart, and a flow diagram. Claude made the design calls that principle VIII leaves to you. `specs/008-domain-packs/research.md` lists them.
+24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
+25. The storyboard prompt still names `axes` and `number-line`, which no component draws. A later feature should fix that prompt and rebuild the storyboards.
+26. Importing `unfold.visuals.components` first, in a fresh process, fails with a circular import through `unfold.formats`. The command line and the tests load `unfold.formats` first, so nothing breaks today. Moving the shared field types out of `unfold.formats` would end the cycle.
+27. The domain packs missed their goal: 13.5 percent of golden beats stay custom, not 10. Six need motion, five need pictures that no component draws, and two need a circle on a scatter plot. Accept the result, or ask for that circle and for motion inside components.

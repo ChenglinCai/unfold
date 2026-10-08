@@ -168,7 +168,7 @@ entries:
     visual: {component: bar-chart, labels: [Now, Later], values: [100, 105]}
 ```
 
-The regions are `full`, `top`, `bottom`, `plot`, `left`, and `right`. The components are `text-card`, `equation`, `bar-chart`, `scatter-plot`, `timeline`, and `custom`. A `custom` entry draws as a labeled card, which a person reviews. `src/unfold/visuals/params.py` defines each component's parameters.
+The regions are `full`, `top`, `bottom`, `plot`, `left`, and `right`. The components are `text-card`, `equation`, `bar-chart`, `scatter-plot`, `timeline`, `complex-plane`, `histogram`, `present-value`, `flow-diagram`, and `custom`. A `custom` entry draws as a labeled card, which a person reviews. `src/unfold/visuals/params.py` defines each component's parameters.
 
 `unfold render` turns each scene into `segment.mp4`, `contact-sheet.png`, and `segment.srt`. `timing.json` records when each beat starts and ends, and `render.json` records the render's key. The render then stitches each episode into `episode.mp4` and `episode.srt`, with a title card before each segment.
 

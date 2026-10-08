@@ -4,6 +4,8 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Added four domain-pack components with schema, drawing, layout, property, and render tests. The golden custom share fell from 28 to 13.5 percent, short of the 10 percent goal. `docs/evals/M8-packs-report.md` gives the numbers.
+- Changed the scene prompt twice to improve the evals, as principle IV allows. A motion rule cut custom beats from 18 to 12, and a plain-label rule fixed TeX in labels. No scene check fell below its starting point, so both stay.
 - Finished M7: `unfold doctor`, the review page, the gallery, an MCP server with seven tools, a Claude Code plugin, and a quickstart. A CI job renders the quickstart on a clean Mac, and a security review fixed two gaps. Tagged `m7-done`.
 
 ## 2026-10-07

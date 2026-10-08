@@ -2,8 +2,20 @@
 
 from pathlib import Path
 
-from unfold.build.replies import OutlineReply, PlanReply, ScriptReply, StoryboardReply
-from unfold.build.write import outline_text, plan_text, script_text, storyboard_text
+from unfold.build.replies import (
+    OutlineReply,
+    PlanReply,
+    SceneReply,
+    ScriptReply,
+    StoryboardReply,
+)
+from unfold.build.write import (
+    outline_text,
+    plan_text,
+    scene_text,
+    script_text,
+    storyboard_text,
+)
 from unfold.formats import problems
 from unfold.script import parse_script
 
@@ -75,3 +87,17 @@ def test_the_yaml_outputs_pass_their_schemas(tmp_path: Path) -> None:
     for name, text in texts.items():
         assert problems(save(tmp_path, name, text)) == [], name
     assert "from: s1-part" in texts["outline.yaml"]
+
+
+def test_a_written_scene_keeps_aliased_fields(tmp_path: Path) -> None:
+    link = {"from": "data", "to": "guess"}
+    boxes = [{"id": "data", "label": "Data"}, {"id": "guess", "label": "Guess"}]
+    visual = {"component": "flow-diagram", "boxes": boxes, "links": [link]}
+    reply = SceneReply.model_validate(
+        {"entries": [{"cue": "show", "region": "plot", "visual": visual}]}
+    )
+
+    path = save(tmp_path, "scene.yaml", scene_text(reply, "E01-a", "s1-b", "test"))
+
+    assert problems(path) == []
+    assert "from: data" in path.read_text()

@@ -54,6 +54,73 @@
       "title": "BarChart",
       "type": "object"
     },
+    "Box": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "Box",
+      "type": "object"
+    },
+    "ComplexPlane": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "const": "complex-plane",
+          "title": "Component",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/PlanePoint"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Points",
+          "type": "array"
+        },
+        "unit_circle": {
+          "default": true,
+          "title": "Unit Circle",
+          "type": "boolean"
+        },
+        "rays": {
+          "default": true,
+          "title": "Rays",
+          "type": "boolean"
+        },
+        "turn": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Turn"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "component",
+        "points"
+      ],
+      "title": "ComplexPlane",
+      "type": "object"
+    },
     "Custom": {
       "additionalProperties": false,
       "description": "A visual that no component draws yet. It renders as a labeled card.",
@@ -131,6 +198,293 @@
         "label"
       ],
       "title": "Event",
+      "type": "object"
+    },
+    "Flow": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "At",
+          "type": "number"
+        },
+        "amount": {
+          "title": "Amount",
+          "type": "number"
+        }
+      },
+      "required": [
+        "at",
+        "amount"
+      ],
+      "title": "Flow",
+      "type": "object"
+    },
+    "FlowDiagram": {
+      "additionalProperties": false,
+      "description": "A few labeled boxes in a row or a column, joined by arrows.",
+      "properties": {
+        "component": {
+          "const": "flow-diagram",
+          "title": "Component",
+          "type": "string"
+        },
+        "boxes": {
+          "items": {
+            "$ref": "#/$defs/Box"
+          },
+          "maxItems": 6,
+          "minItems": 2,
+          "title": "Boxes",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/Link"
+          },
+          "maxItems": 10,
+          "title": "Links",
+          "type": "array"
+        },
+        "direction": {
+          "default": "right",
+          "enum": [
+            "right",
+            "down"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "highlight": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight"
+        }
+      },
+      "required": [
+        "component",
+        "boxes"
+      ],
+      "title": "FlowDiagram",
+      "type": "object"
+    },
+    "Histogram": {
+      "additionalProperties": false,
+      "description": "Counts in touching bins, with an optional mean, spread, and bell curve.",
+      "properties": {
+        "component": {
+          "const": "histogram",
+          "title": "Component",
+          "type": "string"
+        },
+        "edges": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 41,
+          "minItems": 2,
+          "title": "Edges",
+          "type": "array"
+        },
+        "counts": {
+          "items": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "title": "Counts",
+          "type": "array"
+        },
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean"
+        },
+        "spread": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spread"
+        },
+        "curve": {
+          "default": false,
+          "title": "Curve",
+          "type": "boolean"
+        },
+        "highlight": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "x_label": {
+          "default": "",
+          "title": "X Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "edges",
+        "counts"
+      ],
+      "title": "Histogram",
+      "type": "object"
+    },
+    "Link": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "To",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "title": "Link",
+      "type": "object"
+    },
+    "PlanePoint": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "radius": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Radius",
+          "type": "number"
+        },
+        "angle": {
+          "title": "Angle",
+          "type": "number"
+        },
+        "guides": {
+          "default": false,
+          "title": "Guides",
+          "type": "boolean"
+        },
+        "real_label": {
+          "default": "",
+          "title": "Real Label",
+          "type": "string"
+        },
+        "imag_label": {
+          "default": "",
+          "title": "Imag Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "radius",
+        "angle"
+      ],
+      "title": "PlanePoint",
+      "type": "object"
+    },
+    "PresentValue": {
+      "additionalProperties": false,
+      "description": "Cash flows, and what each is worth today. Code computes every present value.",
+      "properties": {
+        "component": {
+          "const": "present-value",
+          "title": "Component",
+          "type": "string"
+        },
+        "rate": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Rate",
+          "type": "number"
+        },
+        "flows": {
+          "items": {
+            "$ref": "#/$defs/Flow"
+          },
+          "maxItems": 24,
+          "minItems": 1,
+          "title": "Flows",
+          "type": "array"
+        },
+        "total": {
+          "default": true,
+          "title": "Total",
+          "type": "boolean"
+        },
+        "prefix": {
+          "default": "",
+          "maxLength": 3,
+          "title": "Prefix",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "rate",
+        "flows"
+      ],
+      "title": "PresentValue",
       "type": "object"
     },
     "ScatterPlot": {
@@ -223,8 +577,12 @@
           "discriminator": {
             "mapping": {
               "bar-chart": "#/$defs/BarChart",
+              "complex-plane": "#/$defs/ComplexPlane",
               "custom": "#/$defs/Custom",
               "equation": "#/$defs/Equation",
+              "flow-diagram": "#/$defs/FlowDiagram",
+              "histogram": "#/$defs/Histogram",
+              "present-value": "#/$defs/PresentValue",
               "scatter-plot": "#/$defs/ScatterPlot",
               "text-card": "#/$defs/TextCard",
               "timeline": "#/$defs/Timeline"
@@ -246,6 +604,18 @@
             },
             {
               "$ref": "#/$defs/Timeline"
+            },
+            {
+              "$ref": "#/$defs/ComplexPlane"
+            },
+            {
+              "$ref": "#/$defs/Histogram"
+            },
+            {
+              "$ref": "#/$defs/PresentValue"
+            },
+            {
+              "$ref": "#/$defs/FlowDiagram"
             },
             {
               "$ref": "#/$defs/Custom"
@@ -324,6 +694,31 @@
         "events"
       ],
       "title": "Timeline",
+      "type": "object"
+    },
+    "Turn": {
+      "additionalProperties": false,
+      "description": "An arc with an arrow tip, from one angle to another, in degrees.",
+      "properties": {
+        "start": {
+          "title": "Start",
+          "type": "number"
+        },
+        "end": {
+          "title": "End",
+          "type": "number"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Turn",
       "type": "object"
     }
   },

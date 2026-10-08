@@ -19,6 +19,7 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | ruff | dev | MIT | M0 | Lints and formats Python |
 | pyright | dev | MIT | M0 | Checks types |
 | pre-commit | dev | MIT | M0 | Runs the checks before each commit |
+| hypothesis | dev | MPL-2.0 | M8 | Draws each component with random valid parameters, in property tests. It brings sortedcontainers, under Apache-2.0 |
 
 System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, and a LaTeX distribution for equations. Scans use Apple's Vision framework, which ships with macOS. Install the audio extra with `uv sync --extra audio`.
 
@@ -32,3 +33,4 @@ System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, an
 - Schemas: pydantic only validates data in memory. It reads no files and opens no network connections.
 - The MCP server: `unfold mcp` exposes only unfold's own commands, and each runs in a subprocess. It never runs other programs or code.
 - Model jobs: `unfold understand` sends each source's text to Claude under your own account. The job has no tools, so text in a source can change only the job's reply. Code checks every reply before it writes a file.
+- Property tests: Hypothesis runs only in tests, so users never install it. It saves failing examples in `.hypothesis/`, which git ignores. Remove it with `uv remove --dev hypothesis`.

@@ -2,7 +2,19 @@
 
 Each entry names a mistake, its cause, and the guardrail we added. A guardrail is a test, hook, rule, or checklist item that makes the mistake harder to repeat. People and Claude both add entries, newest first.
 
-## 2026-10-07 and 2026-10-08, during M2 to M7
+## 2026-10-07 and 2026-10-08, during M2 to M8
+
+### A Linux font failure waited until the pull request
+
+- What happened: twenty commits of the domain packs ran no Linux check, because CI runs only on pull requests. When the pull request opened, Linux's wider font shrank a flow diagram below 18 points.
+- Cause: Claude opened the pull request at the end of the feature. M5 had already shown that Linux fonts run wider, but no local test drew with a wide font.
+- Guardrail: open a draft pull request with a feature's first commit, so CI checks every push on Linux. A test now draws flow diagrams with Verdana on macOS, which runs about as wide as Linux's font.
+
+### iCloud made 90 conflict copies after a pull
+
+- What happened: Claude switched to an old local main and pulled, which deleted and rewrote many files at once. iCloud then saved 80 file copies, such as `pages 2.py`, and 10 empty folder copies.
+- Cause: the repo sits on the iCloud-synced Desktop, as progress item 5 notes. Claude also let local main fall far behind, so one pull rewrote about 270 files.
+- Guardrail: a pre-commit hook now rejects any conflict copy. After a checkout or pull, search for names that end in a space and a number. Moving the repo out of iCloud would end the problem.
 
 ### A hook failure looked like a quiet commit
 

@@ -9,6 +9,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -153,6 +154,21 @@ def count_flags(folder: Path) -> tuple[int, int]:
     return flagged, beats
 
 
+def custom_share(folder: Path) -> tuple[int, int]:
+    """The custom entries and all entries, across a series' scenes."""
+    custom = entries = 0
+    for path in sorted(folder.glob("E*/s*/scene.yaml")):
+        found = yaml.safe_load(path.read_text(encoding="utf-8"))["entries"]
+        custom += sum(1 for e in found if e["visual"]["component"] == "custom")
+        entries += len(found)
+    return custom, entries
+
+
+def share_line(custom: int, entries: int) -> str:
+    line = f"custom visuals: {custom} of {entries} beats"
+    return f"{line} ({round(100 * custom / entries)} percent)" if entries else line
+
+
 def no_source_framing(narration: str) -> bool:
     """The narration never speaks as if it were the source, such as "this course"."""
     return FRAMING.search(narration) is None
@@ -191,6 +207,28 @@ def chart_numbers_grounded(values: list[float], said: str) -> bool:
     return all(
         any(abs(v - k) <= max(0.01, 0.005 * abs(k)) for k in known) for v in values
     )
+
+
+def chart_values(visuals: list[dict[str, Any]]) -> list[float]:
+    """The numbers a model supplied to charts, which the narration must back."""
+    values: list[float] = []
+    for visual in visuals:
+        kind = visual["component"]
+        if kind == "bar-chart":
+            values += visual["values"]
+        elif kind == "timeline":
+            values += [
+                e["amount"] for e in visual["events"] if e.get("amount") is not None
+            ]
+        elif kind == "present-value":
+            # Code computes each present value, so only the inputs need backing.
+            values += [flow["amount"] for flow in visual["flows"]] + [visual["rate"]]
+        elif kind == "histogram":
+            # Counts describe a shape, so only the mean and the spread need backing.
+            values += [
+                visual[k] for k in ("mean", "spread") if visual.get(k) is not None
+            ]
+    return [abs(float(value)) for value in values]
 
 
 def scene_uses_components(components: list[str]) -> bool:
@@ -288,19 +326,6 @@ def _scene(path: Path, narration: str, board_path: Path) -> list[Verdict]:
     entries = yaml.safe_load(path.read_text(encoding="utf-8"))["entries"]
     visuals = [entry["visual"] for entry in entries]
     board = board_path.read_text(encoding="utf-8") if board_path.is_file() else ""
-    values = [
-        float(v)
-        for vis in visuals
-        if vis["component"] == "bar-chart"
-        for v in vis["values"]
-    ]
-    values += [
-        float(event["amount"])
-        for vis in visuals
-        if vis["component"] == "timeline"
-        for event in vis["events"]
-        if event.get("amount") is not None
-    ]
     said = f"{narration} {board}"
     return [
         Verdict(
@@ -311,6 +336,6 @@ def _scene(path: Path, narration: str, board_path: Path) -> list[Verdict]:
         Verdict(
             "chart-numbers-grounded",
             path,
-            chart_numbers_grounded([abs(v) for v in values], said),
+            chart_numbers_grounded(chart_values(visuals), said),
         ),
     ]

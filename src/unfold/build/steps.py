@@ -274,7 +274,8 @@ def scene_job(
         from unfold.visuals.scene import check_scene  # loads manim only when needed
 
         head = {"format": "scene/v0", "episode": outline.episode, "segment": segment.id}
-        scene = SceneV0.model_validate({**head, **reply.model_dump(mode="json")})
+        data = reply.model_dump(mode="json", by_alias=True)
+        scene = SceneV0.model_validate({**head, **data})
         return check_scene(scene, cues)
 
     def render(reply: BaseModel) -> str:

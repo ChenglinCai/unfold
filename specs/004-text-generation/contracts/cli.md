@@ -38,7 +38,7 @@ unfold build SERIES [--until STEP] [--model MODEL] [--retries N]
 unfold eval SERIES [SERIES ...] [--format text|json]
 ```
 
-The command runs every binary check on the outputs of each series. It prints each check's passes, failures, and pass rate.
+The command runs every binary check on the outputs of each series. It prints each check's passes, failures, and pass rate. It also counts the flagged beats, and the custom visuals out of all scene beats.
 
 | Exit code | Meaning |
 |---|---|

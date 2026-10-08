@@ -1,11 +1,14 @@
 """Binary checks from the M4 error analysis. Each one passes or fails, never a score."""
 
+import json
 from pathlib import Path
 
 from unfold.cli import main
 from unfold.evals import (
     beats_are_grounded,
     chart_numbers_grounded,
+    chart_values,
+    custom_share,
     episode_stays_in_plan,
     first_episode_reaches_title,
     flagged_beats,
@@ -15,6 +18,7 @@ from unfold.evals import (
     numbers_in,
     plan_fits_source,
     scene_uses_components,
+    share_line,
     storyboard_reuses_components,
 )
 
@@ -114,3 +118,40 @@ def test_ideas_link_by_episode() -> None:
         "E01-a": True,
         "E02-b": False,
     }
+
+
+def write_scene(folder: Path, components: list[str]) -> None:
+    entries = [
+        {"cue": f"c{n}", "visual": {"component": c}} for n, c in enumerate(components)
+    ]
+    folder.mkdir(parents=True)
+    (folder / "scene.yaml").write_text(json.dumps({"entries": entries}))
+
+
+def test_the_custom_share_counts_custom_entries_across_scenes(tmp_path: Path) -> None:
+    write_scene(tmp_path / "E01-a" / "s1-x", ["custom", "text-card", "custom"])
+    write_scene(tmp_path / "E01-a" / "s2-y", ["histogram", "custom"])
+
+    assert custom_share(tmp_path) == (3, 5)
+
+
+def test_the_share_line_gives_a_count_and_a_percent() -> None:
+    assert share_line(27, 96) == "custom visuals: 27 of 96 beats (28 percent)"
+    assert share_line(0, 0) == "custom visuals: 0 of 0 beats"
+
+
+def test_chart_values_are_the_numbers_a_model_supplies() -> None:
+    visuals = [
+        {"component": "bar-chart", "labels": ["a", "b"], "values": [100, -105]},
+        {"component": "timeline", "events": [{"at": 0, "amount": -50}, {"at": 1}]},
+        {
+            "component": "present-value",
+            "rate": 8,
+            "flows": [{"at": 1, "amount": 10_000}],
+        },
+        {"component": "histogram", "counts": [3, 4], "mean": 3.5, "spread": 1.7},
+        {"component": "complex-plane", "points": [{"radius": 2, "angle": 60}]},
+        {"component": "flow-diagram", "boxes": [], "links": []},
+    ]
+
+    assert chart_values(visuals) == [100, 105, 50, 10_000, 8, 3.5, 1.7]

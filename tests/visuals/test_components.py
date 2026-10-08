@@ -1,5 +1,7 @@
 """Each component draws inside any region it fits, with readable text."""
 
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -39,6 +41,45 @@ SAMPLES: dict[str, dict[str, object]] = {
             {"at": 0, "label": "Invest", "amount": -100},
             {"at": 3, "label": "Payoff", "amount": 120},
         ],
+    },
+    "complex-plane": {
+        "component": "complex-plane",
+        "points": [
+            {"label": "z", "radius": 1, "angle": 60, "guides": True}
+            | {"real_label": "cos x", "imag_label": "sin x"}
+        ],
+        "turn": {"start": 0, "end": 60, "label": "x"},
+    },
+    "histogram": {
+        "component": "histogram",
+        "edges": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
+        "counts": [1, 1, 1, 1, 1, 1],
+        "labels": ["1", "2", "3", "4", "5", "6"],
+        "mean": 3.5,
+        "spread": 1.71,
+        "curve": True,
+        "title": "One fair die",
+    },
+    "flow-diagram": {
+        "component": "flow-diagram",
+        "boxes": [
+            {"id": "data", "label": "Labeled data"},
+            {"id": "method", "label": "A method"},
+            {"id": "guess", "label": "A prediction"},
+        ],
+        "links": [
+            {"from": "data", "to": "method", "label": "train"},
+            {"from": "method", "to": "guess"},
+        ],
+        "highlight": "method",
+    },
+    "present-value": {
+        "component": "present-value",
+        "rate": 8,
+        "flows": [{"at": 0, "amount": -25_000}]
+        + [{"at": year, "amount": 8_000} for year in range(1, 5)],
+        "prefix": "$",
+        "title": "An investment at 8 percent",
     },
     "custom": {
         "component": "custom",
@@ -109,3 +150,10 @@ def test_a_bar_chart_with_long_labels_keeps_them_apart() -> None:
 
     assert crowded(drawing) == 0
     assert min_font is not None and min_font >= 18
+
+
+def test_the_scene_prompt_names_every_component() -> None:
+    prompt = Path(__file__).parents[2] / "src" / "unfold" / "prompts" / "scene.md"
+    text = prompt.read_text()
+
+    assert [name for name in NAMES if f"`{name}`" not in text] == []
