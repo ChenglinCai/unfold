@@ -37,6 +37,32 @@ def doctor() -> str:
 
 
 @server.tool()
+def ingest(
+    source: str,
+    out: str,
+    license: str = "",
+    owner: str = "",
+    attribution: str = "",
+    family: str = "",
+    title: str = "",
+) -> str:
+    """Turn a file, a URL, or a topic into a source document in a private folder.
+
+    The license decides whether videos from the source may be public, and an
+    unknown license keeps them private. Set family to topic for a bare topic.
+    """
+    options = {
+        "--license": license,
+        "--owner": owner,
+        "--attribution": attribution,
+        "--family": family,
+        "--title": title,
+    }
+    given = [part for flag, value in options.items() if value for part in (flag, value)]
+    return unfold("ingest", source, "--out", out, *given)
+
+
+@server.tool()
 def check(path: str) -> str:
     """Validate a file, or every file in a folder, against unfold's schemas."""
     return unfold("check", path)

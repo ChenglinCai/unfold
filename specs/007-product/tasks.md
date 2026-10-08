@@ -30,6 +30,6 @@
 ## Phase 6: Convergence
 
 - [X] T009 Make the gallery fail closed, so a series with no sources or unclear rights stays private, per FR-003 and Constitution VII (partial)
-- [ ] T010 Add an `ingest` tool to `src/unfold/mcp_server.py`, and point step 2 of `plugin/skills/unfold/SKILL.md` at it, per US4 (partial)
+- [X] T010 Add an `ingest` tool to `src/unfold/mcp_server.py`, and point step 2 of `plugin/skills/unfold/SKILL.md` at it, per US4 (partial)
 - [ ] T011 Install the `audio` extra with the plugin's server, so step 5 of the skill can check audio, per US4 (partial)
 - [ ] T012 Write `plugin/README.md`: what the plugin installs and runs, what could go wrong, and how to remove it, per Constitution IX (partial)
