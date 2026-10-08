@@ -9,8 +9,8 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
 
-from unfold.formats.sources import Model, Slug
-from unfold.formats.sources import Text as NonEmpty
+from unfold.fields import Model, Slug
+from unfold.fields import Text as NonEmpty
 
 # Raise this whenever a component draws differently, so saved scenes rebuild.
 VERSION = "4"
