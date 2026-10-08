@@ -56,7 +56,22 @@ Round 1 asked for the neighborhood circle three times, which meets the plan's ru
 - **Correct numbers.** Each present value matches the formula. The verdict's total also matches the decision card on the next beat.
 - **Inventive uses.** One flow diagram chains i, π, e, 1, and 0 with the signs that join them in Euler's identity.
 
+## After the storyboard fix
+
+The storyboard prompt still suggested `axes` and `number-line`, which no component draws, and it asked for pictures that change while the narration speaks. A later change made it name only the real components, and prefer their still pictures. The rebuild ran the storyboards and scenes again.
+
+| Measure | Round 3 | After the fix |
+|---|---|---|
+| Custom beats | 13 of 96, or 13.5% | 7 of 96, or 7.3% |
+| `storyboard-reuses-components` | 9 of 14 | 14 of 14 |
+| `chart-numbers-grounded` | 7 of 14 | 10 of 14 |
+| Layout failures at render | 0 | 0 |
+
+The other checks held, so SC-001 now passes, at 7.3 percent against a goal of 10.
+
+The contact sheets showed one new problem. A central limit theorem histogram labels a fair die's spread as 2.5, the largest distance from the mean. A die's standard deviation is about 1.71. The number appears in the narration, so `chart-numbers-grounded` passes it. A check that compares a histogram's mean and spread with its own bins comes next.
+
 ## Decisions for the maintainer
 
-- Keep both prompt rules. Against the starting point, every scene check improved or held, as principle IV requires.
-- SC-001 needs a call. Accept 13.5 percent, or ask for the next components: a neighborhood circle for scatter plots, and motion inside a component.
+- Keep all three prompt changes. Against the starting point, every scene check improved or held, as principle IV requires.
+- The neighborhood circle and motion inside a component remain the next steps for the last 7 custom beats.
