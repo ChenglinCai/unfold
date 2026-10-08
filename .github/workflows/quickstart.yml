@@ -1,0 +1,53 @@
+# Follows docs/quickstart.md on a clean macOS machine, as a new user would.
+# It makes no calls to language models, needs no secrets, and installs no LaTeX.
+name: quickstart
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quickstart:
+    name: render the quickstart on macOS
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      # Actions are pinned to full commit hashes, so a moved tag cannot change what runs.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the programs that manim and the stitcher use
+        run: brew install ffmpeg cairo pkg-config
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Install Python packages from the lock file
+        run: uv sync --locked
+
+      - name: Check the machine
+        run: uv run unfold doctor
+
+      - name: Render a copy of the example
+        run: |
+          cp -R examples/quickstart "$RUNNER_TEMP/quickstart"
+          uv run unfold render "$RUNNER_TEMP/quickstart"
+
+      - name: Check that every promised file exists
+        working-directory: ${{ runner.temp }}/quickstart/E01-compound-growth
+        run: |
+          for file in s1-growth/segment.mp4 s1-growth/contact-sheet.png s1-growth/timing.json episode.mp4 episode.srt; do
+            test -s "$file" || { echo "missing $file"; exit 1; }
+          done
+          echo "every file exists"

@@ -1,0 +1,11 @@
+format: outline/v0
+series: quickstart
+episode: E01-compound-growth
+title: Money that grows on itself
+core_question: Why does a savings account grow faster each year?
+audience: Adults who know what a savings account is.
+segments:
+  - id: s1-growth
+    title: Interest on interest
+    target_seconds: 30
+    establishes: [idea:compound-growth]

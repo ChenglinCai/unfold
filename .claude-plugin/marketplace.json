@@ -1,0 +1,15 @@
+{
+  "name": "unfold",
+  "description": "The unfold plugin, which turns learning material into explainer videos.",
+  "owner": {
+    "name": "ChenglinCai"
+  },
+  "plugins": [
+    {
+      "name": "unfold",
+      "source": "./plugin",
+      "description": "Turn learning material into explainer videos, with checked scripts, scenes, and voices.",
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+format: scene/v0
+episode: E01-compound-growth
+segment: s1-growth
+written_by: hand, for the quickstart
+entries:
+  - cue: title
+    region: full
+    visual:
+      component: text-card
+      title: Compound growth
+      lines: [100 dollars at 5 percent a year]
+  - cue: growth
+    region: plot
+    visual:
+      component: bar-chart
+      title: Savings at 5 percent
+      labels: [Start, Year 1, Year 2]
+      values: [100, 105, 110.25]
+      highlight: 2
+  - cue: timeline
+    region: plot
+    visual:
+      component: timeline
+      start: 0
+      end: 3
+      events:
+        - {at: 1, label: Year 1, amount: 5}
+        - {at: 2, label: Year 2, amount: 5.25}
+        - {at: 3, label: Year 3, amount: 5.51}
