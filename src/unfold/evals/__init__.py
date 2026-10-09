@@ -14,7 +14,7 @@ from typing import Any
 import yaml
 
 from unfold.episodes.links import check_links
-from unfold.formats import read_data
+from unfold.formats import built_segments, read_data
 from unfold.formats.episode import OutlineV0
 from unfold.script import load_script
 from unfold.sources import load
@@ -147,7 +147,9 @@ def flagged_beats(anchors: dict[str, list[str]]) -> int:
 def count_flags(folder: Path) -> tuple[int, int]:
     """The flagged beats and all beats, across a series' scripts."""
     flagged = beats = 0
-    for path in sorted(folder.glob("E*/s*/script.md")):
+    for path in (s / "script.md" for s in built_segments(folder)):
+        if not path.is_file():
+            continue
         anchors = load_script(path).anchors()
         flagged += flagged_beats(anchors)
         beats += len(anchors)
@@ -157,7 +159,9 @@ def count_flags(folder: Path) -> tuple[int, int]:
 def custom_share(folder: Path) -> tuple[int, int]:
     """The custom entries and all entries, across a series' scenes."""
     custom = entries = 0
-    for path in sorted(folder.glob("E*/s*/scene.yaml")):
+    for path in (s / "scene.yaml" for s in built_segments(folder)):
+        if not path.is_file():
+            continue
         found = yaml.safe_load(path.read_text(encoding="utf-8"))["entries"]
         custom += sum(1 for e in found if e["visual"]["component"] == "custom")
         entries += len(found)

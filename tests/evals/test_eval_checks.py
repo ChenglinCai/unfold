@@ -135,6 +135,17 @@ def test_the_custom_share_counts_custom_entries_across_scenes(tmp_path: Path) ->
     assert custom_share(tmp_path) == (3, 5)
 
 
+def test_the_custom_share_skips_a_segment_that_the_outline_dropped(
+    tmp_path: Path,
+) -> None:
+    write_scene(tmp_path / "E01-a" / "s1-x", ["custom", "text-card"])
+    write_scene(tmp_path / "E01-a" / "s2-old", ["custom", "custom"])
+    outline = {"segments": [{"id": "s1-x"}]}
+    (tmp_path / "E01-a" / "outline.yaml").write_text(json.dumps(outline))
+
+    assert custom_share(tmp_path) == (1, 2)
+
+
 def test_the_share_line_gives_a_count_and_a_percent() -> None:
     assert share_line(27, 96) == "custom visuals: 27 of 96 beats (28 percent)"
     assert share_line(0, 0) == "custom visuals: 0 of 0 beats"

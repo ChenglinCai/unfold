@@ -67,6 +67,17 @@ def test_segments_are_the_folders_with_scenes(tmp_path: Path) -> None:
     assert segments(tmp_path) == [folder]
 
 
+def test_segments_follow_the_outline_when_there_is_one(tmp_path: Path) -> None:
+    folder = segment_folder(tmp_path)
+    dropped = tmp_path / "E01-growth" / "s2-dropped"
+    dropped.mkdir()
+    (dropped / "scene.yaml").write_text(yaml.safe_dump(SCENE))
+    outline = {"segments": [{"id": "s1-interest"}, {"id": "s3-not-built"}]}
+    (tmp_path / "E01-growth" / "outline.yaml").write_text(yaml.safe_dump(outline))
+
+    assert segments(tmp_path) == [folder]
+
+
 def test_each_beat_ends_after_its_narration() -> None:
     assert beat_ends([2.0, 4.0]) == [2.0, 6.0]
 

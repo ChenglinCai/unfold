@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made render and the eval counts follow each episode's outline, so a segment that a rebuilt outline dropped is neither rendered nor counted.
 - Made the outline step retry when a segment teaches a concept that the plan saves for a later episode. The same rule was only an eval before.
 - Made job records and call logs keep each call's model turns, and corrected the stated reason for understand's word limit.
 - Added `unfold ingest --part FIRST..LAST`, which keeps one span of anchors, such as a chapter, so a long book can feed one series.

@@ -57,6 +57,28 @@ def read_data(path: Path) -> dict[str, object]:
     return data
 
 
+def built_segments(series: Path) -> list[Path]:
+    """Each episode's segment folders, in the order that its outline gives.
+
+    A rebuilt outline can drop a segment whose folder stays on disk, so the outline
+    decides. An episode without an outline keeps every segment folder.
+    """
+    found: list[Path] = []
+    for episode in sorted(path for path in series.glob("E*") if path.is_dir()):
+        outline = episode / "outline.yaml"
+        if not outline.is_file():
+            found += sorted(path for path in episode.glob("s*") if path.is_dir())
+            continue
+        listed = read_data(outline).get("segments")
+        ids = (
+            [s.get("id") for s in listed if isinstance(s, dict)]
+            if isinstance(listed, list)
+            else []
+        )
+        found += [episode / str(i) for i in ids if (episode / str(i)).is_dir()]
+    return found
+
+
 def model_for(data: dict[str, object]) -> type[BaseModel]:
     name = data.get("format")
     if not name:
