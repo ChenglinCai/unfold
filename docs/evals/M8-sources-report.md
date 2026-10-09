@@ -39,6 +39,8 @@ Each finding became a fix and a test. The last three came from reading the whole
 | Apple's `textutil` writes Word headings with only bold and size | A short paragraph that is bold and large counts as a heading when no style marks one, in PR 35 |
 | A nested Word table spilled its cells into the outer table | Rows and cells come from direct children only, in PR 35 |
 | Word keeps equations as OMML, which a plain-text reading flattens | A converter turns OMML into TeX, in PR 36 |
+| python-pptx reads only text runs, so every equation on a slide vanished | The deck reader converts each slide's OMML too, in PR 38 |
+| trafilatura escaped Markdown characters inside formulas, so `R_{t}` read as `R\_{t}` | The web reader undoes those escapes inside each formula, in PR 39 |
 
 ## End to end: understand on a LaTeX source
 
