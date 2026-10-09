@@ -1,6 +1,6 @@
-# Eval report: M8, LaTeX and EPUB readers
+# Eval report: M8, new source readers
 
-`unfold ingest` gained two readers in M8: one for LaTeX files and one for EPUB books. This report covers six real files, the bugs that they found, and one run of the understand step on a LaTeX source. Examples quote only sources that allow public outputs.
+`unfold ingest` gained three readers in M8: for LaTeX files, EPUB books, and Word files. This report covers seven real files, the bugs that they found, and one run of the understand step on a LaTeX source. Examples quote only sources that allow public outputs.
 
 ## Real files
 
@@ -12,6 +12,7 @@
 | LaTeX, Beamer | The learnlatex beginners' course deck | None stated, so no quotes | 47 | 2,010 | under 0.01 |
 | EPUB | *The Wealth of Nations*, from Project Gutenberg | Public domain | 66 | 383,485 | 0.04 |
 | Web | OpenStax *Introductory Statistics 2e*, section 6.1 | CC BY 4.0 | 26 | 2,063 | under 0.5 |
+| Word | Pandoc's test file with equations | Test data, so counts only | 1 | 213 | under 0.1 |
 
 - The paper defines 41 macros. After expansion, none of their names stays in the output.
 - The deck gets the slides family, and each titled frame starts an anchor.
@@ -35,6 +36,9 @@ Each finding became a fix and a test. The last three came from reading the whole
 | The book redefines `\section` for its look, and expansion erased every heading | The reader keeps its own meaning for structural commands, in PR 32 |
 | A line break with space, such as `\\[2mm]`, opened a formula that swallowed most of the book | A math opener after a backslash no longer counts, in PR 32 |
 | OpenStax pages hold MathML with no TeX, and the web reader dropped every formula | The web and EPUB readers convert MathML to TeX, in PR 33 |
+| Apple's `textutil` writes Word headings with only bold and size | A short paragraph that is bold and large counts as a heading when no style marks one, in PR 35 |
+| A nested Word table spilled its cells into the outer table | Rows and cells come from direct children only, in PR 35 |
+| Word keeps equations as OMML, which a plain-text reading flattens | A converter turns OMML into TeX, in PR 36 |
 
 ## End to end: understand on a LaTeX source
 
