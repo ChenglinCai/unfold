@@ -77,8 +77,8 @@ This file holds the current state of the work, so that a new session can resume 
 
 ### M8, more source formats
 
-- What to try: `uv run unfold ingest notes.tex --out ../content/sources`, with a LaTeX file of your own. A Beamer deck gets the slides family.
-- What to read: the LaTeX paragraph of `docs/formats.md`, then the docstring of `src/unfold/sources/latex.py`.
+- What to try: `uv run unfold ingest notes.tex --out ../content/sources`, with a LaTeX file of your own. A Beamer deck gets the slides family, and an EPUB book works the same way.
+- What to read: `docs/evals/M8-sources-report.md`, then the docstrings of `src/unfold/sources/latex.py` and `src/unfold/sources/epub.py`.
 - Evidence: `tests/sources/test_latex.py`, including the tests that keep includes inside the folder.
 - Walkthrough to ask for: `gather` and `_target`, which decide which files the reader may open.
 - Not done, by design: includes that a macro hides, such as `\includechapter`. Item 30 waits for you.
