@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made job records and call logs keep each call's model turns, and corrected the stated reason for understand's word limit.
 - Added `unfold ingest --part FIRST..LAST`, which keeps one span of anchors, such as a chapter, so a long book can feed one series.
 - Made `unfold understand` stop before any call when a source holds over 60,000 words, with a message that asks for one chapter instead.
 - Capped anchor ids from headings at 60 characters, cut between words, so citations of long book headings stay short.

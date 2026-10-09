@@ -53,6 +53,8 @@ class Reply:
     seconds: float = 0.0
     # The structured output, when the job asked for a schema.
     data: dict[str, object] | None = None
+    # The model turns inside one call. Usage sums over them, so more turns cost more.
+    turns: int = 1
 
 
 class Runner(Protocol):
@@ -128,6 +130,7 @@ def parse(stdout: str, seconds: float) -> Reply:
         int(usage.get("output_tokens") or 0),
         seconds,
         structured if isinstance(structured, dict) else None,
+        int(data.get("num_turns") or 1),
     )
 
 
@@ -175,6 +178,7 @@ class Record:
     key: str
     model: str
     attempts: int = 0
+    turns: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
     seconds: float = 0.0
@@ -188,6 +192,7 @@ class Record:
 
     def add(self, reply: Reply) -> None:
         self.attempts += 1
+        self.turns += reply.turns
         self.input_tokens += reply.input_tokens
         self.output_tokens += reply.output_tokens
         self.seconds = round(self.seconds + reply.seconds, 1)

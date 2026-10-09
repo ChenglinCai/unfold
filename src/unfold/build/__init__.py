@@ -159,6 +159,7 @@ def log_call(
         "key": job.key,
         "model": job.model,
         "attempt": attempt,
+        "turns": reply.turns if reply else 0,
         "input_tokens": reply.input_tokens if reply else 0,
         "output_tokens": reply.output_tokens if reply else 0,
         "seconds": reply.seconds if reply else 0,
