@@ -1,6 +1,6 @@
 ---
 name: unfold
-description: Turn learning material into explainer videos with unfold. Use it when someone wants a video series from a textbook, slides, a web page, a recording, or a bare topic.
+description: Turn learning material into explainer videos with unfold. Use it when someone wants a video series from a textbook, slides, a web page, a notebook, a LaTeX or Word file, an EPUB book, a recording, or a bare topic.
 ---
 
 # Make explainer videos with unfold
@@ -10,7 +10,7 @@ unfold turns learning material into a series of short explainer videos. Its tool
 ## Steps
 
 1. Run the `doctor` tool. Fix every failed check before you go on.
-2. Run the `ingest` tool for each source, into a private folder outside any public repository. Give its license.
+2. Run the `ingest` tool for each source, into a private folder outside any public repository. Give its license. Understand reads at most 60,000 words, so for a long book set `part` to one chapter's span of anchors.
 3. Write `series.yaml` in a new series folder. Name the sources, describe the audience, and list in `knows` what the audience knows already.
 4. Run the `build` tool. It runs model jobs on the user's own Claude subscription, so say so before you start.
 5. Run the `render` tool with `check_audio` set to true.
