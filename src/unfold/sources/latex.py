@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from unfold.sources import Meta, SourceDocument
-from unfold.sources.web import _document
+from unfold.sources.web import _document, markdown_table
 
 DEPTH = 10  # how deep includes may nest
 READS = 500  # how many files one document may include
@@ -516,13 +516,7 @@ def _table(match: re.Match[str]) -> str:
         [" ".join(cell.split()) for cell in re.split(r"(?<!\\)&", row)]
         for row in re.split(r"\\\\(?:\[[^\]]*\])?", RULE.sub("", body[at:]))
     ]
-    rows = [row for row in rows if any(row)]
-    if not rows:
-        return "\n\n"
-    width = max(len(row) for row in rows)
-    lines = ["| " + " | ".join(row + [""] * (width - len(row))) + " |" for row in rows]
-    lines.insert(1, "|" + " --- |" * width)
-    return "\n\n" + "\n".join(lines) + "\n\n"
+    return "\n\n" + markdown_table(rows) + "\n\n"
 
 
 def _titled(text: str) -> str:
