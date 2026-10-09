@@ -56,6 +56,7 @@ max-line-length = 100
 # Word lists read better as one string split on spaces than as long list literals.
 "src/unfold/lint/words.py" = ["SIM905"]
 "src/unfold/sources/latex.py" = ["SIM905"]
+"src/unfold/sources/mathml.py" = ["SIM905"]
 
 [tool.pyright]
 include = ["src", "tests", "examples", ".claude/hooks"]

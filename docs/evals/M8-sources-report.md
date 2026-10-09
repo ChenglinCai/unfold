@@ -1,6 +1,6 @@
 # Eval report: M8, LaTeX and EPUB readers
 
-`unfold ingest` gained two readers in M8: one for LaTeX files and one for EPUB books. This report covers five real files, the bugs that they found, and one run of the understand step on a LaTeX source. Examples quote only sources that allow public outputs.
+`unfold ingest` gained two readers in M8: one for LaTeX files and one for EPUB books. This report covers six real files, the bugs that they found, and one run of the understand step on a LaTeX source. Examples quote only sources that allow public outputs.
 
 ## Real files
 
@@ -11,9 +11,11 @@
 | LaTeX | arXiv 2107.07511, a tutorial on conformal prediction | Not checked, so no quotes | 48 | 19,142 | 0.02 |
 | LaTeX, Beamer | The learnlatex beginners' course deck | None stated, so no quotes | 47 | 2,010 | under 0.01 |
 | EPUB | *The Wealth of Nations*, from Project Gutenberg | Public domain | 66 | 383,485 | 0.04 |
+| Web | OpenStax *Introductory Statistics 2e*, section 6.1 | CC BY 4.0 | 26 | 2,063 | under 0.5 |
 
 - The paper defines 41 macros. After expansion, none of their names stays in the output.
 - The deck gets the slides family, and each titled frame starts an anchor.
+- The OpenStax page holds 7 formulas in MathML, with no TeX. The web reader kept none of them, and now it keeps all 7, such as $$z = \frac{x - \mu}{\sigma}$$.
 - The whole OpenIntro book reads in full. A macro, `\includechapter`, pulls in each chapter, and the reader expands it before it follows the includes.
 
 ## What the real files found
@@ -32,6 +34,7 @@ Each finding became a fix and a test. The last three came from reading the whole
 | A macro, `\includechapter`, hid each chapter's include | The reader expands such macros, then follows the includes, in PR 32 |
 | The book redefines `\section` for its look, and expansion erased every heading | The reader keeps its own meaning for structural commands, in PR 32 |
 | A line break with space, such as `\\[2mm]`, opened a formula that swallowed most of the book | A math opener after a backslash no longer counts, in PR 32 |
+| OpenStax pages hold MathML with no TeX, and the web reader dropped every formula | The web and EPUB readers convert MathML to TeX, in PR 33 |
 
 ## End to end: understand on a LaTeX source
 

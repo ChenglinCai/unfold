@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made the web and EPUB readers turn MathML into TeX, so OpenStax pages keep their formulas. One page went from 0 of 7 formulas to 7 of 7.
 - Made the LaTeX reader read whole books. It follows includes that a macro hides, keeps restyled structural commands, and no longer takes `\\[2mm]` for math.
 - Made render and the eval counts follow each episode's outline, so a segment that a rebuilt outline dropped is neither rendered nor counted.
 - Made the outline step retry when a segment teaches a concept that the plan saves for a later episode. The same rule was only an eval before.
