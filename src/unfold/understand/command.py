@@ -49,7 +49,12 @@ def run_understand(args: argparse.Namespace) -> int:
         )
         return 0
     problems = "\n".join(f"  {error}" for error in record.errors)
-    return fail(f"{folder}: failed after {tries(record.attempts)}:\n{problems}", 1)
+    stage = (
+        f"failed after {tries(record.attempts)}"
+        if record.attempts
+        else "stopped before any call"
+    )
+    return fail(f"{folder}: {stage}:\n{problems}", 1)
 
 
 def tries(count: int) -> str:

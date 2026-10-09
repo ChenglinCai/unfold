@@ -33,6 +33,7 @@ unfold understand DIR [--model MODEL] [--retries N]
 
 - A failed job writes only `job.json`, with the last errors. Older outputs stay, but their key no longer matches, so the next run tries again.
 - A job error, such as a usage limit, stops the step at once, because a retry would fail the same way.
+- One call reads the whole source, so a source over 60,000 words stops the step before any call. Ingest one chapter or part of it instead.
 
 | Exit code | Meaning |
 |---|---|
