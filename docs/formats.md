@@ -81,6 +81,7 @@ Each model job writes a record next to its outputs.
 | `key` | A hash of the prompt, the request, and the model. A matching key means the saved outputs are reused |
 | `model` | The model that ran |
 | `attempts` | How many tries the job took |
+| `turns` | The model turns inside those tries. The tokens add up over turns, so more turns cost more |
 | `input_tokens`, `output_tokens` | The tokens of every try, summed |
 | `seconds` | The total time |
 | `outcome`, `errors` | `ok` or `failed`, and the last errors |

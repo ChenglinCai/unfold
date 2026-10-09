@@ -25,6 +25,11 @@
       "title": "Attempts",
       "type": "integer"
     },
+    "turns": {
+      "default": 0,
+      "title": "Turns",
+      "type": "integer"
+    },
     "input_tokens": {
       "default": 0,
       "title": "Input Tokens",

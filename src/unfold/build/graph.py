@@ -96,6 +96,7 @@ def logged(
             lines.append({**line, "outcome": "failed", "errors": [str(error)]})
             raise
         tokens = {
+            "turns": reply.turns,
             "input_tokens": reply.input_tokens,
             "output_tokens": reply.output_tokens,
         }
@@ -137,6 +138,7 @@ class Guarded:
                 )
                 raise
             tokens = {
+                "turns": reply.turns,
                 "input_tokens": reply.input_tokens,
                 "output_tokens": reply.output_tokens,
             }

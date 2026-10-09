@@ -23,9 +23,10 @@ NOTES_FILE = "study-notes.md"
 RECORD_FILE = "job.json"
 DEFAULT_MODEL = "sonnet"
 RETRIES = 3
-# One call reads the whole source. A call carries about 56,000 tokens of fixed
-# overhead, and a word costs about 1.6 tokens, so 60,000 words come to about
-# 150,000 tokens. That leaves room for the reply in a 200,000-token context.
+# One call reads the whole source. Prose ran about 1.8 tokens a word in a measured
+# run, and text full of TeX may run near 2.5, so 60,000 words stay under about
+# 150,000 tokens. That leaves room for the prompt and the reply in a 200,000-token
+# context.
 MAX_WORDS = 60_000
 FENCE = re.compile(r"^```[a-z]*\n(.*?)\n?```$", re.DOTALL)
 

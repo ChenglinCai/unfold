@@ -113,6 +113,7 @@ class JobV0(Model):
     key: Text
     model: Text
     attempts: int = 0
+    turns: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
     seconds: float = 0.0

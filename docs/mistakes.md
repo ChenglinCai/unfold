@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### A token budget rested on one run
+
+- What happened: Claude set understand's word limit from one run, and read its 74,631 input tokens as mostly fixed overhead. A second run and a probe call showed about 500 tokens of overhead. The limit held, but its stated reason was wrong in the code, the docs, and PR 25.
+- Cause: one data point, and an inference stated as a fact. Job records kept no turn count, so nothing could show where the extra tokens came from.
+- Guardrail: a claim about token budgets needs two runs of different sources, or a direct count. Job records and call logs now keep each call's turns.
+
 ### Code that shows LaTeX cut a deck short
 
 - What happened: the first LaTeX reader looked for `\end{document}` before it set code aside. A Beamer course deck shows that line in a code sample, so the reader kept 3 words of about 2,000.

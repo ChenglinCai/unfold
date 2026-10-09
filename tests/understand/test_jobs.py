@@ -61,6 +61,8 @@ def test_parse_reads_the_text_and_every_kind_of_token() -> None:
     assert reply.text.startswith("<knowledge-map>")
     assert (reply.input_tokens, reply.output_tokens) == (1312, 450)
     assert reply.seconds == 2.5
+    assert reply.turns == 1
+    assert jobs.parse(json.dumps({**REPLY, "num_turns": 3}), seconds=1.0).turns == 3
 
 
 @pytest.mark.parametrize(
@@ -107,7 +109,7 @@ def test_the_key_changes_when_any_part_changes() -> None:
 
 def test_a_record_sums_its_attempts_and_round_trips(tmp_path: Path) -> None:
     record = jobs.Record(key="k", model="sonnet")
-    record.add(jobs.Reply("a", 100, 10, 1.5))
+    record.add(jobs.Reply("a", 100, 10, 1.5, turns=2))
     record.add(jobs.Reply("b", 200, 20, 2.0))
     record.outcome = "ok"
     path = tmp_path / "job.json"
@@ -116,6 +118,7 @@ def test_a_record_sums_its_attempts_and_round_trips(tmp_path: Path) -> None:
 
     assert jobs.Record.load(path) == record
     assert (record.attempts, record.input_tokens, record.output_tokens) == (2, 300, 30)
+    assert record.turns == 3
     assert jobs.Record.load(tmp_path / "missing.json") is None
 
 
