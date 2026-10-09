@@ -257,3 +257,18 @@ def test_ingest_reads_a_latex_file(
     doc = load(out / "ls")
     assert doc.family == "textbook"
     assert [a.id for a in doc.anchors] == ["intro", "the-model", "residuals"]
+
+
+def test_ingest_names_the_includes_it_could_not_find(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "ch.tex"
+    path.write_text("\\section{Means}\nThe average.\n\\input{book/TeX/exercises}\n")
+    out = tmp_path / "sources"
+
+    assert main(["ingest", str(path), "--out", str(out)]) == 0
+
+    assert load(out / "ch").profile["missing"] == ["book/TeX/exercises"]
+    warning = capsys.readouterr().err
+    assert "book/TeX/exercises" in warning and "main file" in warning
+    assert main(["check", str(out / "ch" / "source.yaml")]) == 0

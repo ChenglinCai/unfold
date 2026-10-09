@@ -44,7 +44,7 @@ The manifest has these fields:
 | `id`, `title`, `family`, `origin` | What the source is, and the URL or path it came from |
 | `retrieved` | The date of ingestion |
 | `rights` | `license`, `owner`, `attribution`, and `public_outputs` |
-| `profile` | `format`, `size`, `quality`, `subject`, and `needs` |
+| `profile` | `format`, `size`, `quality`, `subject`, and `needs`. A LaTeX file adds `missing`, the includes that ingest could not find |
 | `anchors` | Each block: `id`, `kind`, and `title` |
 
 `public_outputs` is true only under CC0, CC BY, CC BY-SA, or the public domain, and for a bare topic. `needs` names what the source needs most: `cut`, `fill-gaps`, `clean-up`, or `fact-check`.

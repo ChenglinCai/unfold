@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made `unfold ingest` name each LaTeX include that it could not find, in the source profile and in a warning.
 - Made the LaTeX reader turn theorems, lists, tables, figures, and Beamer frames into Markdown. A Beamer deck now gets the slides family.
 - Made the LaTeX reader expand each document's own macros, such as `\newcommand` and `\DeclareMathOperator`, so each formula stands alone.
 - Added a LaTeX reader to `unfold ingest`. It follows includes only inside the main file's folder, keeps formulas as TeX, and turns sections into anchors.

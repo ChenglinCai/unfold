@@ -92,6 +92,14 @@ def run_ingest(args: argparse.Namespace) -> int:
         folder = doc.save(out)
         if original is not None:
             shutil.move(original, folder / original.name)
+    missing = doc.profile.get("missing")
+    if isinstance(missing, list) and missing:
+        print(
+            f"unfold ingest: skipped {len(missing)} includes that are not in the file's "
+            f"folder: {', '.join(map(str, missing))}. If the file belongs to a larger "
+            "project, ingest the project's main file.",
+            file=sys.stderr,
+        )
     print(folder)
     return 0
 
