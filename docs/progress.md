@@ -73,7 +73,15 @@ This file holds the current state of the work, so that a new session can resume 
 - What to read: `docs/evals/M8-packs-report.md`, then `specs/008-domain-packs/research.md`.
 - Evidence: the report's tables, and `tests/visuals/test_pack_props.py`, which draws 25 random cases of each new component.
 - Walkthrough to ask for: `src/unfold/visuals/finance.py` and `_present_value`, which show how code, not the model, computes each number.
-- Not done, by design: motion inside components, and the machine-learning pack. Item 27 waits for you.
+- Not done, by design: motion inside components, and the machine-learning pack.
+
+### M8, more source formats
+
+- What to try: `uv run unfold ingest notes.tex --out ../content/sources`, with a LaTeX file of your own. A Beamer deck gets the slides family.
+- What to read: the LaTeX paragraph of `docs/formats.md`, then the docstring of `src/unfold/sources/latex.py`.
+- Evidence: `tests/sources/test_latex.py`, including the tests that keep includes inside the folder.
+- Walkthrough to ask for: `gather` and `_target`, which decide which files the reader may open.
+- Not done, by design: includes that a macro hides, such as `\includechapter`. Item 30 waits for you.
 
 ## Decisions for the maintainer to confirm
 

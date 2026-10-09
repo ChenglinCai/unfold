@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### Code that shows LaTeX cut a deck short
+
+- What happened: the first LaTeX reader looked for `\end{document}` before it set code aside. A Beamer course deck shows that line in a code sample, so the reader kept 3 words of about 2,000.
+- Cause: Claude tried the reader on an article and a book, but not on a document that teaches LaTeX. No unit test put document markers inside code.
+- Guardrail: the reader now sets code aside before every other step, and a test puts both markers inside code. Before a new reader's pull request merges, it runs on a real file of every kind it claims. For LaTeX, that means an article, a book, and a deck.
+
 ### A loop variable broke every gallery video
 
 - What happened: PR 11 copied subtitles in a loop over `name`, inside a function that already used `name` for the series. Every gallery video then linked to a wrong path. The next feature's test caught it.
