@@ -13,7 +13,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 from unfold import jobs
-from unfold.formats import read_data
+from unfold.formats import built_segments, read_data
 from unfold.formats.episode import SceneV0
 from unfold.script import load_script
 from unfold.visuals import params
@@ -29,8 +29,8 @@ THUMB = 480
 
 
 def segments(series: Path) -> list[Path]:
-    """Every segment folder in a series that holds a scene."""
-    return sorted(p.parent for p in series.glob("E*/s*/scene.yaml"))
+    """Every segment folder of a series that its outline lists and that holds a scene."""
+    return [path for path in built_segments(series) if (path / "scene.yaml").is_file()]
 
 
 def beat_ends(lengths: list[float]) -> list[float]:
