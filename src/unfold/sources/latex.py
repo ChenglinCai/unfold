@@ -208,10 +208,14 @@ def _target(root: Path, name: str) -> Path | None:
     return path if path.is_file() else None
 
 
-def gather(main: Path) -> str:
-    """The main file's text without comments, with each include replaced by its file."""
+def gather(main: Path) -> tuple[str, list[str]]:
+    """The main file's text without comments, with each include replaced by its file.
+
+    The list names each include that no file inside the main file's folder matches.
+    """
     root = main.resolve().parent
     reads = 0
+    missing: list[str] = []
 
     def read(chain: tuple[Path, ...]) -> str:
         nonlocal reads
@@ -225,8 +229,11 @@ def gather(main: Path) -> str:
             text = _body(text)
 
         def include(match: re.Match[str]) -> str:
-            target = _target(root, match.group(1).strip())
+            name = match.group(1).strip()
+            target = _target(root, name)
             if target is None:
+                if name and name not in missing:
+                    missing.append(name)
                 return ""
             if target in chain:
                 raise ValueError(f"{target.name} includes itself")
@@ -234,7 +241,7 @@ def gather(main: Path) -> str:
 
         return keep.restore(INCLUDE.sub(include, text))
 
-    return read((main.resolve(),))
+    return read((main.resolve(),)), missing
 
 
 def _skip(text: str, at: int) -> int:
@@ -634,4 +641,8 @@ def family(path: Path) -> str:
 
 
 def read_latex(path: Path, meta: Meta) -> SourceDocument:
-    return _document(latex_markdown(gather(path)), meta, "tex")
+    text, missing = gather(path)
+    doc = _document(latex_markdown(text), meta, "tex")
+    if missing:
+        doc.profile["missing"] = missing
+    return doc

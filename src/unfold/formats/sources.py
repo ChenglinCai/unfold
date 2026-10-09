@@ -56,6 +56,9 @@ class Profile(Model):
     quality: dict[str, object]
     subject: str
     needs: Text
+    missing: list[str] = Field(
+        default_factory=list
+    )  # LaTeX includes that ingest could not find
 
 
 class SourceV1(Model):
