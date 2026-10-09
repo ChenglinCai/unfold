@@ -89,6 +89,16 @@ def test_sections_and_formulas_survive_and_the_rest_goes() -> None:
         assert gone not in text
 
 
+def test_a_line_break_with_space_is_not_math() -> None:
+    text = latex_markdown(
+        "First line\\\\[2mm] second line.\\\\(a) A choice.\n"
+        "\\section{Next}\nThen \\[x^2\\] and \\(y\\) are math.\n"
+    )
+
+    assert "## Next" in text and "second line." in text and "(a) A choice." in text
+    assert "$$\nx^2\n$$" in text and "$y$" in text
+
+
 def test_unknown_commands_keep_only_their_text() -> None:
     text = latex_markdown(
         "Called the \\termsub{bell curve}{normal curve}\\index{normal}%\n"
@@ -118,6 +128,17 @@ Fit $\argmin_w \E\norm{\vec w}$ with $\inner{y}$ and $\inner[a]{b}$ in \Rn{} her
     assert r"$\langle x, y \rangle$" in text and r"$\langle a, b \rangle$" in text
     assert r"in $\mathbb{R}^n$ here." in text
     assert "newcommand" not in text and "def" not in text
+
+
+def test_a_redefined_section_still_makes_a_heading() -> None:
+    text = latex_markdown(
+        "\\let\\oldsection\\section\n"
+        "\\renewcommand\\section{\\clearpageforsection\\oldsection}\n"
+        "\\renewcommand{\\emph}[1]{\\textbf{#1}}\n"
+        "\\section{Means}\nThe \\emph{average} of draws.\n"
+    )
+
+    assert "## Means" in text and "The *average* of draws." in text
 
 
 def test_macros_that_expand_forever_fail() -> None:
@@ -207,6 +228,41 @@ def test_code_that_shows_latex_stays_code(tmp_path: Path) -> None:
     assert [a.id for a in doc.anchors] == ["start", "more"]
     assert "Put `\\begin{document}` first." in doc.text()
     assert "A second part." in doc.text()
+
+
+def test_includes_that_a_macro_hides_are_followed(tmp_path: Path) -> None:
+    (tmp_path / "style").mkdir()
+    (tmp_path / "ch4" / "TeX").mkdir(parents=True)
+    (tmp_path / "style" / "style.tex").write_text(
+        "\\newcommand\\includechapter[2]{\\setcounter{chapter}{#1}\\include{#2/TeX/#2}}\n"
+    )
+    (tmp_path / "main.tex").write_text(
+        "\\include{style/style}\n\\begin{document}\n\\includechapter{4}{ch4}\n"
+        "\\end{document}\n"
+    )
+    (tmp_path / "ch4" / "TeX" / "ch4.tex").write_text(
+        "\\section{Spread}\nHow far draws fall.\n\\input{ch4/TeX/exercises}\n"
+    )
+    (tmp_path / "ch4" / "TeX" / "exercises.tex").write_text(
+        "\\section{Exercises}\nFind the spread.\n"
+    )
+
+    doc = read_latex(tmp_path / "main.tex", META)
+
+    assert [a.id for a in doc.anchors] == ["spread", "exercises"]
+    assert "missing" not in doc.profile
+
+
+def test_a_hidden_include_still_cannot_leave_the_folder(tmp_path: Path) -> None:
+    folder = tmp_path / "notes"
+    folder.mkdir()
+    (tmp_path / "secret.tex").write_text("The secret.\n")
+    (folder / "main.tex").write_text(
+        "\\newcommand{\\pull}[1]{\\input{../#1}}\n\\pull{secret}\n"
+    )
+
+    with pytest.raises(ValueError, match="outside"):
+        read_latex(folder / "main.tex", META)
 
 
 @pytest.mark.parametrize("kind", ["parent", "absolute", "link", "hidden"])

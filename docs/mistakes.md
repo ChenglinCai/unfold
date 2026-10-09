@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### A line break looked like the start of a formula
+
+- What happened: the LaTeX reader took `\\[2mm]`, a line break with space, for the display-math opener `\[`. One such break in the OpenIntro book swallowed 550,060 characters as a formula.
+- Cause: the math pattern ignored the backslash before the opener. Claude's real files did not include a whole book until PR 32.
+- Guardrail: a math opener after a backslash no longer counts, and a test puts line breaks with space beside real formulas. Each reader's real files now include one whole book.
+
 ### A lint failure reached a pull request body, twice
 
 - What happened: PR 11 and PR 29 opened with a description that failed `unfold lint`. Each command piped the lint through `tail`, which always succeeds, so the next step ran anyway.

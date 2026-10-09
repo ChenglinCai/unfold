@@ -54,7 +54,9 @@ DISPLAY = {
 }
 MATH = re.compile(
     r"\\begin\{(" + "|".join(DISPLAY) + r")(\*?)\}(.*?)\\end\{\1\2\}"
-    r"|\$\$(.+?)\$\$|\\\[(.+?)\\\]|(?<!\\)\$(.+?)(?<!\\)\$|\\\((.+?)\\\)",
+    # A math opener that follows a backslash is a line break, such as \\[2mm].
+    r"|\$\$(.+?)\$\$|(?<!\\)\\\[(.+?)(?<!\\)\\\]|(?<!\\)\$(.+?)(?<!\\)\$"
+    r"|(?<!\\)\\\((.+?)(?<!\\)\\\)",
     re.DOTALL,
 )
 NUMBERING = re.compile(
@@ -217,6 +219,27 @@ def gather(main: Path) -> tuple[str, list[str]]:
     reads = 0
     missing: list[str] = []
 
+    def follow(text: str, chain: tuple[Path, ...]) -> str:
+        """Replace each include with its file, in text whose code is set aside.
+
+        A name with # belongs to a macro's definition, so it stays as written.
+        """
+
+        def include(match: re.Match[str]) -> str:
+            name = match.group(1).strip()
+            if "#" in name:
+                return match.group(0)
+            target = _target(root, name)
+            if target is None:
+                if name and name not in missing:
+                    missing.append(name)
+                return ""
+            if target in chain:
+                raise ValueError(f"{target.name} includes itself")
+            return read((*chain, target))
+
+        return INCLUDE.sub(include, text)
+
     def read(chain: tuple[Path, ...]) -> str:
         nonlocal reads
         reads += 1
@@ -227,21 +250,17 @@ def gather(main: Path) -> tuple[str, list[str]]:
         text = SKIPPED.sub("", COMMENT.sub(r"\1", _shield(text, keep)))
         if len(chain) > 1:
             text = _body(text)
+        return keep.restore(follow(text, chain))
 
-        def include(match: re.Match[str]) -> str:
-            name = match.group(1).strip()
-            target = _target(root, name)
-            if target is None:
-                if name and name not in missing:
-                    missing.append(name)
-                return ""
-            if target in chain:
-                raise ValueError(f"{target.name} includes itself")
-            return read((*chain, target))
-
-        return keep.restore(INCLUDE.sub(include, text))
-
-    return read((main.resolve(),)), missing
+    top = (main.resolve(),)
+    text = read(top)
+    for _ in range(DEPTH):  # a revealed file may hide more includes in its turn
+        revealed = _reveal(text)
+        if revealed == text:
+            break
+        keep = _Kept()
+        text = keep.restore(follow(_shield(revealed, keep), top))
+    return text, missing
 
 
 def _skip(text: str, at: int) -> int:
@@ -336,20 +355,62 @@ def definitions(text: str) -> tuple[str, dict[str, Macro], dict[str, str]]:
     text = THEOREM.sub("", text)
     macros: dict[str, Macro] = {}
     parts: list[str] = []
+    last = 0
+    for start, end, kind, name, macro in _defined(text):
+        if name in OWN:  # a redefinition of a structural command changes only its look
+            pass
+        elif kind != "providecommand" or name not in macros:
+            macros[name] = macro
+        parts.append(text[last:start])
+        last = end
+    parts.append(text[last:])
+    return "".join(parts), macros, theorems
+
+
+# Commands that the reader turns into structure itself, whatever the document says.
+OWN = (
+    set(SECTIONS)
+    | set(INLINE)
+    | {"item", "caption", "url", "href", "input", "include", "subfile", "begin", "end"}
+)
+
+
+def _defined(text: str) -> list[tuple[int, int, str, str, Macro]]:
+    """Each macro definition: its start and end, its kind, its name, and the macro.
+
+    A form this reader does not know stays out, so it stays in the text as written.
+    """
+    found: list[tuple[int, int, str, str, Macro]] = []
     index = 0
     while (match := DEFINE.search(text, index)) is not None:
-        found = _macro(text, match.end(), match.group(1), match.group(2))
-        if found is None:  # a form this reader does not know, so it stays as written
-            parts.append(text[index : match.end()])
+        parsed = _macro(text, match.end(), match.group(1), match.group(2))
+        if parsed is None:
             index = match.end()
             continue
-        name, macro, end = found
-        if match.group(1) != "providecommand" or name not in macros:
-            macros[name] = macro
-        parts.append(text[index : match.start()])
+        name, macro, end = parsed
+        found.append((match.start(), end, match.group(1), name, macro))
         index = end
-    parts.append(text[index:])
-    return "".join(parts), macros, theorems
+    return found
+
+
+def _reveal(text: str) -> str:
+    """Expand only the macros that hide an include, such as \\includechapter.
+
+    Code and the definitions themselves stay as written.
+    """
+    keep = _Kept()
+    shielded = _shield(text, keep)
+    spans = _defined(shielded)
+    hiding = {name: macro for *_, name, macro in spans if INCLUDE.search(macro.body)}
+    if not hiding:
+        return text
+    parts: list[str] = []
+    last = 0
+    for start, end, *_ in spans:
+        parts += [shielded[last:start], keep(shielded[start:end])]
+        last = end
+    parts.append(shielded[last:])
+    return keep.restore(expand("".join(parts), hiding))
 
 
 def _substitute(body: str, values: list[str]) -> str:
