@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Capped anchor ids from headings at 60 characters, cut between words, so citations of long book headings stay short.
 - Added an EPUB reader to `unfold ingest`. It reads chapters in reading order from the zip, with an XML parser that resolves no entities and a 200 MB cap.
 - Made `unfold ingest` name each LaTeX include that it could not find, in the source profile and in a warning.
 - Made the LaTeX reader turn theorems, lists, tables, figures, and Beamer frames into Markdown. A Beamer deck now gets the slides family.
