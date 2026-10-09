@@ -38,4 +38,4 @@ Claude read every beat of the velocity-of-money episode, from a Spoken Wikipedia
 
 - The English-word check can flag math notation. Round 2's one retry came from `cosx` in the Euler's identity episode, and the retry wrote `cos x` instead.
 - A Chinese speaker on the maintainer's side should still read one episode, as the spec asks. Claude's reading is a first pass.
-- The subtitles are sidecar files. The gallery copies them, but its video player does not show them yet.
+- The gallery and review players show both tracks. Each page writes a WebVTT copy of each subtitle file, and English plays by default.
