@@ -88,7 +88,7 @@ def _name(element: lxml_html.HtmlElement) -> str:
     return tag.rsplit("}", 1)[-1].lower()
 
 
-def _chars(text: str) -> str:
+def chars_tex(text: str) -> str:
     """Each character as TeX, with a space after a command so that it stays whole."""
     out = ""
     for char in text:
@@ -104,10 +104,10 @@ def _identifier(text: str) -> str:
         return "\\" + text
     if len(text) > 1 and text.isascii() and text.isalpha():
         return r"\mathrm{" + text + "}"
-    return _chars(text)
+    return chars_tex(text)
 
 
-def _fence(char: str) -> str:
+def fence_tex(char: str) -> str:
     return {"": ".", "{": r"\{", "}": r"\}"}.get(char, SYMBOLS.get(char, char))
 
 
@@ -138,7 +138,7 @@ def mathml_tex(element: lxml_html.HtmlElement) -> str:
     if name == "mi":
         return _identifier(text)
     if name in ("mn", "mo"):
-        return _chars(text)
+        return chars_tex(text)
     if name == "mtext":
         return (
             r"\text{" + text.replace("{", r"\{").replace("}", r"\}") + "}"
@@ -174,9 +174,9 @@ def mathml_tex(element: lxml_html.HtmlElement) -> str:
         separator = (element.get("separators") or ",").strip()[:1] or ","
         opening, closing = element.get("open", "("), element.get("close", ")")
         inside = f" {separator} ".join(kids)
-        return rf"\left{_fence(opening)} {inside} \right{_fence(closing)}"
+        return rf"\left{fence_tex(opening)} {inside} \right{fence_tex(closing)}"
     if name == "mtable":
         return r"\begin{matrix} " + r" \\ ".join(kids) + r" \end{matrix}"
     if name in ("mtr", "mlabeledtr"):
         return " & ".join(kids)
-    return " ".join(kids) or _chars(text)
+    return " ".join(kids) or chars_tex(text)

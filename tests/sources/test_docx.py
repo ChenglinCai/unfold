@@ -99,8 +99,8 @@ def test_styled_headings_become_anchors_and_equations_become_tex(
         "rates",
     ]
     text = doc.text()
-    assert "The rate is $ab$ each year." in text
-    assert "$$x2$$" in text
+    assert r"The rate is $\frac{a}{b}$ each year." in text
+    assert "$${x}^{2}$$" in text
     assert "- First point\n  - Nested point" in text
     assert "| Years | Balance |\n| --- | --- |\n| 1 | 105 |" in text
     assert "Kept text. More." in text
