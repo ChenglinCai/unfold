@@ -82,6 +82,18 @@
           },
           "title": "Missing",
           "type": "array"
+        },
+        "part": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Part"
         }
       },
       "required": [

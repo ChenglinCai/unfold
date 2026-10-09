@@ -56,9 +56,10 @@ class Profile(Model):
     quality: dict[str, object]
     subject: str
     needs: Text
-    missing: list[str] = Field(
-        default_factory=list
-    )  # LaTeX includes that ingest could not find
+    # The LaTeX includes that ingest could not find.
+    missing: list[str] = Field(default_factory=list)
+    # The span of anchors that `unfold ingest --part` kept.
+    part: str | None = None
 
 
 class SourceV1(Model):

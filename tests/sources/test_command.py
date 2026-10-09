@@ -133,3 +133,43 @@ def test_a_failed_download_leaves_no_partial_files(
 
     assert main(["ingest", "https://example.org/book.pdf", "--out", str(out)]) == 1
     assert nothing_in(out)
+
+
+BOOK = "## One\n\nFirst part.\n\n## Two\n\nSecond part text.\n\n## Three\n\nThird.\n"
+
+
+def test_a_part_keeps_only_the_anchors_it_names(tmp_path: Path) -> None:
+    path = tmp_path / "book.md"
+    path.write_text(BOOK)
+    out = tmp_path / "sources"
+
+    assert main(["ingest", str(path), "--out", str(out), "--part", "tw..three"]) == 0
+
+    doc = load(out / "book-two")
+    assert [a.id for a in doc.anchors] == ["two", "three"]
+    assert doc.title == "book: Two"
+    assert doc.profile["part"] == "two..three"
+    assert doc.profile["size"] == {"sections": 2, "words": 4}
+    assert doc.profile["quality"] == {"words_per_section": 2, "low": False}
+    assert main(["check", str(out / "book-two" / "source.yaml")]) == 0
+
+
+@pytest.mark.parametrize(
+    ("span", "listed"),
+    [
+        ("four", "one, two, three"),
+        ("three..one", "one, two, three"),
+        ("t", "two, three"),
+    ],
+)
+def test_a_part_must_name_anchors_in_order(
+    tmp_path: Path, span: str, listed: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "book.md"
+    path.write_text(BOOK)
+    out = tmp_path / "sources"
+
+    assert main(["ingest", str(path), "--out", str(out), "--part", span]) == 2
+
+    assert listed in capsys.readouterr().err
+    assert nothing_in(out)

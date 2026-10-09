@@ -5,7 +5,7 @@
 ```text
 unfold ingest SOURCE --out DIR [--id ID] [--family FAMILY] [--title TITLE]
               [--license LICENSE] [--owner OWNER] [--attribution TEXT]
-              [--subject SUBJECT]
+              [--subject SUBJECT] [--part FIRST[..LAST]]
 ```
 
 `SOURCE` is a file path, a URL, or, with `--family topic`, a phrase such as "the central limit theorem". The command writes `DIR/<id>/source.yaml` and `DIR/<id>/document.md`, and prints the folder.
@@ -16,6 +16,8 @@ unfold ingest SOURCE --out DIR [--id ID] [--family FAMILY] [--title TITLE]
 - `--subject` takes `math`, `computer-science`, `statistics`, `economics`, or `finance`. Without it, the profile says `unknown`.
 - A bare topic has no text, so no license limits its outputs. Its rights say `public_outputs: true`.
 - A web page needs at least 20 words of main text. A page with fewer words holds only menus or a stub.
+- `--part FIRST..LAST` keeps only the anchors from FIRST to LAST, such as one chapter of a book. Each name may be an anchor's id or a start that only one id has.
+- With `--part`, the default id adds the first anchor's id, and the default title adds its title.
 
 | Exit code | Meaning |
 |---|---|

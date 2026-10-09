@@ -15,6 +15,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from unfold.sources import ANCHOR_ID, Meta, SourceDocument
+from unfold.sources.profile import quality
 from unfold.sources.scan import IMAGES
 
 FAMILIES = ["textbook", "slides", "web", "recording", "topic"]
@@ -40,6 +41,8 @@ CONTENT_TYPES = {
 }
 USER_AGENT = "unfold/0.1 (+https://github.com/ChenglinCai/unfold)"
 MAX_BYTES = 500 * 2**20
+# Size keys that count anchors, which a part recounts.
+COUNTS = ("sections", "slides", "pages", "images")
 
 Reader = Callable[[Path, Meta], SourceDocument]
 
@@ -70,6 +73,11 @@ def add_ingest_command(
     ingest.add_argument("--owner", default="")
     ingest.add_argument("--attribution", default="")
     ingest.add_argument("--subject", choices=SUBJECTS)
+    ingest.add_argument(
+        "--part",
+        metavar="FIRST[..LAST]",
+        help="Keep only the anchors from FIRST to LAST, such as one chapter of a book.",
+    )
     ingest.set_defaults(run=run_ingest)
 
 
@@ -85,6 +93,8 @@ def run_ingest(args: argparse.Namespace) -> int:
     with tempfile.TemporaryDirectory() as scratch:
         try:
             doc, original = ingest(args, Path(scratch))
+            if args.part:
+                select(doc, args.part, args)
         except UsageError as problem:
             return fail(str(problem), 2)
         except Exception as problem:  # each reader fails in its own way
@@ -155,6 +165,47 @@ def choose(suffix: str, family: str | None, path: Path) -> tuple[str, Reader]:
     if suffix in AUDIO:
         return family or "recording", recording.read
     raise UsageError(f"unfold has no reader for {suffix or 'files without a suffix'}")
+
+
+def _find(ids: list[str], name: str) -> int:
+    """The position of the anchor that name gives in full, or as a unique start."""
+    if name in ids:
+        return ids.index(name)
+    starts = [index for index, anchor in enumerate(ids) if anchor.startswith(name)]
+    if len(starts) == 1:
+        return starts[0]
+    if starts:
+        found = ", ".join(ids[index] for index in starts[:5])
+        raise UsageError(
+            f"--part names {name!r}, which starts several anchors: {found}"
+        )
+    known = ", ".join(ids[:10]) + (", and more" if len(ids) > 10 else "")
+    raise UsageError(f"--part names {name!r}, which is not an anchor: {known}")
+
+
+def select(doc: SourceDocument, span: str, args: argparse.Namespace) -> None:
+    """Keep the anchors from FIRST to LAST, as `--part FIRST..LAST` names them."""
+    first, _, last = span.partition("..")
+    ids = [anchor.id for anchor in doc.anchors]
+    start, end = _find(ids, first), _find(ids, last or first)
+    if start > end:
+        known = ", ".join(ids[:10]) + (", and more" if len(ids) > 10 else "")
+        raise UsageError(f"--part {span} runs backward. The anchors in order: {known}")
+    doc.anchors = doc.anchors[start : end + 1]
+    words = sum(len(anchor.text.split()) for anchor in doc.anchors)
+    size, checked = doc.profile.get("size"), doc.profile.get("quality")
+    if isinstance(size, dict):
+        counts = {key: len(doc.anchors) for key in size if key in COUNTS}
+        doc.profile["size"] = {**size, **counts, "words": words}
+    if isinstance(checked, dict):
+        units = [key.removeprefix("words_per_") for key in checked if key != "low"]
+        if units:
+            doc.profile["quality"] = quality(words, len(doc.anchors), units[0])
+    doc.profile["part"] = ids[start] if start == end else f"{ids[start]}..{ids[end]}"
+    if args.id is None:
+        doc.id = f"{doc.id}-{ids[start]}"
+    if args.title is None:
+        doc.title = f"{doc.title}: {doc.anchors[0].title}"
 
 
 def describe(args: argparse.Namespace, name: str, family: str) -> Meta:
