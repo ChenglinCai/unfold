@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Added a Word reader to `unfold ingest`. Styled headings start anchors, with a fallback for headings that only bold and size mark.
 - Made the gallery and review pages head each series with its title, when it has one, instead of its id.
 - Made the web and EPUB readers turn MathML into TeX, so OpenStax pages keep their formulas. One page went from 0 of 7 formulas to 7 of 7.
 - Made the LaTeX reader read whole books. It follows includes that a macro hides, keeps restyled structural commands, and no longer takes `\\[2mm]` for math.
