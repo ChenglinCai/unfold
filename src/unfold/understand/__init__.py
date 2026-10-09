@@ -23,6 +23,10 @@ NOTES_FILE = "study-notes.md"
 RECORD_FILE = "job.json"
 DEFAULT_MODEL = "sonnet"
 RETRIES = 3
+# One call reads the whole source. A call carries about 56,000 tokens of fixed
+# overhead, and a word costs about 1.6 tokens, so 60,000 words come to about
+# 150,000 tokens. That leaves room for the reply in a 200,000-token context.
+MAX_WORDS = 60_000
 FENCE = re.compile(r"^```[a-z]*\n(.*?)\n?```$", re.DOTALL)
 
 
@@ -65,6 +69,13 @@ def understand(
     if saved and saved.key == key and saved.outcome == "ok" and _passes(out, doc):
         return Result(out, saved, reused=True)
     record = jobs.Record(key=key, model=model)
+    words = sum(len(anchor.text.split()) for anchor in doc.anchors)
+    if words > MAX_WORDS:
+        record.errors = [
+            f"the source holds {words:,} words, and one call reads at most "
+            f"{MAX_WORDS:,}. Ingest one chapter or part of it instead"
+        ]
+        return _give_up(out, record)
     ask = prompt
     for _ in range(retries + 1):
         try:
@@ -83,6 +94,11 @@ def understand(
             return Result(out, record, reused=False)
         record.tries.append(list(record.errors))
         ask = _retry(prompt, reply.text, record.errors)
+    return _give_up(out, record)
+
+
+def _give_up(out: Path, record: jobs.Record) -> Result:
+    """Save a failed record, and leave any older outputs in place."""
     record.outcome = "failed"
     out.mkdir(exist_ok=True)
     record.save(out / RECORD_FILE)

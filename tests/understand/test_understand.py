@@ -189,3 +189,17 @@ def test_the_command_exits_1_when_every_try_fails(
     monkeypatch.setattr(understand_command, "RUNNER", FakeRunner(BAD, BAD))
 
     assert main(["understand", str(source), "--retries", "1"]) == 1
+
+
+def test_a_source_too_long_for_one_call_stops_before_any_call(
+    source: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    runner = FakeRunner(GOOD)
+    monkeypatch.setattr(understand_command, "RUNNER", runner)
+    monkeypatch.setattr("unfold.understand.MAX_WORDS", 10)
+
+    assert main(["understand", str(source)]) == 1
+
+    error = capsys.readouterr().err
+    assert "stopped before any call" in error and "14 words" in error
+    assert runner.prompts == []

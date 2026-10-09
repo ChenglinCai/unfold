@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made `unfold understand` stop before any call when a source holds over 60,000 words, with a message that asks for one chapter instead.
 - Capped anchor ids from headings at 60 characters, cut between words, so citations of long book headings stay short.
 - Added an EPUB reader to `unfold ingest`. It reads chapters in reading order from the zip, with an XML parser that resolves no entities and a 200 MB cap.
 - Made `unfold ingest` name each LaTeX include that it could not find, in the source profile and in a warning.
