@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Fixed the web reader's formulas: trafilatura escaped their subscript and star marks, so `R_{t}` read as `R\_{t}`.
 - Made the PowerPoint reader keep each slide's equations as TeX, which python-pptx's text reading dropped.
 - Made the Word reader turn equations into TeX, from the OMML that Word keeps for each one.
 - Added a Word reader to `unfold ingest`. Styled headings start anchors, with a fallback for headings that only bold and size mark.

@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### Formulas from web pages lost their subscripts
+
+- What happened: trafilatura escapes Markdown characters inside the formulas that the web reader hands it, so `R_{t}` became `R\_{t}`. TeX prints that as a plain mark, not a subscript. The bug sat in the reader from M2 to PR 39.
+- Cause: the web tests used formulas without subscripts, and no check counted escaped formulas in real sources.
+- Guardrail: the reader undoes those escapes inside each formula, and a test uses subscripts and stars. Real-file checks now count formulas with escapes.
+
 ### A line break looked like the start of a formula
 
 - What happened: the LaTeX reader took `\\[2mm]`, a line break with space, for the display-math opener `\[`. One such break in the OpenIntro book swallowed 550,060 characters as a formula.
