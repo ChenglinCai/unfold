@@ -4,6 +4,12 @@ Each entry names a mistake, its cause, and the guardrail we added. A guardrail i
 
 ## 2026-10-07 and 2026-10-08, during M2 to M8
 
+### A lint failure reached a pull request body, twice
+
+- What happened: PR 11 and PR 29 opened with a description that failed `unfold lint`. Each command piped the lint through `tail`, which always succeeds, so the next step ran anyway.
+- Cause: the check lived in how Claude chained commands, so one careless chain skipped it.
+- Guardrail: Claude now opens and edits pull requests through a script that lints the body first, and sends nothing on any finding.
+
 ### A token budget rested on one run
 
 - What happened: Claude set understand's word limit from one run, and read its 74,631 input tokens as mostly fixed overhead. A second run and a probe call showed about 500 tokens of overhead. The limit held, but its stated reason was wrong in the code, the docs, and PR 25.

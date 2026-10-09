@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 32. M8, growth, now has the domain packs, Chinese subtitles, notebook and LaTeX readers, subtitle tracks in the players, and episode contact sheets.
+- Next: your review of M7 and of items 19 to 32. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, and EPUB books, and ingests one part of a long source.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -77,7 +77,7 @@ This file holds the current state of the work, so that a new session can resume 
 
 ### M8, more source formats
 
-- What to try: `uv run unfold ingest notes.tex --out ../content/sources`, with a LaTeX file of your own. A Beamer deck gets the slides family, and an EPUB book works the same way.
+- What to try: `uv run unfold ingest notes.tex --out ../content/sources`, with a LaTeX file of your own. A Beamer deck gets the slides family, and an EPUB book works the same way. Then open `content/series/division-of-labour/review.html`, a series from three chapters of *The Wealth of Nations*.
 - What to read: `docs/evals/M8-sources-report.md`, then the docstrings of `src/unfold/sources/latex.py` and `src/unfold/sources/epub.py`.
 - Evidence: `tests/sources/test_latex.py`, including the tests that keep includes inside the folder.
 - Walkthrough to ask for: `gather` and `_target`, which decide which files the reader may open.

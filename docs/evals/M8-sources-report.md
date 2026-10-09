@@ -39,6 +39,17 @@ Each finding became a fix and a test before its pull request merged.
 - The notes cover the normal distribution and leave out the later sections. A textbook has the "cut" need, so understand narrows it to one topic.
 - One gap notes that the chapter never says why so many variables come out close to normal, and never mentions the Central Limit Theorem.
 
+## End to end: a series from an EPUB part
+
+`unfold ingest --part` kept chapters I to III of *The Wealth of Nations*, 6,877 words. Understand, build, and render then made a series on the division of labour.
+
+- The plan proposed 6 episodes, and the build made the first, "How Ten Workers Make 48,000 Pins a Day", in 2 segments.
+- The first outline taught concepts that the plan saves for episode 2, and only the eval `episode-stays-in-plan` caught it. PR 29 moved that rule into the outline step.
+- In the rebuild, the outline's first try failed that check, which named each concept. The second try passed, and its second segment walks through the pin factory's eighteen steps.
+- A chart in the first build gave 4,800 pins a day as the output of ten untrained workers. Smith gives 4,800 as each trained worker's share. After the rebuild, each chart number appears in its beat's narration.
+- The rebuild left the old segment's folder on disk, and render and the eval counts still read it. PR 30 fixed both.
+- After the rebuild, every eval passes but one. In segment 1, one of four beats cites the source, under the half that `beats-are-grounded` asks for. Of 13 beats, 2 use a custom visual.
+
 ## Known limits
 
 - A macro that hides an include, such as `\includechapter`, stays unread. Ingest each chapter's file instead.
