@@ -206,3 +206,19 @@ def test_the_review_page_shows_the_episode_sheet_and_the_custom_share(
     page = (folder / "review.html").read_text()
     assert 'src="E01-growth/episode-sheet.png"' in page
     assert "custom visuals: 1 of 2 beats (50 percent)" in page
+
+
+def test_pages_show_a_series_title_when_it_has_one(tmp_path: Path) -> None:
+    folder = make_series(tmp_path, "open", public=True)
+    spec = yaml.safe_load((folder / "series.yaml").read_text())
+    (folder / "series.yaml").write_text(
+        yaml.safe_dump({**spec, "title": "Why money grows"})
+    )
+    out = tmp_path / "site"
+
+    assert main(["gallery", str(folder), "--out", str(out)]) == 0
+    assert main(["review", str(folder)]) == 0
+
+    assert "<h2>Why money grows</h2>" in (out / "index.html").read_text()
+    assert "<h1>Why money grows</h1>" in (folder / "review.html").read_text()
+    assert (out / "open" / "E01-growth" / "episode.mp4").exists()
