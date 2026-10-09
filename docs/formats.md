@@ -28,7 +28,7 @@ Examples: `examples/econ-supply-demand/source.yaml`, and `content/cis5200/manife
 
 `unfold ingest` writes one folder per source. M1's hand-written manifests use source/v0, and every ingested source uses source/v1. It reads PDF files, PowerPoint decks, images of slides, web pages, Markdown, Jupyter notebooks, LaTeX files, and recordings. A notebook keeps its Markdown, its code as fenced blocks, and the first 20 lines of each cell's printed output.
 
-A LaTeX file keeps its sections as anchors and its formulas as TeX. Its own macros expand, so each formula stands alone. Ingest follows `\input`, `\include`, and `\subfile` only to `.tex` files inside the main file's folder. A macro that hides an include, such as `\includechapter`, stays unread, so ingest each chapter's file instead.
+A LaTeX file keeps its sections as anchors and its formulas as TeX. Its own macros expand, so each formula stands alone. Theorems, lists, tables, and figure captions become Markdown. A Beamer deck gets the slides family, and each frame's title starts an anchor. Ingest follows `\input`, `\include`, and `\subfile` only to `.tex` files inside the main file's folder. A macro that hides an include, such as `\includechapter`, stays unread, so ingest each chapter's file instead.
 
 | File | What it holds |
 |---|---|

@@ -117,11 +117,11 @@ def ingest(
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a file")
         stem, suffix = path.stem, path.suffix
-    family, reader = choose(suffix, args.family)
+    family, reader = choose(suffix, args.family, path)
     return reader(path, describe(args, stem, family)), original
 
 
-def choose(suffix: str, family: str | None) -> tuple[str, Reader]:
+def choose(suffix: str, family: str | None, path: Path) -> tuple[str, Reader]:
     """Pick the reader for a file type, and the family that the type implies."""
     from unfold.sources import deck, latex, notebook, pdf, recording, scan, web
 
@@ -137,7 +137,7 @@ def choose(suffix: str, family: str | None) -> tuple[str, Reader]:
     if suffix in NOTEBOOKS:
         return family or "web", notebook.read_notebook
     if suffix in LATEX:
-        return family or "textbook", latex.read_latex
+        return family or latex.family(path), latex.read_latex
     if suffix in PAGES:
         return family or "web", web.read_page
     if suffix in AUDIO:

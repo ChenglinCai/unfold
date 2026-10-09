@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-08
 
+- Made the LaTeX reader turn theorems, lists, tables, figures, and Beamer frames into Markdown. A Beamer deck now gets the slides family.
 - Made the LaTeX reader expand each document's own macros, such as `\newcommand` and `\DeclareMathOperator`, so each formula stands alone.
 - Added a LaTeX reader to `unfold ingest`. It follows includes only inside the main file's folder, keeps formulas as TeX, and turns sections into anchors.
 - Added a scene check that compares a histogram's stated mean and spread with its bins, and regenerated the one golden scene that failed it.
