@@ -18,6 +18,11 @@ MIN_WORDS = 20
 # Long ids make long citations, such as [§book-i-of-the-causes-of-improvement-in...].
 MAX_ID = 60
 TEX_WRAPPER = re.compile(r"^\{\\(?:display|text)style\s*(.*)\}$", re.DOTALL)
+# trafilatura escapes Markdown characters even inside a formula, so R_{t} arrives
+# as R\_{t}, which TeX reads as a literal underscore. Inside each formula, the
+# reader undoes those escapes.
+FORMULA = re.compile(r"(?<!\\)\$\$.+?(?<!\\)\$\$|(?<!\\)\$[^$\n]+?(?<!\\)\$", re.DOTALL)
+ESCAPED = re.compile(r"\\([_*])")
 
 
 def _with_class(tag: str, name: str) -> str:
@@ -147,6 +152,7 @@ def read_html(html: str, meta: Meta) -> SourceDocument:
     words = len((markdown or "").split())
     if markdown is None or words < MIN_WORDS:
         raise ValueError(f"the page has no main text, only {words} words")
+    markdown = FORMULA.sub(lambda m: ESCAPED.sub(r"\1", m.group(0)), markdown)
     return _document(markdown, meta, "html")
 
 

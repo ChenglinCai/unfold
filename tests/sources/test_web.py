@@ -119,3 +119,17 @@ def test_a_hash_inside_a_code_fence_is_not_a_heading(tmp_path: Path) -> None:
 
     assert [a.id for a in doc.anchors] == ["setup", "use"]
     assert "# install it" in doc.anchors[0].text
+
+
+def test_formulas_keep_their_underscores_and_stars() -> None:
+    page = (
+        "<html><body><article><h1>Present value</h1><p>Each future amount counts for "
+        'less today, and the formula <math alttext="R_{t} x^{*}"><mi>R</mi></math> '
+        "shows one term of the sum.</p><p>Many pages write the formula as text, such as "
+        "$$PV = \\sum_{t=1}^{n} R_{t}$$ for the whole stream of amounts.</p>"
+        "</article></body></html>"
+    )
+
+    text = read_html(page, META).text()
+
+    assert "$R_{t} x^{*}$" in text and "$$PV = \\sum_{t=1}^{n} R_{t}$$" in text
