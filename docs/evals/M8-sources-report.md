@@ -7,18 +7,18 @@
 | Reader | File | License | Anchors | Words | Seconds |
 |---|---|---|---|---|---|
 | LaTeX | OpenIntro Statistics, chapter 4 | CC BY-SA 3.0 | 16 | 9,124 | 0.01 |
-| LaTeX | OpenIntro Statistics, whole book | CC BY-SA 3.0 | 9 | 23,749 | 0.06 |
+| LaTeX | OpenIntro Statistics, whole book | CC BY-SA 3.0 | 205 | 168,179 | 0.46 |
 | LaTeX | arXiv 2107.07511, a tutorial on conformal prediction | Not checked, so no quotes | 48 | 19,142 | 0.02 |
 | LaTeX, Beamer | The learnlatex beginners' course deck | None stated, so no quotes | 47 | 2,010 | under 0.01 |
 | EPUB | *The Wealth of Nations*, from Project Gutenberg | Public domain | 66 | 383,485 | 0.04 |
 
 - The paper defines 41 macros. After expansion, none of their names stays in the output.
 - The deck gets the slides family, and each titled frame starts an anchor.
-- The whole OpenIntro book yields only its front and back matter. A macro, `\includechapter`, pulls in each chapter, and the reader does not expand macros before it follows includes.
+- The whole OpenIntro book reads in full. A macro, `\includechapter`, pulls in each chapter, and the reader expands it before it follows the includes.
 
 ## What the real files found
 
-Each finding became a fix and a test before its pull request merged.
+Each finding became a fix and a test. The last three came from reading the whole OpenIntro book.
 
 | Finding | Fix |
 |---|---|
@@ -29,6 +29,9 @@ Each finding became a fix and a test before its pull request merged.
 | trafilatura dropped the headings and short chapters of EPUB books | The EPUB reader converts every block itself, in PR 23 |
 | A long heading made a 170-character anchor id | Ids stop at 60 characters, in PR 24 |
 | A whole book would overflow one understand call | Understand stops before any call over 60,000 words, in PR 25 |
+| A macro, `\includechapter`, hid each chapter's include | The reader expands such macros, then follows the includes, in PR 32 |
+| The book redefines `\section` for its look, and expansion erased every heading | The reader keeps its own meaning for structural commands, in PR 32 |
+| A line break with space, such as `\\[2mm]`, opened a formula that swallowed most of the book | A math opener after a backslash no longer counts, in PR 32 |
 
 ## End to end: understand on a LaTeX source
 
@@ -52,8 +55,7 @@ Each finding became a fix and a test before its pull request merged.
 
 ## Known limits
 
-- A macro that hides an include, such as `\includechapter`, stays unread. Ingest each chapter's file instead.
-- A chapter whose includes name paths from the book's folder loses those files. Ingest names them, so the loss is visible.
+- A chapter whose includes name paths from the book's folder loses those files when ingested alone. Ingest names them, and the book's main file reads them all.
 - An EPUB formula in MathML without TeX keeps only its plain text.
 - An EPUB with encrypted chapters fails with a message, because unfold cannot read them.
 - Understand reads at most 60,000 words, so a whole book needs one chapter at a time.
