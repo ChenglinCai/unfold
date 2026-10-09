@@ -4,8 +4,8 @@ A .docx file is a zip of XML parts. The reader reads the main document and its
 styles straight from the zip, through an archive that resolves no entities and
 stops after MAX_BYTES. A paragraph is a heading when its style, or a style that
 the style builds on, is named "heading N" or "Title", or sets an outline level.
-A table of contents, deleted text, and field codes stay out, and an equation
-keeps its plain text.
+A table of contents, deleted text, and field codes stay out, and each equation
+becomes TeX.
 """
 
 import posixpath
@@ -19,6 +19,7 @@ from lxml import etree  # pyright: ignore[reportAttributeAccessIssue]
 
 from unfold.sources import Meta, SourceDocument
 from unfold.sources.archive import Archive
+from unfold.sources.omml import omml_tex
 from unfold.sources.web import _document, markdown_table
 
 MAX_BYTES = 200 * 2**20
@@ -67,11 +68,6 @@ def heading_levels(styles: etree._Element | None) -> dict[str, int]:
     return levels
 
 
-def _math_text(node: etree._Element) -> str:
-    """An equation's plain text. It keeps every symbol, but not the structure."""
-    return " ".join("".join(t.text or "" for t in node.iter(f"{M}t")).split())
-
-
 def _inline(node: etree._Element, parts: list[str]) -> None:
     """Append the text and equations of a paragraph, in order."""
     for child in node:
@@ -83,9 +79,9 @@ def _inline(node: etree._Element, parts: list[str]) -> None:
         elif tag == f"{W}noBreakHyphen":
             parts.append("-")
         elif tag == f"{M}oMathPara":
-            parts += [f" $${_math_text(math)}$$ " for math in child.iter(f"{M}oMath")]
+            parts += [f" $${omml_tex(math)}$$ " for math in child.iter(f"{M}oMath")]
         elif tag == f"{M}oMath":
-            parts.append(f"${_math_text(child)}$")
+            parts.append(f"${omml_tex(child)}$")
         elif tag not in HIDDEN:
             _inline(child, parts)
 
