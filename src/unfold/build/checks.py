@@ -40,7 +40,10 @@ def check_outline(
     reply: OutlineReply,
     anchors: set[str],
     earlier: frozenset[str] | set[str] = frozenset(),
+    later: frozenset[str] | set[str] = frozenset(),
 ) -> list[str]:
+    """Earlier names segments that callbacks may reach. Later names the concepts
+    that the plan gives to later episodes, which this episode must not teach."""
     ids = [segment.id for segment in reply.segments]
     errors = [f"segment {id_} appears twice" for id_ in repeated(ids)]
     low, high = SECONDS
@@ -58,6 +61,12 @@ def check_outline(
             f"{segment.id}: a callback names {callback.to}, which the outline lacks"
             for callback in segment.callbacks
             if callback.to not in ids and callback.to not in earlier
+        ]
+        errors += [
+            f"{segment.id}: establishes {item}, which the plan saves for a later "
+            "episode. Leave it for that episode"
+            for item in segment.establishes
+            if item.split(":", 1)[-1] in later
         ]
     for transition in reply.transitions:
         errors += [

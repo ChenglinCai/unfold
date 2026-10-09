@@ -135,6 +135,7 @@ def outline_job(
     episode: PlannedEpisode,
     previously: str = "",
     earlier: frozenset[str] = frozenset(),
+    later: frozenset[str] = frozenset(),
 ) -> Job:
     output = ctx.folder / episode.id / "outline.yaml"
     listing = "\n".join(f"- {ref}: {title}" for ref, (title, _) in ctx.anchors.items())
@@ -152,7 +153,7 @@ def outline_job(
 
     def check(reply: BaseModel) -> list[str]:
         assert isinstance(reply, OutlineReply)
-        return check_outline(reply, set(ctx.anchors), earlier)
+        return check_outline(reply, set(ctx.anchors), earlier, later)
 
     def render(reply: BaseModel) -> str:
         assert isinstance(reply, OutlineReply)

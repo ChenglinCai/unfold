@@ -199,10 +199,12 @@ def build(
         count = f"{spec.episodes} of {len(plan.episodes)}"
         result.notes.append(f"plan.yaml: building {count} episodes")
     built: list[OutlineV0] = []
-    for episode in plan.episodes[: spec.episodes]:
+    for index, episode in enumerate(plan.episodes[: spec.episodes]):
         earlier = frozenset(s.id for o in built for s in o.segments)
         previously = ledger_text(build_ledger(spec.id, built)) if built else ""
-        job = outline_job(ctx, episode, previously, earlier)
+        owned = {c for e in plan.episodes[index + 1 :] for c in e.concepts}
+        later = frozenset(owned - set(episode.concepts))
+        job = outline_job(ctx, episode, previously, earlier, later)
         if not run(job):
             return result
         outline = OutlineV0.model_validate(read_data(job.output))

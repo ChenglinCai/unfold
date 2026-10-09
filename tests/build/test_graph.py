@@ -331,3 +331,30 @@ def test_episode_two_sees_the_ledger_of_episode_one(series: Path) -> None:
     assert "<previously>" in outlines[1] and "E01-center" in outlines[1]
     ledger = yaml.safe_load((series / "ledger.yaml").read_text())
     assert [e["episode"] for e in ledger["episodes"]] == ["E01-center", "E02-spread"]
+
+
+def test_an_outline_that_teaches_a_later_concept_retries(series: Path) -> None:
+    teaches_variance = {
+        **segment(2, "variance", "demo#p-2"),
+        "establishes": ["idea:variance"],
+    }
+    eager: dict[str, object] = {  # variance is the plan's concept for E02
+        **REPLIES["OutlineReply"],
+        "segments": [segment(1, "mean", "demo#p-1"), teaches_variance],
+    }
+    runner = StepRunner()
+
+    def first_outline_eager(
+        prompt: str, *, system: str, model: str, schema: object = None
+    ) -> jobs.Reply:
+        is_outline = isinstance(schema, dict) and schema.get("title") == "OutlineReply"
+        if is_outline and "OutlineReply" not in runner.calls:
+            runner.calls.append("OutlineReply")
+            return jobs.Reply(json.dumps(eager), 10, 5, 0.1, eager)
+        return runner(prompt, system=system, model=model, schema=schema)
+
+    result = build(series, first_outline_eager, until="outline")
+
+    assert not result.failed
+    record = series / "records" / "E01-center" / "outline.yaml.json"
+    assert "saves for a later episode" in json.loads(record.read_text())["tries"][0][0]

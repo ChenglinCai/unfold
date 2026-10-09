@@ -122,3 +122,15 @@ def test_a_callback_may_name_a_segment_of_an_earlier_episode() -> None:
         "s2-part: a callback names s1-old, which the outline lacks"
     ]
     assert check_outline(later, ANCHORS, earlier={"s1-old"}) == []
+
+
+def test_an_outline_leaves_later_episodes_their_concepts() -> None:
+    taught = outline(
+        [segment(1, establishes=["idea:mean", "idea:variance"]), segment(2)], []
+    )
+
+    assert check_outline(taught, ANCHORS) == []
+    assert check_outline(taught, ANCHORS, later={"variance"}) == [
+        "s1-part: establishes idea:variance, which the plan saves for a later episode."
+        " Leave it for that episode"
+    ]
