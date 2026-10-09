@@ -22,9 +22,10 @@ SUBJECTS = ["math", "computer-science", "statistics", "economics", "finance"]
 TEXT = {".md", ".markdown", ".txt"}
 NOTEBOOKS = {".ipynb"}
 LATEX = {".tex"}
+BOOKS = {".epub"}
 PAGES = {".html", ".htm"}
 AUDIO = {".ogg", ".oga", ".mp3", ".wav", ".m4a", ".aiff", ".flac", ".mp4", ".webm"}
-KNOWN = {".pdf", ".pptx"} | TEXT | NOTEBOOKS | LATEX | PAGES | AUDIO | IMAGES
+KNOWN = {".pdf", ".pptx"} | TEXT | NOTEBOOKS | LATEX | BOOKS | PAGES | AUDIO | IMAGES
 CONTENT_TYPES = {
     "application/pdf": ".pdf",
     "text/html": ".html",
@@ -32,6 +33,7 @@ CONTENT_TYPES = {
     "text/plain": ".txt",
     "application/x-tex": ".tex",
     "text/x-tex": ".tex",
+    "application/epub+zip": ".epub",
     "audio/ogg": ".ogg",
     "audio/mpeg": ".mp3",
     "audio/wav": ".wav",
@@ -131,7 +133,7 @@ def ingest(
 
 def choose(suffix: str, family: str | None, path: Path) -> tuple[str, Reader]:
     """Pick the reader for a file type, and the family that the type implies."""
-    from unfold.sources import deck, latex, notebook, pdf, recording, scan, web
+    from unfold.sources import deck, epub, latex, notebook, pdf, recording, scan, web
 
     suffix = suffix.lower()
     if suffix == ".pdf":
@@ -144,6 +146,8 @@ def choose(suffix: str, family: str | None, path: Path) -> tuple[str, Reader]:
         return family or "web", web.read_markdown
     if suffix in NOTEBOOKS:
         return family or "web", notebook.read_notebook
+    if suffix in BOOKS:
+        return family or "textbook", epub.read_epub
     if suffix in LATEX:
         return family or latex.family(path), latex.read_latex
     if suffix in PAGES:

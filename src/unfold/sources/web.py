@@ -67,6 +67,17 @@ def sections(markdown: str) -> list[Anchor]:
     return anchors
 
 
+def markdown_table(rows: list[list[str]]) -> str:
+    """Rows of cells as a Markdown table, with the first row as the header."""
+    rows = [row for row in rows if any(row)]
+    if not rows:
+        return ""
+    width = max(len(row) for row in rows)
+    lines = ["| " + " | ".join(row + [""] * (width - len(row))) + " |" for row in rows]
+    lines.insert(1, "|" + " --- |" * width)
+    return "\n".join(lines)
+
+
 def _document(markdown: str, meta: Meta, file_format: str) -> SourceDocument:
     anchors = sections(markdown)
     words = sum(len(a.text.split()) for a in anchors)
