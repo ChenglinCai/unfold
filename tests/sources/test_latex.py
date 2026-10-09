@@ -56,6 +56,29 @@ def test_unknown_commands_keep_only_their_text() -> None:
     )
 
 
+def test_the_documents_own_macros_expand() -> None:
+    text = latex_markdown(
+        r"""\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\inner}[2][x]{\langle #1, #2 \rangle}
+\renewcommand\vec[1]{\mathbf{#1}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\def\E{\mathbb{E}}
+\newcommand{\Rn}{\ensuremath{\mathbb{R}^n}}
+Fit $\argmin_w \E\norm{\vec w}$ with $\inner{y}$ and $\inner[a]{b}$ in \Rn{} here.
+"""
+    )
+
+    assert r"$\operatorname*{arg\,min}_w \mathbb{E}\lVert \mathbf{w} \rVert$" in text
+    assert r"$\langle x, y \rangle$" in text and r"$\langle a, b \rangle$" in text
+    assert r"in $\mathbb{R}^n$ here." in text
+    assert "newcommand" not in text and "def" not in text
+
+
+def test_macros_that_expand_forever_fail() -> None:
+    with pytest.raises(ValueError, match="expand"):
+        latex_markdown("\\newcommand{\\twice}{\\twice\\twice}\n$\\twice$")
+
+
 def test_code_stays_as_written() -> None:
     text = latex_markdown(
         "\\begin{lstlisting}[language=Python]\nx = 50 % 7  {not a group}\n"
