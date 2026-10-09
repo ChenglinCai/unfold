@@ -7,6 +7,7 @@ import trafilatura
 from lxml import html as lxml_html
 
 from unfold.sources import Anchor, Meta, SourceDocument, build
+from unfold.sources.mathml import mathml_tex
 from unfold.sources.profile import quality
 
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
@@ -103,11 +104,13 @@ def prepare(html: str) -> lxml_html.HtmlElement:
     """Keep each formula's TeX, and drop wiki clutter, before extraction.
 
     Pages such as Wikipedia's put TeX in the `alttext` of each `<math>` element.
+    Pages such as OpenStax's hold only MathML, which `mathml_tex` turns into TeX.
     trafilatura drops `<math>`, so without this step every formula vanishes.
     """
     tree = lxml_html.fromstring(html)
     for math in list(tree.iter("math")):
         tex = TEX_WRAPPER.sub(r"\1", (math.get("alttext") or "").strip()).strip()
+        tex = tex or mathml_tex(math)
         wrapper = next(
             (
                 span
@@ -119,8 +122,10 @@ def prepare(html: str) -> lxml_html.HtmlElement:
         parent = wrapper.getparent()
         if not tex or parent is None:
             continue
-        formula = lxml_html.Element("span")
-        formula.text = f"${tex}$"
+        block = math.get("display") == "block"
+        # A block formula becomes a paragraph, which the extractor keeps.
+        formula = lxml_html.Element("p" if block else "span")
+        formula.text = f"$${tex}$$" if block else f"${tex}$"
         formula.tail = wrapper.tail
         parent.replace(wrapper, formula)
     for xpath in CLUTTER:
