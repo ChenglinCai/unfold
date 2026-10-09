@@ -16,16 +16,13 @@ import urllib.parse
 import zipfile
 from pathlib import Path
 
-from lxml import etree  # pyright: ignore[reportAttributeAccessIssue]
 from lxml import html as lxml_html
 
 from unfold.sources import Meta, SourceDocument
+from unfold.sources.archive import Archive
 from unfold.sources.web import _document, markdown_table, prepare
 
 MAX_BYTES = 200 * 2**20
-PARSER = etree.XMLParser(
-    resolve_entities=False, no_network=True, load_dtd=False, huge_tree=False
-)
 CHAPTERS = {"application/xhtml+xml", "text/html"}
 # An XML declaration and a DOCTYPE, whose inline entities the HTML parser would print.
 PROLOG = re.compile(
@@ -43,25 +40,7 @@ BLOCKS = (
 )
 
 
-class _Book:
-    """A zip that counts what it unpacks, and stops at MAX_BYTES."""
-
-    def __init__(self, archive: zipfile.ZipFile) -> None:
-        self.archive, self.left = archive, MAX_BYTES
-
-    def read(self, name: str) -> bytes:
-        with self.archive.open(name) as member:
-            data = member.read(self.left + 1)
-        self.left -= len(data)
-        if self.left < 0:
-            raise ValueError(f"the EPUB unpacks to more than {MAX_BYTES // 2**20} MB")
-        return data
-
-    def xml(self, name: str) -> etree._Element:
-        return etree.fromstring(self.read(name), PARSER)
-
-
-def spine(book: _Book) -> list[str]:
+def spine(book: Archive) -> list[str]:
     """The names of the book's chapters inside the zip, in reading order."""
     rootfile = book.xml("META-INF/container.xml").find(".//{*}rootfile")
     package_name = rootfile.get("full-path") if rootfile is not None else None
@@ -163,7 +142,7 @@ def chapter_markdown(xhtml: str) -> str:
 
 def read_epub(path: Path, meta: Meta) -> SourceDocument:
     with zipfile.ZipFile(path) as archive:
-        book = _Book(archive)
+        book = Archive(archive, MAX_BYTES, "EPUB")
         present = set(archive.namelist())
         names = [name for name in spine(book) if name in present]
         if "META-INF/encryption.xml" in present:
