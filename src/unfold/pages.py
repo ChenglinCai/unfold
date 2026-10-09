@@ -74,9 +74,14 @@ def _page(title: str, body: list[str]) -> str:
     return f"<!doctype html>\n<html><head>{head}</head><body>\n{text}\n</body></html>\n"
 
 
+def _heading(series: dict[str, object], folder: Path) -> str:
+    """A series' title, or its id when it has no title."""
+    return str(series.get("title") or series.get("id", folder.name))
+
+
 def review_html(folder: Path) -> str:
     series = _yaml(folder / "series.yaml")
-    body = [f"<h1>{escape(str(series.get('id', folder.name)))}</h1>"]
+    body = [f"<h1>{escape(_heading(series, folder))}</h1>"]
     body.append(f"<p>Audience: {escape(str(series.get('audience', '')))}</p>")
     try:
         verdicts = evaluate(folder)
@@ -169,7 +174,8 @@ def gallery(folders: list[Path], out: Path) -> list[str]:
     """Copy each public series' episodes into a static site, and report each choice."""
     lines, sections = [], []
     for folder in folders:
-        name = str(_yaml(folder / "series.yaml").get("id", folder.name))
+        spec = _yaml(folder / "series.yaml")
+        name = str(spec.get("id", folder.name))
         if not plain(name):
             lines.append(f"skipped {name}: its id is not a plain name")
             continue
@@ -177,7 +183,8 @@ def gallery(folders: list[Path], out: Path) -> list[str]:
         if not allowed:
             lines.append(f"skipped {name}: {notes[0]}")
             continue
-        section = [f"<h2>{escape(name)}</h2>"] + [f"<p>{escape(n)}</p>" for n in notes]
+        heading = f"<h2>{escape(_heading(spec, folder))}</h2>"
+        section = [heading] + [f"<p>{escape(n)}</p>" for n in notes]
         for episode in _episodes(folder):
             video = folder / episode["id"] / "episode.mp4"
             if not video.is_file():
