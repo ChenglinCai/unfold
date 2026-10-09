@@ -48,11 +48,13 @@ def ingest(
     attribution: str = "",
     family: str = "",
     title: str = "",
+    part: str = "",
 ) -> str:
     """Turn a file, a URL, or a topic into a source document in a private folder.
 
     The license decides whether videos from the source may be public, and an
-    unknown license keeps them private. Set family to topic for a bare topic.
+    unknown license keeps them private. Set family to topic for a bare topic. Set
+    part to FIRST..LAST to keep one span of anchors, such as one chapter of a book.
     """
     options = {
         "--license": license,
@@ -60,6 +62,7 @@ def ingest(
         "--attribution": attribution,
         "--family": family,
         "--title": title,
+        "--part": part,
     }
     given = [part for flag, value in options.items() if value for part in (flag, value)]
     return unfold("ingest", "--out", out, *given, "--", source)
