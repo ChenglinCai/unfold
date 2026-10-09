@@ -55,6 +55,20 @@ def test_repeated_headings_get_distinct_ids(tmp_path: Path) -> None:
     assert [a.id for a in read_markdown(path, META).anchors] == ["example", "example-2"]
 
 
+def test_long_headings_get_short_ids(tmp_path: Path) -> None:
+    title = "Book I. Of the causes of improvement in the productive powers of labour"
+    path = tmp_path / "notes.md"
+    path.write_text(f"## {title}\n\nOne.\n\n## {title}\n\nTwo.\n")
+
+    first, second = [a.id for a in read_markdown(path, META).anchors]
+
+    assert len(first) <= 60 and first.startswith("book-i-of-the-causes")
+    assert "book-i-of-the-causes-of-improvement-in-the-productive-powers-of-labour".startswith(
+        f"{first}-"
+    )
+    assert second == f"{first}-2"
+
+
 def test_a_web_page_keeps_its_article_and_drops_its_clutter() -> None:
     doc = read_html(PAGE, META)
     text = " ".join(a.text for a in doc.anchors)

@@ -14,6 +14,8 @@ HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
 FENCE = re.compile(r"^\s*(```|~~~)")
 # Fewer words of main text means a menu or a stub, not an article.
 MIN_WORDS = 20
+# Long ids make long citations, such as [§book-i-of-the-causes-of-improvement-in...].
+MAX_ID = 60
 TEX_WRAPPER = re.compile(r"^\{\\(?:display|text)style\s*(.*)\}$", re.DOTALL)
 
 
@@ -31,7 +33,11 @@ CLUTTER = [
 
 
 def _slug(title: str, seen: set[str]) -> str:
+    """An anchor id from a heading: at most MAX_ID characters, cut between words."""
     base = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-") or "section"
+    if len(base) > MAX_ID:
+        cut = base[: MAX_ID + 1]
+        base = cut.rsplit("-", 1)[0] if "-" in cut else base[:MAX_ID]
     candidate, number = base, 2
     while candidate in seen:
         candidate, number = f"{base}-{number}", number + 1
