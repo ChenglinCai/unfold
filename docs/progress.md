@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 33. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source.
+- Next: carry out the decisions of 2026-10-11, which the last section lists. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -118,3 +118,28 @@ This file holds the current state of the work, so that a new session can resume 
 31. `unfold understand` now stops before any call when a source holds over 60,000 words, because one call reads the whole source. Prose ran about 1.8 tokens a word in a measured run, and text full of TeX may run near 2.5. So 60,000 words stay under about 150,000 tokens, which leaves room in a 200,000-token context. A whole book, such as *The Wealth of Nations* at 383,485 words, needs one chapter at a time. Please confirm the limit.
 32. `unfold ingest --part FIRST..LAST` keeps one span of a source's anchors, so one chapter of a long book can feed a series. Each name may be an anchor's id or a start that only one id has. Please confirm the option's name and form.
 33. Two golden web sources hold formulas with escaped subscripts. Net present value has 26 of 52 such formulas, and Euler's identity has 2 of 45. PR 39 fixes the reader, but the stored sources keep the escapes. Ingesting them again would change their understand keys and rebuild both series. Please decide when.
+
+## Decisions made on 2026-10-11
+
+The maintainer answered every open item. Each line names the item and the choice.
+
+- Items 1 to 4, 6 to 8, 11, 12, 16, 20, and 24: accepted as written.
+- Item 5: Claude moves the project out of iCloud, to `~/Code/3B1B`.
+- Item 9: the FFmpeg note is enough until someone packages unfold as an app.
+- Item 10: a bare topic's videos may stay public, after a fact check of their flagged claims.
+- Item 13: principle II now lets one job write a fixed set of files from one reply. The constitution is now 1.1.0.
+- Item 14: a key covers what its output depends on, and only scene jobs add the component and manim versions.
+- Item 15: Claude's M4 error analysis stands.
+- Item 17: a chart may show numbers from its narration, or numbers that follow from them by arithmetic, but never invented ones.
+- Item 18: the voice must sound fully human, with nothing robotic. Claude researches the options, and the maintainer can supply an API key.
+- Item 19: the package becomes `unfold-video`, and the command stays `unfold`.
+- Item 21: the plugin keeps installing the audio extra.
+- Item 22: Cowork moves to a later release, so the M7 gate covers Claude Code only.
+- Item 23: the domain-pack design calls stand.
+- Item 28: reports go through GitHub's private vulnerability reporting.
+- Item 29: the maintainer accepts Claude's reading of the Chinese subtitles, so the spec's human reading stays open.
+- Item 30: the LaTeX include rule stands.
+- Item 31: the 60,000-word limit stands.
+- Item 32: `--part` keeps its name and form.
+- Item 33: fix the two golden sources now, and rebuild both series.
+- Dependabot PR 4: merge it after CI passes.

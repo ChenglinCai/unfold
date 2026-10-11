@@ -2,6 +2,10 @@
 
 One line for each finished task, newest first.
 
+## 2026-10-11
+
+- Recorded the maintainer's answers to all 31 open decisions, and amended principle II to version 1.1.0.
+
 ## 2026-10-08
 
 - Fixed the web reader's formulas: trafilatura escaped their subscript and star marks, so `R_{t}` read as `R\_{t}`.

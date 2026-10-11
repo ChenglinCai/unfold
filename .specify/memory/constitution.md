@@ -15,8 +15,9 @@ Rationale: contributors cost nothing, secrets stay out of CI, and nobody pays fo
 ### II. Code Keeps Track, and Agents Write
 
 - Python owns the build graph, the saved results, and every file write.
-- Each language-model step MUST be a job. Python builds its input files, and the runner returns text. Python then checks the text before it writes the one output file.
-- The key of a saved result MUST cover the inputs, the prompt version, the model, the component-library version, and the manim version.
+- Each language-model step MUST be a job. Python builds its input files, and the runner returns text. Python then checks the text before it writes the job's outputs.
+- A job writes one output file, or a fixed set of files that one reply holds, such as the knowledge map and the study notes.
+- The key of a saved result MUST cover everything its output depends on: the inputs, the prompt version, and the model. Scene jobs also cover the component-library version and the manim version.
 
 Rationale: runs are repeatable, a crash resumes where it stopped, and unchanged work costs no tokens.
 
@@ -139,4 +140,4 @@ Review Checklist. Before anyone presents a plan, doc, or pull request, they chec
 - Each `/speckit-plan` checks its plan against these principles, and each `/speckit-converge` checks its result.
 - The maintainer reviews this constitution at each milestone retro.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-06 | **Last Amended**: 2026-10-06
+**Version**: 1.1.0 | **Ratified**: 2026-10-06 | **Last Amended**: 2026-10-11
