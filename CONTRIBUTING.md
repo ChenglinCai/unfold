@@ -46,3 +46,5 @@ A component is a tested, reusable animation, and a domain pack is a set of compo
 ## Report a bug or suggest an idea
 
 Use the issue forms. For a bug, include the output of `uv run unfold doctor`, so we can see your machine.
+
+For a security problem, follow [SECURITY.md](SECURITY.md) instead, so the report stays private. Everyone here follows the [code of conduct](CODE_OF_CONDUCT.md).
