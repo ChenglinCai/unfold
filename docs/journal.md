@@ -2,6 +2,10 @@
 
 One line for each finished task, newest first.
 
+## 2026-10-11
+
+- Added SECURITY.md and CODE_OF_CONDUCT.md, which send every report through GitHub's private reporting, and turned that setting on.
+
 ## 2026-10-08
 
 - Fixed the web reader's formulas: trafilatura escaped their subscript and star marks, so `R_{t}` read as `R\_{t}`.
