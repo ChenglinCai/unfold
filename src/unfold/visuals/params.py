@@ -11,9 +11,10 @@ from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_valid
 
 from unfold.fields import Model, Slug
 from unfold.fields import Text as NonEmpty
+from unfold.visuals.neighbors import tied
 
 # Raise this whenever a component draws differently, so saved scenes rebuild.
-VERSION = "4"
+VERSION = "5"
 REGION_NAMES = ("full", "plot", "top", "bottom", "left", "right")
 Region = Literal["full", "plot", "top", "bottom", "left", "right"]
 
@@ -57,6 +58,26 @@ class ScatterPlot(Model):
     y_label: str = ""
     # An optional line, as its slope and intercept.
     line: Pair | None = None
+    # An optional neighborhood: the k points nearest the query point.
+    query: Pair | None = None
+    k: Annotated[int, Field(ge=1)] | None = None
+
+    @model_validator(mode="after")
+    def clear_neighborhood(self) -> Self:
+        if (self.query is None) != (self.k is None):
+            raise ValueError("a neighborhood needs both a query point and k")
+        if self.query is None or self.k is None:
+            return self
+        if self.k > len(self.points):
+            raise ValueError(
+                f"k is {self.k}, but the plot has {len(self.points)} points"
+            )
+        if tied(self.points, self.query, self.k):
+            raise ValueError(
+                f"points tie for place {self.k} of the nearest, "
+                "so choose another k or query point"
+            )
+        return self
 
 
 class Event(Model):

@@ -32,6 +32,8 @@ SAMPLES: dict[str, dict[str, object]] = {
         "x_label": "size",
         "y_label": "price",
         "line": [0.8, 1.2],
+        "query": [3, 3.5],
+        "k": 2,
     },
     "timeline": {
         "component": "timeline",

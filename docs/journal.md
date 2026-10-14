@@ -2,6 +2,10 @@
 
 One line for each finished task, newest first.
 
+## 2026-10-14
+
+- Added a neighborhood to the scatter plot: a query point and k ring the k nearest points, inside a circle. Code finds the neighbors and the vote, and refuses ties. The component version rose to 5.
+
 ## 2026-10-08
 
 - Fixed the web reader's formulas: trafilatura escaped their subscript and star marks, so `R_{t}` read as `R\_{t}`.

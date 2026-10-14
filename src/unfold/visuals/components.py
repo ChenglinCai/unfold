@@ -25,6 +25,7 @@ from manim import (
     DashedVMobject,
     Dot,
     DoubleArrow,
+    Ellipse,
     Line,
     MathTex,
     Mobject,
@@ -43,6 +44,7 @@ from pydantic import BaseModel
 from unfold.visuals import theme
 from unfold.visuals.finance import present_value, shown
 from unfold.visuals.layout import REGIONS, box_of
+from unfold.visuals.neighbors import nearest, reach, vote
 from unfold.visuals.params import (
     NAMES,
     BarChart,
@@ -187,12 +189,20 @@ def _padded(values: list[float]) -> list[float]:
 def _scatter_plot(plot: ScatterPlot, width: float, height: float) -> VGroup:
     xs = [p[0] for p in plot.points]
     ys = [p[1] for p in plot.points]
+    if plot.query is not None and plot.k is not None:
+        # The axes cover the whole neighborhood, so it never needs clipping.
+        distance = reach(plot.points, plot.query, plot.k)
+        xs += [plot.query[0] - distance, plot.query[0] + distance]
+        ys += [plot.query[1] - distance, plot.query[1] + distance]
     x_range, y_range = _padded(xs), _padded(ys)
+    x_length, y_length = width - 0.4, height - 1.3
+    if plot.query is not None:
+        x_length, y_length = _same_scale(x_range, y_range, x_length, y_length)
     axes = Axes(
         x_range=x_range,
         y_range=y_range,
-        x_length=width - 0.4,
-        y_length=height - 1.3,
+        x_length=x_length,
+        y_length=y_length,
         tips=False,
         axis_config={"include_numbers": False, "color": theme.MUTED},
     )
@@ -208,6 +218,8 @@ def _scatter_plot(plot: ScatterPlot, width: float, height: float) -> VGroup:
         ]
     )
     group = VGroup(axes, dots)
+    if plot.query is not None and plot.k is not None:
+        group.add(_neighborhood(plot, axes, plot.query, plot.k))
     if plot.line is not None:
         slope, intercept = plot.line
         line = axes.plot(lambda x: slope * x + intercept, x_range=x_range[:2])
@@ -219,6 +231,54 @@ def _scatter_plot(plot: ScatterPlot, width: float, height: float) -> VGroup:
     if plot.y_label:
         group.add(_text(plot.y_label, theme.LABEL_SIZE, theme.MUTED).next_to(axes, UP))
     return group
+
+
+def _same_scale(
+    x_range: list[float], y_range: list[float], width: float, height: float
+) -> tuple[float, float]:
+    """Axis lengths with one scale for both, so a neighborhood draws as a circle.
+
+    Spans more than three times apart would squeeze one axis into a strip, so
+    they keep the full size, and the neighborhood draws as an oval.
+    """
+    x_span, y_span = x_range[1] - x_range[0], y_range[1] - y_range[0]
+    if max(x_span, y_span) > 3 * min(x_span, y_span):
+        return width, height
+    unit = min(width / x_span, height / y_span)
+    return x_span * unit, y_span * unit
+
+
+def _neighborhood(plot: ScatterPlot, axes: Axes, query: list[float], k: int) -> VGroup:
+    """A shaded boundary of every point within reach, rings on the neighbors, and the query.
+
+    The boundary follows each axis's own scale, so it shows the true neighbors
+    even when it draws as an oval.
+    """
+    distance = reach(plot.points, query, k)
+    middle = axes.c2p(*query)
+    wide = axes.c2p(query[0] + distance, query[1])[0] - middle[0]
+    tall = axes.c2p(query[0], query[1] + distance)[1] - middle[1]
+    boundary = Ellipse(
+        width=max(2 * wide, 0.4),
+        height=max(2 * tall, 0.4),
+        stroke_color=theme.TEXT,
+        stroke_width=2,
+        fill_color=theme.TEXT,
+        fill_opacity=0.08,
+    ).move_to(middle)
+    boundary.name = "reach"
+    neighbors = nearest(plot.points, query, k)
+    rings = VGroup()
+    for i in neighbors:
+        ring = Circle(radius=0.16, stroke_color=theme.TEXT, stroke_width=3)
+        ring.move_to(axes.c2p(*plot.points[i])).name = "ring"
+        rings.add(ring)
+    winner = vote(plot.groups, neighbors)
+    color = theme.TEXT if winner is None else theme.PALETTE[winner]
+    dot = Dot(middle, radius=0.13, color=color)
+    dot.name = "query"
+    mark = Circle(radius=0.2, stroke_color=theme.TEXT, stroke_width=3).move_to(middle)
+    return VGroup(boundary, rings, dot, mark)
 
 
 def _timeline(timeline: Timeline, width: float, height: float) -> VGroup:
