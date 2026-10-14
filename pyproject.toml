@@ -28,6 +28,13 @@ audio = [
 mcp = [
     "mcp>=2.3.0",
 ]
+voice = [
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl#sha256=1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85",
+    "kokoro-onnx>=0.6.1",
+    "misaki>=0.9.4",
+    "num2words>=0.5.14",
+    "spacy>=3.8.16",
+]
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]

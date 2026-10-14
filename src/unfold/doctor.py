@@ -46,6 +46,25 @@ def program(name: str, fix: str, required: bool = True, label: str = "") -> Find
     )
 
 
+def voice() -> Finding:
+    """Kokoro sounds natural. The macOS `say` voice and silence only warn."""
+    fix = "For a natural voice on macOS or Linux, add the Kokoro extra: uv sync --extra voice"
+    if all(has_module(m) for m in ("kokoro_onnx", "misaki", "spacy")):
+        from unfold.kokoro import KokoroVoice, cache_folder
+
+        model = (
+            ""
+            if (cache_folder() / "kokoro-v1.0.onnx").is_file()
+            else ", model downloads on first render"
+        )
+        return Finding(
+            "voice", True, f"kokoro, {KokoroVoice().name}{model}", fix, False
+        )
+    if which("say"):
+        return Finding("voice", False, "say, which sounds robotic", fix, False)
+    return Finding("voice", False, "none, so segments render silent", fix, False)
+
+
 def checks() -> list[Finding]:
     version = ".".join(map(str, sys.version_info[:2]))
     text, whisper = draws_text(), has_module("faster_whisper")
@@ -73,12 +92,7 @@ def checks() -> list[Finding]:
             "draws text" if text else "cannot draw text",
             "Install cairo and pango, such as with: brew install cairo pango pkg-config",
         ),
-        program(
-            "say",
-            "Use macOS for a voice. Without one, segments render silent",
-            required=False,
-            label="voice",
-        ),
+        voice(),
         Finding(
             "audio",
             whisper,

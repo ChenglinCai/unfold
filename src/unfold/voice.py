@@ -1,11 +1,12 @@
-"""A stand-in voice: the macOS `say` command turns text into speech.
+"""Voices: each one turns a beat's text into a clip that a scene can time.
 
-M6 replaces it with Kokoro. Until then, it lets a scene time each animation
-to the length of its narration. Each clip's file name comes from the voice and
-the text, so the same text is never spoken twice.
+Kokoro, in `unfold.kokoro`, is the natural voice. The macOS `say` command is
+the fallback. Each clip's file name comes from the voice and the text, so the
+same text is never spoken twice. Set UNFOLD_VOICE to choose a voice.
 """
 
 import hashlib
+import os
 import shutil
 import subprocess
 import wave
@@ -82,7 +83,7 @@ def voiced(
 
 
 class Voice(Protocol):
-    """Anything that turns one beat's text into a clip. Kokoro can fill it later."""
+    """Anything that turns one beat's text into a clip, such as Kokoro or `say`."""
 
     @property
     def name(self) -> str: ...
@@ -105,6 +106,34 @@ class SayVoice:
         return synthesize(text, cache_dir, self.voice, self.rate)
 
 
+SETTING = "UNFOLD_VOICE takes kokoro:VOICE@SPEED, say:VOICE@RATE, or none"
+
+
+def parse_voice(setting: str) -> Voice | None:
+    """Read a voice setting, such as kokoro:af_heart@1.0, say:Samantha@140, or none."""
+    from unfold.kokoro import KokoroVoice
+
+    kind, _, rest = setting.strip().partition(":")
+    name, _, number = rest.partition("@")
+    try:
+        if kind == "none" and not rest:
+            return None
+        if kind == "kokoro":
+            return KokoroVoice(name or "af_heart", float(number or 1.0))
+        if kind == "say":
+            return SayVoice(name or DEFAULT_VOICE, int(number or 140))
+    except ValueError:
+        pass
+    raise ValueError(f"{SETTING}, not {setting!r}")
+
+
 def default_voice() -> Voice | None:
-    """The voice to use on this machine, or None when no voice exists."""
+    """The voice to use: UNFOLD_VOICE, else Kokoro, else `say`, else None."""
+    from unfold import kokoro
+
+    setting = os.environ.get("UNFOLD_VOICE")
+    if setting:
+        return parse_voice(setting)
+    if kokoro.installed():
+        return kokoro.KokoroVoice()
     return SayVoice() if available() else None

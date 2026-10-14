@@ -57,7 +57,7 @@ A segment is one idea, and this one runs about 20 seconds. A beat is one short p
 | `episode.mp4` | The episode: a title card, then the segment |
 | `episode.srt` | Subtitles for the episode |
 
-The voice uses the macOS `say` command. On Linux, the render still works, but the video is silent.
+For a natural voice on macOS or Linux, install the Kokoro extra with `uv sync --extra voice`. The first render then downloads a 350 MB voice model, once. Without the extra, macOS falls back to its robotic `say` voice, and Linux renders silent. To choose another voice, set `UNFOLD_VOICE`, such as `kokoro:am_michael@1.0`.
 
 ## How the example works
 

@@ -15,13 +15,18 @@ Every dependency, with its license, the reason we need it, and how to remove it.
 | numpy | runtime | BSD-3-Clause, with parts under 0BSD, MIT, Zlib, and CC0 | M2 | Holds the decoded audio samples. manim already installs it |
 | faster-whisper | `audio` extra | MIT | M2 | Transcribes recordings. Its English base model, about 145 MB, downloads once from Hugging Face |
 | mcp | `mcp` extra | MIT | M7 | Serves unfold's commands as tools to Claude Code. Each tool runs its command in a subprocess |
+| kokoro-onnx | `voice` extra | MIT | M8 | Speaks narration with Kokoro, an open voice model under Apache-2.0, through ONNX Runtime, which uses MIT. Its model files, about 350 MB, download once from GitHub and must match pinned hashes |
+| misaki | `voice` extra | Apache-2.0 | M8 | Turns text into phonemes, the G2P that Kokoro trained with. It tags parts of speech, so words sound right in context |
+| spacy | `voice` extra | MIT | M8 | Tags parts of speech for misaki. Its small English model, en-core-web-sm 3.8.0 under MIT, installs from GitHub by a pinned URL and hash, which PyPI will not accept at release |
+| num2words | `voice` extra | LGPL-2.1 | M8 | Spells numbers as words for misaki. unfold imports it unchanged, which the LGPL allows |
+| phonemizer and espeakng-loader | `voice` extra | GPL-3.0 and MIT | M8 | kokoro-onnx installs them. espeakng-loader bundles espeak-ng, which uses the GPL, for words that misaki does not know. Users install them from PyPI, so unfold does not redistribute them |
 | pytest | dev | MIT | M0 | Runs the tests |
 | ruff | dev | MIT | M0 | Lints and formats Python |
 | pyright | dev | MIT | M0 | Checks types |
 | pre-commit | dev | MIT | M0 | Runs the checks before each commit |
 | hypothesis | dev | MPL-2.0 | M8 | Draws each component with random valid parameters, in property tests. It brings sortedcontainers, under Apache-2.0 |
 
-System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, and a LaTeX distribution for equations. Scans use Apple's Vision framework, which ships with macOS. Install the audio extra with `uv sync --extra audio`.
+System tools: cairo and pkg-config from Homebrew, which manim needs on macOS, and a LaTeX distribution for equations. Scans use Apple's Vision framework, which ships with macOS. Install the audio extra with `uv sync --extra audio`, and the natural voice with `uv sync --extra voice`. Remove the voice by syncing without the extra, then deleting `~/.cache/unfold/kokoro`.
 
 ## Safety
 

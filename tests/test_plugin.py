@@ -42,7 +42,7 @@ def test_the_server_installs_the_extras_that_the_skill_uses() -> None:
 
     package = args[args.index("--from") + 1]
 
-    assert package.startswith("unfold-video[audio,mcp] @ git+https://")
+    assert package.startswith("unfold-video[audio,mcp,voice] @ git+https://")
 
 
 def test_the_package_name_is_free_of_the_pypi_clash() -> None:

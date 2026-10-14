@@ -115,7 +115,7 @@ The maintainer asked Claude to settle items 13 to 33. The maintainer chose items
 15. Moved to the next list, because the open notes live in the content folder.
 16. Confirmed. PyAV, NumPy, lxml, and pydantic each use a permissive license.
 17. Charts may show numbers that code or the model computes from the narration's numbers. Made-up data needs "Example" in its title, as the scene prompt says. The five charts still need a reading, in the next list.
-18. Kokoro becomes an optional extra, and users install espeak-ng themselves. Decision record 0007 explains. Building it is the next voice feature.
+18. Kokoro is now the voice, through the `voice` extra. Decision record 0007 and `specs/011-natural-voice/` explain. The default is `af_heart` until the maintainer picks a voice by ear.
 19. The package is now `unfold-video`, and the command stays `unfold`. Tagging `v0.1.0` waits for a release.
 20. Confirmed. LaTeX stays optional.
 21. Confirmed. The plugin's first audio check downloads a Whisper model.
@@ -143,3 +143,4 @@ Each of these needs the private content folder, so a cloud session cannot do the
 5. Read `episode.zh.srt` of velocity-of-money beside its video. This is item 29.
 6. Write `.claude/settings.json`, which closes the M0 gate.
 7. Switch on private vulnerability reporting in the repository's security settings.
+8. Run `uv sync --extra voice`, then listen to a rendered episode. Pick the default voice, and check that Whisper hears each segment with under 5 percent word errors.

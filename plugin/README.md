@@ -18,8 +18,9 @@ Then ask Claude to run the unfold doctor, and fix each gap that it names.
 
 ## What it installs and runs
 
-- When Claude Code starts the server, `uvx` installs unfold from the main branch of this repository. It also installs the `audio` and `mcp` extras from PyPI, into uv's cache.
+- When Claude Code starts the server, `uvx` installs unfold from the main branch of this repository. It also installs the `audio`, `mcp`, and `voice` extras from PyPI, into uv's cache. The voice extra also installs spaCy's small English model from spaCy's GitHub releases, checked by its SHA-256.
 - The first audio check downloads a Whisper speech model from Hugging Face, into `~/.cache/huggingface`.
+- The first render downloads the Kokoro voice model, about 350 MB, from GitHub into `~/.cache/unfold/kokoro`. unfold checks each file's SHA-256 before it loads the file.
 - Each tool runs one unfold command on your machine, with your account's access. The tools save their outputs inside the folders you give them, and they also use temporary folders and caches.
 - The `ingest` tool downloads a web page or file when you give it a URL.
 - The `build` tool calls Claude through the `claude` command, so it spends your own Claude usage.
@@ -39,4 +40,4 @@ claude plugin uninstall unfold@unfold
 claude plugin marketplace remove unfold
 ```
 
-uv keeps the downloaded packages in a cache that other projects share. To free that space, run `uv cache clean`, and uv downloads again what other projects need. You can also delete the Whisper model from `~/.cache/huggingface/hub`.
+uv keeps the downloaded packages in a cache that other projects share. To free that space, run `uv cache clean`, and uv downloads again what other projects need. You can also delete the Whisper model from `~/.cache/huggingface/hub`, and the voice model from `~/.cache/unfold/kokoro`.

@@ -20,3 +20,11 @@ def no_model_calls(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(understand_command, "RUNNER", refuse)
     monkeypatch.setattr(build_command, "RUNNER", refuse)
     monkeypatch.setattr(translate, "RUNNER", refuse)
+
+
+@pytest.fixture(autouse=True)
+def no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep renders on `say` or silence, so no test downloads the Kokoro model."""
+    from unfold import voice
+
+    monkeypatch.setenv("UNFOLD_VOICE", "say" if voice.available() else "none")
