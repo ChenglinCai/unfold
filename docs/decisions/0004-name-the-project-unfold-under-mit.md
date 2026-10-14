@@ -29,3 +29,7 @@ Chosen option: "unfold", because it describes the product, and renaming stays ch
 ## Revisit when
 
 * Before the first PyPI release in M7. Then choose a package name such as `unfold-video`, or rename the project.
+
+## Follow-up on 2026-10-14
+
+The maintainer chose `unfold-video` as the package name, because it was free on PyPI. The import name, the command, and the repository stay `unfold`.

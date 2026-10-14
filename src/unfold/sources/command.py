@@ -266,7 +266,8 @@ def unfold_checkout(path: Path) -> Path | None:
         if project.is_file():
             with project.open("rb") as handle:
                 name = tomllib.load(handle).get("project", {}).get("name")
-            if name == "unfold":
+            # The package was named unfold until 2026-10-14, so older checkouts count.
+            if name in ("unfold-video", "unfold"):
                 return folder
     return None
 

@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 33. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source. On 2026-10-14, a cloud session added the neighborhood circle, the first part of the machine-learning pack.
+- Next: the steps under "Waiting on the maintainer's Mac". M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source. On 2026-10-14, a cloud session added the neighborhood circle, the first part of the machine-learning pack.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -105,25 +105,41 @@ This file holds the current state of the work, so that a new session can resume 
 10. A bare topic's outputs may be public, because no source text reaches them. Every claim still starts flagged for a fact check.
 11. The CUNY statistics deck sits behind Cloudflare's bot wall, which refuses any download outside a browser. MIT 18.05's Class 10 slides take its place, under CC BY-NC-SA 4.0. To add the CUNY deck, save the PDF from a browser and run `unfold ingest` on the file.
 12. The web reader now keeps each formula's TeX from the page's MathML. Without it, the Euler's identity article lost every equation.
-13. Principle II says a job writes one output file. The understand job writes two: the knowledge map and the study notes. The spec asked for one job. I recommend a map job and a notes job in M4, when the build graph arrives. The other choice is a wording patch to principle II.
-14. Principle II says every key covers the manim and component-library versions. The understand outputs use neither, so the key leaves them out, and a manim upgrade costs no model calls. Proposed patch: "A key MUST cover everything its output depends on: the inputs, the prompt version, and the model. Scene jobs add the component-library and manim versions."
-15. Claude did the M4 error analysis, a step that principle IV prefers a domain expert for. Please read the open notes, and correct any failure type.
-16. New dependencies overnight: PyAV, NumPy, lxml, and pydantic. Each uses a permissive license, and `docs/dependencies.md` logs each one.
-17. Five golden charts show numbers that the narration never states. Some are correct computations, and one is an invented poll. Please review them, and decide whether charts may show computed numbers.
-18. M6 needs a voice. Kokoro, the plan's default, depends on espeak-ng and phonemizer for some words, and both use the GPL. Until you decide, M6 keeps the macOS voice behind an interface that Kokoro can fill later.
-19. The plugin says version 0.1.0, but it installs unfold from the main branch. A release would tag `v0.1.0`, and the plugin would pin that tag. Decision record 0004 also asks for a package name first, because another project already holds `unfold` on PyPI.
-20. `unfold doctor` now treats LaTeX as optional, because only equations need it. The quickstart and its CI job install no LaTeX.
-21. The plugin installs the audio extra, so a user's first audio check downloads a Whisper model from Hugging Face. `plugin/README.md` says so.
-22. The plan's M7 gate names Cowork as well as Claude Code. The spec moved Cowork to a later release, so that half of the gate is still open.
-23. M8 began with the four components that the golden set asked for most. They draw a complex plane, a histogram, a present-value chart, and a flow diagram. Claude made the design calls that principle VIII leaves to you. `specs/008-domain-packs/research.md` lists them.
-24. New dev dependency: Hypothesis, under MPL-2.0, for property tests. Users never install it.
-25. Fixed: the storyboard prompt now names only real components and prefers their still pictures. A test keeps the list in step with the library.
-26. Fixed: importing `unfold.visuals.components` first used to fail with a circular import. `unfold/fields.py` now holds the shared field types, and a test imports each affected module first.
-27. Resolved: the domain packs first left 13.5 percent of golden beats custom, over the 10 percent goal. After the storyboard fix and the histogram check, 9 of 96 stay custom, or 9.4 percent. The neighborhood circle and motion inside components remain options.
-28. GitHub suggests a code of conduct and a security policy. Each needs a contact for reports, such as an email address or private vulnerability reporting. Please choose one.
-29. Claude read the Chinese subtitles of one public episode, and the spec asks for your reading too. Please read `episode.zh.srt` of velocity-of-money beside its video.
-30. The LaTeX reader follows `\input`, `\include`, and `\subfile` only to `.tex` files inside the main file's folder. A path outside that folder, or inside a hidden folder, stops ingest with an error. A stranger's file could otherwise send private files to the model. Please confirm this rule.
-31. `unfold understand` now stops before any call when a source holds over 60,000 words, because one call reads the whole source. Prose ran about 1.8 tokens a word in a measured run, and text full of TeX may run near 2.5. So 60,000 words stay under about 150,000 tokens, which leaves room in a 200,000-token context. A whole book, such as *The Wealth of Nations* at 383,485 words, needs one chapter at a time. Please confirm the limit.
-32. `unfold ingest --part FIRST..LAST` keeps one span of a source's anchors, so one chapter of a long book can feed a series. Each name may be an anchor's id or a start that only one id has. Please confirm the option's name and form.
-33. Two golden web sources hold formulas with escaped subscripts. Net present value has 26 of 52 such formulas, and Euler's identity has 2 of 45. PR 39 fixes the reader, but the stored sources keep the escapes. Ingesting them again would change their understand keys and rebuild both series. Please decide when.
-34. The neighborhood circle raised the component version to 5. So the next golden build remakes all 14 scenes, with about 14 model calls. Please run it, then compare the custom share and the scene checks with the M8 packs report. Principle IV keeps the change only if the results hold or improve.
+
+## Decided on 2026-10-14
+
+The maintainer asked Claude to settle items 13 to 33. The maintainer chose items 13, 14, 18, 19, and 28 from options. Claude reviewed the rest, and the maintainer accepted each recommendation.
+
+13. Principle II now says a job writes the files that its one reply holds. Constitution 1.1.0 records the patch, so the understand job stays one job.
+14. Principle II now says a key covers everything its output depends on. Scene jobs add the component-library and manim versions.
+15. Moved to the next list, because the open notes live in the content folder.
+16. Confirmed. PyAV, NumPy, lxml, and pydantic each use a permissive license.
+17. Charts may show numbers that code or the model computes from the narration's numbers. Made-up data needs "Example" in its title, as the scene prompt says. The five charts still need a reading, in the next list.
+18. Kokoro becomes an optional extra, and users install espeak-ng themselves. Decision record 0007 explains. Building it is the next voice feature.
+19. The package is now `unfold-video`, and the command stays `unfold`. Tagging `v0.1.0` waits for a release.
+20. Confirmed. LaTeX stays optional.
+21. Confirmed. The plugin's first audio check downloads a Whisper model.
+22. Confirmed. Cowork waits for a later release.
+23. Confirmed. The design calls in `specs/008-domain-packs/research.md` stay.
+24. Confirmed. Hypothesis stays a dev dependency.
+25. Done, and kept as a record.
+26. Done, and kept as a record.
+27. Done. The neighborhood circle has since shipped.
+28. `SECURITY.md` points to GitHub's private vulnerability reporting. The maintainer switches it on in the repository settings. The code of conduct waits for a contact.
+29. Moved to the next list, because the subtitles live in the content folder.
+30. Confirmed. Includes stay inside the main file's folder.
+31. Confirmed. The limit stays at 60,000 words.
+32. Confirmed. The option stays `--part FIRST..LAST`.
+33. Ingest both sources again with the next golden rebuild, so the two series rebuild only once.
+
+## Waiting on the maintainer's Mac
+
+Each of these needs the private content folder, so a cloud session cannot do them.
+
+1. Ingest net present value and Euler's identity again, then rebuild the golden set. This covers items 33 and 34.
+2. Compare `unfold eval` with `docs/evals/M8-packs-report.md`. Keep the neighborhood circle only if the custom share and the scene checks hold or improve.
+3. Read the M4 open notes, and correct any failure type. This is item 15.
+4. Read the five charts that fail `chart-numbers-grounded`, and fix any invented number. This is item 17.
+5. Read `episode.zh.srt` of velocity-of-money beside its video. This is item 29.
+6. Write `.claude/settings.json`, which closes the M0 gate.
+7. Switch on private vulnerability reporting in the repository's security settings.

@@ -25,7 +25,7 @@ Every document in this project uses these terms with these meanings only.
 | component | A tested, reusable animation, such as a supply-and-demand chart |
 | domain pack | A set of components for one subject |
 | contact sheet | One image grid of key frames from a segment, for quick review |
-| job | One LLM task with fixed input files and one output file |
+| job | One LLM task with fixed input files, whose one reply becomes its output files |
 | runner | The part of the tool that executes jobs |
 | build graph | The record of which file is made from which, so unchanged results can be reused |
 | check | An automatic pass/fail test of an output |

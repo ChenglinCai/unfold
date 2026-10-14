@@ -2507,7 +2507,7 @@ wheels = [
 ]
 
 [[package]]
-name = "unfold"
+name = "unfold-video"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

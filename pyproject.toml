@@ -1,5 +1,5 @@
 [project]
-name = "unfold"
+name = "unfold-video"
 version = "0.1.0"
 description = "Turn learning material into explainer videos: scripts, visual plans, manim scenes, and voice."
 readme = "README.md"
@@ -32,6 +32,11 @@ mcp = [
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# Another project holds unfold on PyPI, so the package is unfold-video. The
+# import name and the command stay unfold.
+module-name = "unfold"
 
 [dependency-groups]
 dev = [

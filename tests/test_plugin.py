@@ -1,6 +1,7 @@
 """The plugin bundles the MCP server and a skill, and the marketplace lists it."""
 
 import json
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -41,4 +42,16 @@ def test_the_server_installs_the_extras_that_the_skill_uses() -> None:
 
     package = args[args.index("--from") + 1]
 
-    assert package.startswith("unfold[audio,mcp] @ git+https://")
+    assert package.startswith("unfold-video[audio,mcp] @ git+https://")
+
+
+def test_the_package_name_is_free_of_the_pypi_clash() -> None:
+    """Another project holds unfold on PyPI, so the package is unfold-video.
+
+    The import name and the command stay unfold. Decision record 0004 explains.
+    """
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text())
+
+    assert project["project"]["name"] == "unfold-video"
+    assert project["project"]["scripts"] == {"unfold": "unfold.cli:main"}
+    assert project["tool"]["uv"]["build-backend"]["module-name"] == "unfold"
