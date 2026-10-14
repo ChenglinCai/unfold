@@ -4,15 +4,18 @@ Hypothesis makes up the parameters. Every drawing must fit its region and keep
 its labels apart, whatever the inputs.
 """
 
+import math
 from typing import Any
 
-from hypothesis import given, settings
+import numpy as np
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
-from manim import Text, VGroup
+from manim import Axes, Text, VGroup
 
 from unfold.visuals.components import build, crowded, parse
 from unfold.visuals.finance import present_value, shown
 from unfold.visuals.layout import REGIONS, box_of
+from unfold.visuals.neighbors import tied
 
 FAST = settings(max_examples=25, deadline=None)
 regions = st.sampled_from(["full", "plot", "left", "right"])
@@ -136,3 +139,50 @@ def test_flow_diagrams_fit_and_keep_labels_apart(
     visual: dict[str, Any], region: str
 ) -> None:
     drawn(visual, region)
+
+
+@st.composite
+def neighborhoods(draw: st.DrawFn) -> dict[str, Any]:
+    coordinate = st.floats(-50, 50).map(lambda v: round(v, 1))
+    pair = st.lists(coordinate, min_size=2, max_size=2)
+    points = draw(st.lists(pair, min_size=1, max_size=60))
+    query = draw(pair)
+    k = draw(st.integers(1, len(points)))
+    assume(not tied(points, query, k))
+    groups = draw(st.lists(st.integers(0, 4), min_size=len(points), max_size=60))
+    return {
+        "component": "scatter-plot",
+        "points": points,
+        "groups": groups[: len(points)],
+        "query": query,
+        "k": k,
+    }
+
+
+@settings(max_examples=50, deadline=None)
+@given(visual=neighborhoods(), region=regions)
+def test_neighborhoods_ring_the_nearest_points_and_reach_the_kth(
+    visual: dict[str, Any], region: str
+) -> None:
+    drawing = drawn(visual, region)
+    axes = drawing[0]
+    assert isinstance(axes, Axes)
+    points, query, k = visual["points"], visual["query"], visual["k"]
+
+    distances = sorted(math.dist(p, query) for p in points)
+    inside = [p for p in points if math.dist(p, query) <= distances[k - 1]]
+    rings = [m for m in drawing.get_family() if m.name == "ring"]
+    assert len(rings) == k == len(inside)
+    for point in inside:
+        spot = axes.c2p(*point)
+        assert any(np.allclose(spot, r.get_center(), atol=1e-6) for r in rings)
+
+    (boundary,) = [m for m in drawing.get_family() if m.name == "reach"]
+    middle = axes.c2p(*query)
+    wide = axes.c2p(query[0] + distances[k - 1], query[1])[0] - middle[0]
+    tall = axes.c2p(query[0], query[1] + distances[k - 1])[1] - middle[1]
+    # A ring's radius is 0.16 before build() shrinks the drawing to fit.
+    floor = 0.4 * rings[0].width / 0.32
+    assert np.allclose(boundary.get_center(), middle, atol=1e-6)
+    assert math.isclose(boundary.width, max(2 * wide, floor), rel_tol=1e-3)
+    assert math.isclose(boundary.height, max(2 * tall, floor), rel_tol=1e-3)

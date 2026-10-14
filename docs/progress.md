@@ -7,7 +7,7 @@ This file holds the current state of the work, so that a new session can resume 
 - Mode: the overnight run began on 2026-10-06 and ended at 09:30 on 2026-10-07. Decision record 0006 set its rules.
 - Branch: one branch per milestone, such as `m5`. The maintainer asked on 2026-10-07 to merge each finished milestone after CI passes.
 - Done: M1 through M7, each tagged, such as `m7-done`. M0 lacks only the settings file that the maintainer writes.
-- Next: your review of M7 and of items 19 to 33. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source.
+- Next: your review of M7 and of items 19 to 33. M8, growth, now has the domain packs, Chinese subtitles, subtitle tracks in the players, and episode contact sheets. It also reads notebooks, LaTeX, EPUB books, and Word files, and ingests one part of a long source. On 2026-10-14, a cloud session added the neighborhood circle, the first part of the machine-learning pack.
 - Backup job: a session-only job checked in every hour, and resumed the run after two usage limits. The run deleted it when the run ended.
 
 ## Check-ins
@@ -83,6 +83,14 @@ This file holds the current state of the work, so that a new session can resume 
 - Walkthrough to ask for: `gather` and `_target`, which decide which files the reader may open.
 - Not done, by design: includes that a macro hides, such as `\includechapter`. Item 30 waits for you.
 
+### M8, the neighborhood circle
+
+- What to try: render a scatter plot with `query` and `k`, such as the example in `specs/010-neighborhood-circle/data-model.md`.
+- What to read: `specs/010-neighborhood-circle/research.md`, which lists each design call.
+- Evidence: `tests/visuals/test_neighbors.py`, and a property test that draws 50 random neighborhoods.
+- Walkthrough to ask for: `_neighborhood` and `_same_scale`, which show how the circle stays true to the data.
+- Not done, by design: the golden rebuild, which needs the content folder and model calls. The component version rose to 5, so the next build remakes every scene. Item 34 waits for you.
+
 ## Decisions for the maintainer to confirm
 
 1. Claude wrote the M1 scenes, which the plan reserved for the maintainer.
@@ -118,3 +126,4 @@ This file holds the current state of the work, so that a new session can resume 
 31. `unfold understand` now stops before any call when a source holds over 60,000 words, because one call reads the whole source. Prose ran about 1.8 tokens a word in a measured run, and text full of TeX may run near 2.5. So 60,000 words stay under about 150,000 tokens, which leaves room in a 200,000-token context. A whole book, such as *The Wealth of Nations* at 383,485 words, needs one chapter at a time. Please confirm the limit.
 32. `unfold ingest --part FIRST..LAST` keeps one span of a source's anchors, so one chapter of a long book can feed a series. Each name may be an anchor's id or a start that only one id has. Please confirm the option's name and form.
 33. Two golden web sources hold formulas with escaped subscripts. Net present value has 26 of 52 such formulas, and Euler's identity has 2 of 45. PR 39 fixes the reader, but the stored sources keep the escapes. Ingesting them again would change their understand keys and rebuild both series. Please decide when.
+34. The neighborhood circle raised the component version to 5. So the next golden build remakes all 14 scenes, with about 14 model calls. Please run it, then compare the custom share and the scene checks with the M8 packs report. Principle IV keeps the change only if the results hold or improve.
