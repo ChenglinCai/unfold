@@ -69,3 +69,20 @@ def test_a_missing_latex_only_warns_because_only_equations_need_it(
     assert main(["doctor"]) == 0
     out = capsys.readouterr().out
     assert "warn latex" in out and "equations" in out
+
+
+@pytest.mark.parametrize(("key", "status"), [("sk-test", "ok  "), ("", "warn")])
+def test_the_elevenlabs_setting_needs_its_key(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    key: str,
+    status: str,
+) -> None:
+    hide(monkeypatch)
+    monkeypatch.setenv("UNFOLD_VOICE", "elevenlabs")
+    monkeypatch.setenv("ELEVENLABS_API_KEY", key)
+
+    assert main(["doctor"]) == 0
+    line = next(x for x in capsys.readouterr().out.splitlines() if "voice" in x)
+    assert line.startswith(f"{status} voice: elevenlabs")
+    assert "sk-test" not in line

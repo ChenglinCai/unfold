@@ -28,3 +28,14 @@ def no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> None:
     from unfold import voice
 
     monkeypatch.setenv("UNFOLD_VOICE", "say" if voice.available() else "none")
+
+
+@pytest.fixture(autouse=True)
+def no_voice_service(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fail any test that would send narration to ElevenLabs, which costs money."""
+    from unfold import elevenlabs
+
+    def refuse(request: object) -> bytes:
+        raise AssertionError("tests must not reach ElevenLabs")
+
+    monkeypatch.setattr(elevenlabs, "send", refuse)

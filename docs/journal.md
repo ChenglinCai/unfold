@@ -4,6 +4,7 @@ One line for each finished task, newest first.
 
 ## 2026-10-14
 
+- Added ElevenLabs as a paid voice. It runs only when `UNFOLD_VOICE` names it, and each request carries the neighboring beats so the intonation flows. Tests use a fake server.
 - Added the natural voice: Kokoro through ONNX, with misaki's G2P, edge trimming, and one loudness for every clip. The `voice` extra installs it with no PyTorch, and the bundled example now renders with narration on Linux.
 - Settled items 13 to 33 with the maintainer: constitution 1.1.0, the package name `unfold-video`, decision record 0007 on Kokoro, and a security policy.
 - Added a neighborhood to the scatter plot: a query point and k ring the k nearest points, inside a circle. Code finds the neighbors and the vote, and refuses ties. The component version rose to 5.

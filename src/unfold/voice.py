@@ -88,7 +88,11 @@ class Voice(Protocol):
     @property
     def name(self) -> str: ...
 
-    def speak(self, text: str, cache_dir: Path) -> Clip: ...
+    def speak(
+        self, text: str, cache_dir: Path, before: str = "", after: str = ""
+    ) -> Clip:
+        """Speak one beat. Before and after hold the neighboring beats' text."""
+        ...
 
 
 @dataclass(frozen=True)
@@ -102,15 +106,30 @@ class SayVoice:
     def name(self) -> str:
         return f"say:{self.voice}@{self.rate}"
 
-    def speak(self, text: str, cache_dir: Path) -> Clip:
+    def speak(
+        self, text: str, cache_dir: Path, before: str = "", after: str = ""
+    ) -> Clip:
         return synthesize(text, cache_dir, self.voice, self.rate)
 
 
-SETTING = "UNFOLD_VOICE takes kokoro:VOICE@SPEED, say:VOICE@RATE, or none"
+def speak_beats(voice: Voice, texts: list[str], cache_dir: Path) -> list[Clip]:
+    """Speak a segment's beats in order. Each beat hears only its neighbors.
+
+    So an edit to one beat re-speaks at most three beats.
+    """
+    padded = ["", *texts, ""]
+    return [
+        voice.speak(padded[i], cache_dir, before=padded[i - 1], after=padded[i + 1])
+        for i in range(1, len(padded) - 1)
+    ]
+
+
+SETTING = "UNFOLD_VOICE takes elevenlabs:VOICE@MODEL, kokoro:VOICE@SPEED, say:VOICE@RATE, or none"
 
 
 def parse_voice(setting: str) -> Voice | None:
-    """Read a voice setting, such as kokoro:af_heart@1.0, say:Samantha@140, or none."""
+    """Read a voice setting, such as elevenlabs:VOICE_ID@eleven_multilingual_v2, or none."""
+    from unfold.elevenlabs import ElevenLabsVoice
     from unfold.kokoro import KokoroVoice
 
     kind, _, rest = setting.strip().partition(":")
@@ -118,6 +137,9 @@ def parse_voice(setting: str) -> Voice | None:
     try:
         if kind == "none" and not rest:
             return None
+        if kind == "elevenlabs":
+            default = ElevenLabsVoice()
+            return ElevenLabsVoice(name or default.voice, number or default.model)
         if kind == "kokoro":
             return KokoroVoice(name or "af_heart", float(number or 1.0))
         if kind == "say":

@@ -142,7 +142,8 @@ def _g2p(british: bool) -> Callable[[str], str]:
     return lambda text: g2p(text)[0]
 
 
-def _write(path: Path, samples: np.ndarray) -> None:
+def write_wav(path: Path, samples: np.ndarray) -> None:
+    """Write mono 16-bit audio at 24 kHz."""
     pcm = np.round(np.clip(samples, -1, 1) * 32767).astype("<i2")
     with wave.open(str(path), "wb") as audio:
         audio.setnchannels(1)
@@ -162,7 +163,10 @@ class KokoroVoice:
     def name(self) -> str:
         return f"kokoro-{MODEL_VERSION}:{self.voice}@{self.speed:g}"
 
-    def speak(self, text: str, cache_dir: Path) -> Clip:
+    def speak(
+        self, text: str, cache_dir: Path, before: str = "", after: str = ""
+    ) -> Clip:
+        """Speak one beat. Kokoro ignores the neighboring beats."""
         key = hashlib.sha256(f"{self.name}|{text}".encode()).hexdigest()[:16]
         path = cache_dir / f"{key}.wav"
         if not path.exists():
@@ -180,6 +184,6 @@ class KokoroVoice:
                 raise ValueError(f"Kokoro spoke at {rate} Hz, not {RATE}")
             cache_dir.mkdir(parents=True, exist_ok=True)
             partial = cache_dir / f"{key}.part.wav"
-            _write(partial, level(trim(np.asarray(samples, dtype=np.float32))))
+            write_wav(partial, level(trim(np.asarray(samples, dtype=np.float32))))
             partial.replace(path)
         return Clip(path, seconds(path))

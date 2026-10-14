@@ -18,7 +18,7 @@ from unfold.formats.episode import SceneV0
 from unfold.script import load_script
 from unfold.visuals import params
 from unfold.visuals.scene import FADE_SECONDS, PAUSE, durations
-from unfold.voice import default_voice
+from unfold.voice import default_voice, speak_beats
 
 VIDEO = "segment.mp4"
 SHEET = "contact-sheet.png"
@@ -84,7 +84,8 @@ def render_segment(folder: Path, quality: str = "low") -> Path:
     script = load_script(folder / "script.md")
     voice = default_voice()
     cache = folder.parent.parent / ".voice-cache"
-    clips = [voice.speak(b.text, cache) for b in script.beats] if voice else None
+    texts = [beat.text for beat in script.beats]
+    clips = speak_beats(voice, texts, cache) if voice else None
     lengths = durations(script, clips)
     settings = {
         "quality": QUALITIES[quality],

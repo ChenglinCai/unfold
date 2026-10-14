@@ -24,6 +24,7 @@ Then ask Claude to run the unfold doctor, and fix each gap that it names.
 - Each tool runs one unfold command on your machine, with your account's access. The tools save their outputs inside the folders you give them, and they also use temporary folders and caches.
 - The `ingest` tool downloads a web page or file when you give it a URL.
 - The `build` tool calls Claude through the `claude` command, so it spends your own Claude usage.
+- If you set `UNFOLD_VOICE` to `elevenlabs`, each render sends new narration to ElevenLabs, on your own `ELEVENLABS_API_KEY`.
 - Claude Code's permission settings decide whether it asks before each tool call.
 
 ## What could go wrong

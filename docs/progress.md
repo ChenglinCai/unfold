@@ -143,4 +143,4 @@ Each of these needs the private content folder, so a cloud session cannot do the
 5. Read `episode.zh.srt` of velocity-of-money beside its video. This is item 29.
 6. Write `.claude/settings.json`, which closes the M0 gate.
 7. Switch on private vulnerability reporting in the repository's security settings.
-8. Run `uv sync --extra voice`, then listen to a rendered episode. Pick the default voice, and check that Whisper hears each segment with under 5 percent word errors.
+8. Set `ELEVENLABS_API_KEY` and `UNFOLD_VOICE=elevenlabs`, then render the quickstart and listen. Pick a voice from your ElevenLabs library, and check that Whisper hears each segment with under 5 percent word errors.

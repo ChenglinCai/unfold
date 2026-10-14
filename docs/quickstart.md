@@ -59,6 +59,8 @@ A segment is one idea, and this one runs about 20 seconds. A beat is one short p
 
 For a natural voice on macOS or Linux, install the Kokoro extra with `uv sync --extra voice`. The first render then downloads a 350 MB voice model, once. Without the extra, macOS falls back to its robotic `say` voice, and Linux renders silent. To choose another voice, set `UNFOLD_VOICE`, such as `kokoro:am_michael@1.0`.
 
+For the most natural voice, use ElevenLabs, a paid service. Set `ELEVENLABS_API_KEY` to your key, and set `UNFOLD_VOICE` to `elevenlabs`. To pick a voice and a model, use `elevenlabs:VOICE_ID@MODEL`, with a voice id from your ElevenLabs library. Each beat's narration then goes to ElevenLabs, and each new beat costs characters from your plan.
+
 ## How the example works
 
 The example holds three files. In a real series, `unfold build` writes them with Claude, from your source.

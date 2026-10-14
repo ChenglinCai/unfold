@@ -13,3 +13,4 @@ To add a record, copy the newest one, give it the next number, and open a pull r
 | [0005](0005-let-hooks-run-only-tools-that-read-code.md) | Let hooks run only tools that read code | accepted |
 | [0006](0006-run-overnight-on-a-dev-branch.md) | Run overnight work on a dev branch, with the maintainer's gate on main | accepted |
 | [0007](0007-use-kokoro-as-an-optional-voice.md) | Use Kokoro as an optional voice, with espeak-ng installed from PyPI | accepted |
+| [0008](0008-offer-elevenlabs-as-a-paid-voice.md) | Offer ElevenLabs as a paid voice, chosen on purpose | accepted |

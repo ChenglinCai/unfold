@@ -6,6 +6,7 @@ says how to fix it, because machines differ in fonts, voices, and programs.
 
 import argparse
 import importlib.util
+import os
 import shutil
 import sys
 from dataclasses import dataclass
@@ -49,6 +50,14 @@ def program(name: str, fix: str, required: bool = True, label: str = "") -> Find
 def voice() -> Finding:
     """Kokoro sounds natural. The macOS `say` voice and silence only warn."""
     fix = "For a natural voice on macOS or Linux, add the Kokoro extra: uv sync --extra voice"
+    if os.environ.get("UNFOLD_VOICE", "").startswith("elevenlabs"):
+        from unfold.voice import default_voice
+
+        chosen = default_voice()
+        name = chosen.name if chosen else "elevenlabs"
+        has_key = bool(os.environ.get("ELEVENLABS_API_KEY"))
+        need = "Set ELEVENLABS_API_KEY to your ElevenLabs API key"
+        return Finding("voice", has_key, f"{name}, a paid service", need, False)
     if all(has_module(m) for m in ("kokoro_onnx", "misaki", "spacy")):
         from unfold.kokoro import KokoroVoice, cache_folder
 
