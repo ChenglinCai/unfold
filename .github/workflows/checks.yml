@@ -32,7 +32,7 @@ jobs:
 
       # The package list comes from Manim's own CI, which renders every kind of equation.
       - name: Install LaTeX for equations
-        uses: zauguin/install-texlive@6671d0c62046c7e349fe154d5208fe746b07e037 # v4.4.0
+        uses: zauguin/install-texlive@c9f3ea3d51b2e04d092c4f9d208a19542d5dabcf # v4.5.0
         with:
           packages: >
             scheme-basic latex fontspec tipa calligra xcolor
@@ -40,7 +40,7 @@ jobs:
             ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx
             wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
 
       - name: Install Python packages from the lock file
         run: uv sync --locked --extra mcp
